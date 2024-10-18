@@ -6,9 +6,9 @@ import Login from './components/Login';
 import Register from './components/Register';
 import Dashboard from './components/Dashboard';
 import WorkoutList from './components/WorkoutList';
+import LogWorkout from './components/LogWorkout';
 import Navbar from './components/Navbar';
 
-// Import Bootstrap CSS
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
@@ -29,7 +29,7 @@ function App() {
         <Container className="mt-4">
           <Routes>
             <Route path="/login" element={<Login setAuth={setAuth} />} />
-            <Route path="/register" element={<Register setAuth={setAuth} />} />
+            <Route path="/register" element={<Register />} />
             <Route path="/" element={
               <PrivateRoute>
                 <Dashboard />
@@ -38,6 +38,11 @@ function App() {
             <Route path="/workouts" element={
               <PrivateRoute>
                 <WorkoutList />
+              </PrivateRoute>
+            } />
+            <Route path="/workouts/new" element={
+              <PrivateRoute>
+                <LogWorkout />
               </PrivateRoute>
             } />
           </Routes>

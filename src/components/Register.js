@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Form, Button, Alert, Container } from 'react-bootstrap';
-import { register } from '../services/auth';
 import { useNavigate } from 'react-router-dom';
+import { register } from '../services/auth';
 
 function Register() {
   const [username, setUsername] = useState('');
@@ -16,9 +16,7 @@ function Register() {
     setError('');
     setIsLoading(true);
     try {
-      const response = await register(username, email, password);
-      console.log('Registration successful', response.data);
-      // Redirect to login page after successful registration
+      await register(username, email, password);
       navigate('/login');
     } catch (error) {
       setError('Registration failed. Please try again.');
@@ -32,41 +30,34 @@ function Register() {
     <Container>
       <h2 className="mb-4">Register</h2>
       <Form onSubmit={handleSubmit}>
-        <Form.Group className="mb-3" controlId="formBasicUsername">
+        <Form.Group className="mb-3">
           <Form.Label>Username</Form.Label>
           <Form.Control
             type="text"
-            placeholder="Enter username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
           />
         </Form.Group>
-
-        <Form.Group className="mb-3" controlId="formBasicEmail">
-          <Form.Label>Email address</Form.Label>
+        <Form.Group className="mb-3">
+          <Form.Label>Email</Form.Label>
           <Form.Control
             type="email"
-            placeholder="Enter email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
           />
         </Form.Group>
-
-        <Form.Group className="mb-3" controlId="formBasicPassword">
+        <Form.Group className="mb-3">
           <Form.Label>Password</Form.Label>
           <Form.Control
             type="password"
-            placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
         </Form.Group>
-
         {error && <Alert variant="danger">{error}</Alert>}
-
         <Button variant="primary" type="submit" disabled={isLoading}>
           {isLoading ? 'Registering...' : 'Register'}
         </Button>

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { Table, Button, Container } from 'react-bootstrap';
 import { getWorkouts } from '../services/workouts';
+import { Link } from 'react-router-dom';
 
 function WorkoutList() {
   const [workouts, setWorkouts] = useState([]);
@@ -12,6 +14,7 @@ function WorkoutList() {
 
   const fetchWorkouts = async () => {
     try {
+      setIsLoading(true);
       const response = await getWorkouts();
       setWorkouts(response.data);
     } catch (error) {
@@ -23,23 +26,41 @@ function WorkoutList() {
   };
 
   if (isLoading) return <div>Loading workouts...</div>;
-  if (error) return <div style={{ color: 'red' }}>{error}</div>;
+  if (error) return <div>{error}</div>;
 
   return (
-    <div>
-      <h2>Your Workouts</h2>
-      {workouts.length === 0 ? (
-        <p>No workouts found. Start by creating a new workout!</p>
-      ) : (
-        <ul>
+    <Container>
+      <h2 className="mb-4">Your Workouts</h2>
+      <Button as={Link} to="/workouts/new" variant="primary" className="mb-3">
+        Log New Workout
+      </Button>
+      <Table striped bordered hover>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Type</th>
+            <th>Duration</th>
+            <th>Calories Burned</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
           {workouts.map((workout) => (
-            <li key={workout.id}>
-              {workout.name} - {workout.date}
-            </li>
+            <tr key={workout.id}>
+              <td>{workout.date}</td>
+              <td>{workout.type}</td>
+              <td>{workout.duration} minutes</td>
+              <td>{workout.caloriesBurned}</td>
+              <td>
+                <Button as={Link} to={`/workouts/${workout.id}`} variant="info" size="sm">
+                  View
+                </Button>
+              </td>
+            </tr>
           ))}
-        </ul>
-      )}
-    </div>
+        </tbody>
+      </Table>
+    </Container>
   );
 }
 

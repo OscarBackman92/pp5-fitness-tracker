@@ -3,7 +3,7 @@ import api from './api';
 export const login = async (username, password) => {
   try {
     const response = await api.post('auth/login/', { username, password });
-    const token = response.data.key || response.data.token; // Adjust based on your API response
+    const token = response.data.key || response.data.token;
     localStorage.setItem('authToken', token);
     return response;
   } catch (error) {
@@ -22,18 +22,22 @@ export const register = async (username, email, password) => {
   }
 };
 
-export const logout = async () => {
-  try {
-    await api.post('auth/logout/');
-    localStorage.removeItem('authToken');
-  } catch (error) {
-    console.error('Logout error:', error);
-  } finally {
-    // Even if the API call fails, we should remove the token
-    localStorage.removeItem('authToken');
-  }
+export const logout = () => {
+  localStorage.removeItem('authToken');
 };
 
 export const isAuthenticated = () => {
   return !!localStorage.getItem('authToken');
+};
+
+export const refreshToken = async () => {
+  try {
+    const response = await api.post('auth/token/refresh/');
+    const newToken = response.data.token;
+    localStorage.setItem('authToken', newToken);
+    return newToken;
+  } catch (error) {
+    console.error('Token refresh error:', error);
+    throw error;
+  }
 };
