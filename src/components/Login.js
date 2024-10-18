@@ -1,37 +1,61 @@
 import React, { useState } from 'react';
+import { Form, Button, Alert } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 import { login } from '../services/auth';
 
-function Login() {
+function Login({ setAuth }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+    setIsLoading(true);
     try {
-      const response = await login(username, password);
-      localStorage.setItem('token', response.data.key);
-      // Handle successful login (e.g., redirect to dashboard)
+      await login(username, password);
+      setAuth(true);
+      navigate('/');
     } catch (error) {
-      console.error('Login failed:', error);
+      setError('Login failed. Please check your credentials.');
+      console.error('Login error:', error.response?.data || error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input
-        type="text"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        placeholder="Username"
-      />
-      <input
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        placeholder="Password"
-      />
-      <button type="submit">Login</button>
-    </form>
+    <Form onSubmit={handleSubmit}>
+      <Form.Group className="mb-3" controlId="formBasicUsername">
+        <Form.Label>Username</Form.Label>
+        <Form.Control
+          type="text"
+          placeholder="Enter username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          required
+        />
+      </Form.Group>
+
+      <Form.Group className="mb-3" controlId="formBasicPassword">
+        <Form.Label>Password</Form.Label>
+        <Form.Control
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+      </Form.Group>
+
+      {error && <Alert variant="danger">{error}</Alert>}
+
+      <Button variant="primary" type="submit" disabled={isLoading}>
+        {isLoading ? 'Logging in...' : 'Login'}
+      </Button>
+    </Form>
   );
 }
 

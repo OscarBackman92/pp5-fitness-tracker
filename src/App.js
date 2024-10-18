@@ -1,11 +1,49 @@
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { Container } from 'react-bootstrap';
+import { isAuthenticated } from './services/auth';
 import Login from './components/Login';
-import './App.css';
+import Register from './components/Register';
+import Dashboard from './components/Dashboard';
+import WorkoutList from './components/WorkoutList';
+import Navbar from './components/Navbar';
+
+// Import Bootstrap CSS
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
+  const [auth, setAuth] = useState(false);
+
+  useEffect(() => {
+    setAuth(isAuthenticated());
+  }, []);
+
+  const PrivateRoute = ({ children }) => {
+    return auth ? children : <Navigate to="/login" />;
+  };
+
   return (
-    <div className="App">
-      <Login />
-    </div>
+    <Router>
+      <div className="App">
+        <Navbar auth={auth} setAuth={setAuth} />
+        <Container className="mt-4">
+          <Routes>
+            <Route path="/login" element={<Login setAuth={setAuth} />} />
+            <Route path="/register" element={<Register setAuth={setAuth} />} />
+            <Route path="/" element={
+              <PrivateRoute>
+                <Dashboard />
+              </PrivateRoute>
+            } />
+            <Route path="/workouts" element={
+              <PrivateRoute>
+                <WorkoutList />
+              </PrivateRoute>
+            } />
+          </Routes>
+        </Container>
+      </div>
+    </Router>
   );
 }
 
