@@ -10,6 +10,9 @@ api.interceptors.request.use(
     const token = localStorage.getItem('authToken');
     if (token) {
       config.headers.Authorization = `Token ${token}`;
+      console.log('Sending request with token:', token);
+    } else {
+      console.log('No token found in localStorage');
     }
     return config;
   },
@@ -27,7 +30,10 @@ api.interceptors.response.use(
         originalRequest.headers.Authorization = `Token ${newToken}`;
         return api(originalRequest);
       } catch (refreshError) {
-        // Handle refresh token failure (e.g., logout user)
+        // Handle refresh token failure (e.g., redirect to login)
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('refreshToken');
+        window.location.href = '/login';
         return Promise.reject(refreshError);
       }
     }

@@ -1,67 +1,100 @@
-import React, { useState, useEffect } from 'react';
-import { Table, Button, Container } from 'react-bootstrap';
-import { getWorkouts } from '../services/workouts';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Form, Button, Container, Alert } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
+import { createWorkout } from '../services/workouts';
 
-function WorkoutList() {
-  const [workouts, setWorkouts] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+function LogWorkout() {
+  const [workoutData, setWorkoutData] = useState({
+    workout_type: '',
+    duration: '',
+    calories: '',
+    date_logged: new Date().toISOString().split('T')[0]
+  });
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchWorkouts();
-  }, []);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setWorkoutData(prevData => ({
+      ...prevData,
+      [name]: value
+    }));
+  };
 
-  const fetchWorkouts = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setIsLoading(true);
     try {
-      setIsLoading(true);
-      const response = await getWorkouts();
-      setWorkouts(response.data);
+      console.log('Submitting workout data:', workoutData);
+      const response = await createWorkout(workoutData);
+      console.log('Workout created:', response.data);
+      navigate('/workouts');
     } catch (error) {
-      setError('Failed to fetch workouts. Please try again.');
-      console.error('Fetch workouts error:', error);
+      console.error('Log workout error:', error);
+      if (error.response) {
+        console.error('Error response data:', error.response.data);
+        setError(`Failed to log workout: ${JSON.stringify(error.response.data)}`);
+      } else {
+        setError('Failed to log workout. Please try again.');
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
-  if (isLoading) return <div>Loading workouts...</div>;
-  if (error) return <div>{error}</div>;
-
   return (
     <Container>
-      <h2 className="mb-4">Your Workouts</h2>
-      <Button as={Link} to="/workouts/new" variant="primary" className="mb-3">
-        Log New Workout
-      </Button>
-      <Table striped bordered hover>
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Type</th>
-            <th>Duration</th>
-            <th>Calories Burned</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {workouts.map((workout) => (
-            <tr key={workout.id}>
-              <td>{workout.date}</td>
-              <td>{workout.type}</td>
-              <td>{workout.duration} minutes</td>
-              <td>{workout.caloriesBurned}</td>
-              <td>
-                <Button as={Link} to={`/workouts/${workout.id}`} variant="info" size="sm">
-                  View
-                </Button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
+      <h2 className="mb-4">Log New Workout</h2>
+      {error && <Alert variant="danger">{error}</Alert>}
+      <Form onSubmit={handleSubmit}>
+        <Form.Group className="mb-3">
+          <Form.Label>Workout Type</Form.Label>
+          <Form.Control
+            type="text"
+            name="workout_type"
+            value={workoutData.workout_type}
+            onChange={handleChange}
+            required
+          />
+        </Form.Group>
+        <Form.Group className="mb-3">
+          <Form.Label>Duration (minutes)</Form.Label>
+          <Form.Control
+            type="number"
+            name="duration"
+            value={workoutData.duration}
+            onChange={handleChange}
+            required
+          />
+        </Form.Group>
+        <Form.Group className="mb-3">
+          <Form.Label>Calories Burned</Form.Label>
+          <Form.Control
+            type="number"
+            name="calories"
+            value={workoutData.calories}
+            onChange={handleChange}
+            required
+          />
+        </Form.Group>
+        <Form.Group className="mb-3">
+          <Form.Label>Date</Form.Label>
+          <Form.Control
+            type="date"
+            name="date_logged"
+            value={workoutData.date_logged}
+            onChange={handleChange}
+            required
+          />
+        </Form.Group>
+        <Button variant="primary" type="submit" disabled={isLoading}>
+          {isLoading ? 'Logging...' : 'Log Workout'}
+        </Button>
+      </Form>
     </Container>
   );
 }
 
-export default WorkoutList;
+export default LogWorkout;

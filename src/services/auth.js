@@ -3,8 +3,14 @@ import api from './api';
 export const login = async (username, password) => {
   try {
     const response = await api.post('auth/login/', { username, password });
-    const token = response.data.key || response.data.token;
-    localStorage.setItem('authToken', token);
+    console.log('Login response:', response.data);
+    const token = response.data.access_token || response.data.key;
+    if (token) {
+      localStorage.setItem('authToken', token);
+      console.log('Token stored:', token);
+    } else {
+      console.error('No token received in login response');
+    }
     return response;
   } catch (error) {
     console.error('Login error:', error);
@@ -12,32 +18,39 @@ export const login = async (username, password) => {
   }
 };
 
-export const register = async (username, email, password) => {
+export const refreshToken = async () => {
   try {
-    const response = await api.post('auth/register/', { username, email, password });
-    return response;
+    const refreshToken = localStorage.getItem('refreshToken');
+    const response = await api.post('auth/token/refresh/', { refresh: refreshToken });
+    const newToken = response.data.access;
+    localStorage.setItem('authToken', newToken);
+    return newToken;
   } catch (error) {
-    console.error('Registration error:', error);
+    console.error('Token refresh error:', error);
     throw error;
   }
 };
 
-export const logout = () => {
-  localStorage.removeItem('authToken');
+export const logout = async () => {
+  try {
+    await api.post('auth/logout/');
+  } finally {
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('refreshToken');
+  }
 };
 
 export const isAuthenticated = () => {
   return !!localStorage.getItem('authToken');
 };
 
-export const refreshToken = async () => {
+export const register = async (userData) => {
   try {
-    const response = await api.post('auth/token/refresh/');
-    const newToken = response.data.token;
-    localStorage.setItem('authToken', newToken);
-    return newToken;
+    const response = await api.post('auth/register/', userData);
+    console.log('Registration response:', response.data);
+    return response;
   } catch (error) {
-    console.error('Token refresh error:', error);
+    console.error('Registration error:', error);
     throw error;
   }
 };
