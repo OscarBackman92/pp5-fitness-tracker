@@ -33,3 +33,13 @@ export const getWorkoutSummary = async () => {
     throw error;
   }
 };
+
+export const getWorkoutDetails = async (id) => {
+  try {
+    const response = await api.get(`/workouts/${id}/`);
+    return response;
+  } catch (error) {
+    console.error('Error fetching workout details:', error);
+    throw error;
+  }
+};

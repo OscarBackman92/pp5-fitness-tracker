@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Alert } from 'react-bootstrap';
+import { Container, Row, Col, Card, Alert, ProgressBar } from 'react-bootstrap';
 import { getWorkoutSummary } from '../services/workouts';
 
 function Dashboard() {
   const [summary, setSummary] = useState({
-    totalWorkouts: 0,
-    recentWorkouts: [],
-    caloriesBurned: 0,
-    totalDuration: 0,
-    avgDuration: 0
+    total_workouts: 0,
+    recent_workouts: [],
+    total_calories: 0,
+    total_duration: 0,
+    avg_duration: 0,
+    workouts_this_week: 0,
+    workouts_this_month: 0
   });
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     fetchWorkoutSummary();
@@ -18,6 +21,7 @@ function Dashboard() {
 
   const fetchWorkoutSummary = async () => {
     try {
+      setIsLoading(true);
       console.log('Fetching workout summary...');
       console.log('Current token:', localStorage.getItem('authToken'));
       const response = await getWorkoutSummary();
@@ -26,27 +30,69 @@ function Dashboard() {
     } catch (error) {
       console.error('Error fetching workout summary:', error);
       setError('Failed to load workout summary. Please try refreshing the page.');
+    } finally {
+      setIsLoading(false);
     }
   };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <Container>
       <h1 className="mb-4">Dashboard</h1>
       {error && <Alert variant="danger">{error}</Alert>}
       <Row className="mb-4">
-        <Col md={4}>
+        <Col md={3}>
           <Card>
             <Card.Body>
               <Card.Title>Total Workouts</Card.Title>
-              <Card.Text className="h2">{summary.totalWorkouts}</Card.Text>
+              <Card.Text className="h2">{summary.total_workouts}</Card.Text>
             </Card.Body>
           </Card>
         </Col>
-        <Col md={4}>
+        <Col md={3}>
           <Card>
             <Card.Body>
               <Card.Title>Calories Burned</Card.Title>
-              <Card.Text className="h2">{summary.caloriesBurned}</Card.Text>
+              <Card.Text className="h2">{summary.total_calories}</Card.Text>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col md={3}>
+          <Card>
+            <Card.Body>
+              <Card.Title>Total Duration</Card.Title>
+              <Card.Text className="h2">{(summary.total_duration / 60).toFixed(1)} hours</Card.Text>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col md={3}>
+          <Card>
+            <Card.Body>
+              <Card.Title>Avg. Duration</Card.Title>
+              <Card.Text className="h2">{Math.round(summary.avg_duration)} min</Card.Text>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+      <Row className="mb-4">
+        <Col md={6}>
+          <Card>
+            <Card.Body>
+              <Card.Title>Weekly Progress</Card.Title>
+              <ProgressBar now={(summary.workouts_this_week / 7) * 100} label={`${summary.workouts_this_week}/7`} />
+              <Card.Text className="mt-2">{summary.workouts_this_week} workouts this week</Card.Text>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col md={6}>
+          <Card>
+            <Card.Body>
+              <Card.Title>Monthly Progress</Card.Title>
+              <ProgressBar now={(summary.workouts_this_month / 30) * 100} label={`${summary.workouts_this_month}/30`} />
+              <Card.Text className="mt-2">{summary.workouts_this_month} workouts this month</Card.Text>
             </Card.Body>
           </Card>
         </Col>
@@ -56,11 +102,11 @@ function Dashboard() {
           <Card>
             <Card.Body>
               <Card.Title>Recent Workouts</Card.Title>
-              {summary.recentWorkouts && summary.recentWorkouts.length > 0 ? (
+              {summary.recent_workouts && summary.recent_workouts.length > 0 ? (
                 <ul className="list-unstyled">
-                  {summary.recentWorkouts.map((workout, index) => (
-                    <li key={index} className="mb-2">
-                      <strong>{workout.workout_type}</strong> - {new Date(workout.date_logged).toLocaleDateString()}
+                  {summary.recent_workouts.map((workout) => (
+                    <li key={workout.id} className="mb-2">
+                      <strong>{workout.workout_type_display}</strong> - {new Date(workout.date_logged).toLocaleDateString()} - {workout.duration_hours.toFixed(2)} hours
                     </li>
                   ))}
                 </ul>
