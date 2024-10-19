@@ -1,23 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Button, Container, Alert } from 'react-bootstrap';
 import { useParams, useNavigate } from 'react-router-dom';
+import { Form, Button, Alert } from 'react-bootstrap';
 import { getWorkoutDetails, updateWorkout } from '../services/workouts';
 
 const WORKOUT_TYPES = [
-  'Cardio',
-  'Strength',
-  'Flexibility',
-  'Balance',
-  'HIIT',
-  'Yoga',
-  'Pilates',
-  'Running',
-  'Cycling',
-  'Swimming'
+  { value: 'cardio', label: 'Cardio' },
+  { value: 'strength', label: 'Strength Training' },
+  { value: 'flexibility', label: 'Flexibility' },
+  { value: 'sports', label: 'Sports' },
+  { value: 'other', label: 'Other' }
 ];
 
 function EditWorkout() {
-  const [workoutData, setWorkoutData] = useState({
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [workout, setWorkout] = useState({
     workout_type: '',
     duration: '',
     calories: '',
@@ -25,54 +22,47 @@ function EditWorkout() {
     notes: ''
   });
   const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
-  const { id } = useParams();
-  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchWorkout = async () => {
       try {
-        const response = await getWorkoutDetails(id);
-        setWorkoutData(response.data);
+        const data = await getWorkoutDetails(id);
+        setWorkout(data);
       } catch (error) {
         console.error('Error fetching workout:', error);
-        setError('Failed to load workout. Please try again.');
+        setError('Failed to load workout details. Please try again.');
       } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
     };
-
     fetchWorkout();
   }, [id]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setWorkoutData(prevData => ({
-      ...prevData,
+    setWorkout(prev => ({
+      ...prev,
       [name]: value
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    setIsLoading(true);
     try {
-      await updateWorkout(id, workoutData);
-      navigate(`/workouts/${id}`);
+      await updateWorkout(id, workout);
+      navigate('/workouts');
     } catch (error) {
-      console.error('Update workout error:', error);
+      console.error('Error updating workout:', error);
       setError('Failed to update workout. Please try again.');
-    } finally {
-      setIsLoading(false);
     }
   };
 
-  if (isLoading) return <div>Loading...</div>;
+  if (loading) return <div>Loading...</div>;
 
   return (
-    <Container>
-      <h2 className="mb-4">Edit Workout</h2>
+    <div>
+      <h2>Edit Workout</h2>
       {error && <Alert variant="danger">{error}</Alert>}
       <Form onSubmit={handleSubmit}>
         <Form.Group className="mb-3">
@@ -80,13 +70,13 @@ function EditWorkout() {
           <Form.Control
             as="select"
             name="workout_type"
-            value={workoutData.workout_type}
+            value={workout.workout_type}
             onChange={handleChange}
             required
           >
             <option value="">Select a workout type</option>
             {WORKOUT_TYPES.map(type => (
-              <option key={type} value={type}>{type}</option>
+              <option key={type.value} value={type.value}>{type.label}</option>
             ))}
           </Form.Control>
         </Form.Group>
@@ -95,7 +85,7 @@ function EditWorkout() {
           <Form.Control
             type="number"
             name="duration"
-            value={workoutData.duration}
+            value={workout.duration}
             onChange={handleChange}
             required
           />
@@ -105,7 +95,7 @@ function EditWorkout() {
           <Form.Control
             type="number"
             name="calories"
-            value={workoutData.calories}
+            value={workout.calories}
             onChange={handleChange}
             required
           />
@@ -115,7 +105,7 @@ function EditWorkout() {
           <Form.Control
             type="date"
             name="date_logged"
-            value={workoutData.date_logged}
+            value={workout.date_logged}
             onChange={handleChange}
             required
           />
@@ -126,15 +116,15 @@ function EditWorkout() {
             as="textarea"
             rows={3}
             name="notes"
-            value={workoutData.notes}
+            value={workout.notes}
             onChange={handleChange}
           />
         </Form.Group>
-        <Button variant="primary" type="submit" disabled={isLoading}>
-          {isLoading ? 'Updating...' : 'Update Workout'}
+        <Button variant="primary" type="submit">
+          Update Workout
         </Button>
       </Form>
-    </Container>
+    </div>
   );
 }
 

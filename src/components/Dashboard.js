@@ -21,11 +21,12 @@ function Dashboard() {
   const fetchWorkoutSummary = async () => {
     try {
       setIsLoading(true);
+      setError('');
       const response = await getWorkoutSummary();
-      setSummary(response.data);
+      console.log('API Response:', response.data); // Add this line
+      setSummary(response.data || {});
     } catch (error) {
-      console.error('Error fetching workout summary:', error);
-      setError('Failed to load workout summary. Please try refreshing the page.');
+      // ... error handling ...
     } finally {
       setIsLoading(false);
     }
@@ -51,7 +52,7 @@ function Dashboard() {
           <Card>
             <Card.Body>
               <Card.Title>Total Workouts</Card.Title>
-              <Card.Text className="h2">{summary.total_workouts}</Card.Text>
+              <Card.Text className="h2">{summary.total_workouts || 0}</Card.Text>
             </Card.Body>
           </Card>
         </Col>
@@ -59,7 +60,7 @@ function Dashboard() {
           <Card>
             <Card.Body>
               <Card.Title>Calories Burned</Card.Title>
-              <Card.Text className="h2">{summary.total_calories}</Card.Text>
+              <Card.Text className="h2">{summary.total_calories || 0}</Card.Text>
             </Card.Body>
           </Card>
         </Col>
@@ -67,7 +68,7 @@ function Dashboard() {
           <Card>
             <Card.Body>
               <Card.Title>Total Duration</Card.Title>
-              <Card.Text className="h2">{(summary.total_duration / 60).toFixed(1)} hours</Card.Text>
+              <Card.Text className="h2">{((summary.total_duration || 0) / 60).toFixed(1)} hours</Card.Text>
             </Card.Body>
           </Card>
         </Col>
@@ -75,7 +76,7 @@ function Dashboard() {
           <Card>
             <Card.Body>
               <Card.Title>Avg. Duration</Card.Title>
-              <Card.Text className="h2">{Math.round(summary.avg_duration)} min</Card.Text>
+              <Card.Text className="h2">{Math.round(summary.avg_duration || 0)} min</Card.Text>
             </Card.Body>
           </Card>
         </Col>
@@ -91,7 +92,9 @@ function Dashboard() {
                   {summary.recent_workouts.map((workout) => (
                     <li key={workout.id} className="mb-2">
                       <Link to={`/workouts/${workout.id}`}>
-                        <strong>{workout.workout_type_display}</strong> - {new Date(workout.date_logged).toLocaleDateString()} - {workout.duration} minutes
+                        <strong>{workout.workout_type_display || 'Unknown Type'}</strong> - 
+                        {workout.date_logged ? new Date(workout.date_logged).toLocaleDateString() : 'Unknown Date'} - 
+                        {workout.duration ? `${workout.duration} minutes` : 'Unknown Duration'}
                       </Link>
                     </li>
                   ))}

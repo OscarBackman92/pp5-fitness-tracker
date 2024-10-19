@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Container, Alert, Modal } from 'react-bootstrap';
+import { Table, Button, Alert, Spinner } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { getWorkouts, deleteWorkout } from '../services/workouts';
 
 function WorkoutList() {
   const [workouts, setWorkouts] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [workoutToDelete, setWorkoutToDelete] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [deleting, setDeleting] = useState(null);
 
   useEffect(() => {
     fetchWorkouts();
@@ -16,115 +15,77 @@ function WorkoutList() {
 
   const fetchWorkouts = async () => {
     try {
-      setIsLoading(true);
-      const response = await getWorkouts();
-      console.log('API response:', response); // Log the entire response object
-  
-      // Ensure the response contains the results array
-      if (response.data && Array.isArray(response.data.results)) {
-        setWorkouts(response.data.results); // Use the 'results' array
-      } else {
-        throw new Error('Data format is incorrect');
-      }
+      setLoading(true);
+      setError('');
+      const data = await getWorkouts();
+      setWorkouts(Array.isArray(data) ? data : data.results || []);
     } catch (error) {
-      console.error('Fetch workouts error:', error);
-      setError('Failed to fetch workouts. Please try again.');
+      console.error('Error fetching workouts:', error);
+      setError('Failed to load workouts. Please try again.');
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
-  const handleDeleteClick = (workout) => {
-    setWorkoutToDelete(workout);
-    setShowDeleteModal(true);
-  };
-
-  const handleDeleteConfirm = async () => {
-    try {
-      await deleteWorkout(workoutToDelete.id);
-      setWorkouts(workouts.filter((w) => w.id !== workoutToDelete.id));
-      setShowDeleteModal(false);
-    } catch (error) {
-      console.error('Delete workout error:', error);
-      setError('Failed to delete workout. Please try again.');
+  const handleDelete = async (id) => {
+    if (window.confirm('Are you sure you want to delete this workout?')) {
+      try {
+        setDeleting(id);
+        await deleteWorkout(id);
+        setWorkouts(workouts.filter(workout => workout.id !== id));
+      } catch (error) {
+        console.error('Error deleting workout:', error);
+        setError('Failed to delete workout. Please try again.');
+      } finally {
+        setDeleting(null);
+      }
     }
   };
 
-  if (isLoading) return <div>Loading workouts...</div>;
-  if (error) return <Alert variant="danger">{error}</Alert>;
+  if (loading) return <div className="text-center mt-5"><Spinner animation="border" /></div>;
 
   return (
-    <Container>
+    <div>
       <h2 className="mb-4">Your Workouts</h2>
-      <Link to="/workouts/new">
-        <Button variant="primary" className="mb-3">
-          Log New Workout
-        </Button>
-      </Link>
-
+      {error && <Alert variant="danger" onClose={() => setError('')} dismissible>{error}</Alert>}
+      <Link to="/workouts/new" className="btn btn-primary mb-3">Log New Workout</Link>
       {workouts.length === 0 ? (
-        <p>No workouts found. Start by logging a new workout!</p>
+        <Alert variant="info">No workouts logged yet. Start by logging a new workout!</Alert>
       ) : (
-        <Table striped bordered hover>
+        <Table responsive striped bordered hover>
           <thead>
             <tr>
               <th>Date</th>
               <th>Type</th>
               <th>Duration</th>
-              <th>Calories Burned</th>
+              <th>Calories</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {Array.isArray(workouts) &&
-              workouts.map((workout) => (
-                <tr key={workout.id}>
-                  <td>{new Date(workout.date_logged).toLocaleDateString()}</td>
-                  <td>{workout.workout_type_display}</td>
-                  <td>{workout.duration} minutes</td>
-                  <td>{workout.calories}</td>
-                  <td>
-                    <Link to={`/workouts/${workout.id}`}>
-                      <Button variant="info" size="sm" className="mr-2">
-                        View
-                      </Button>
-                    </Link>
-                    <Button
-                      variant="danger"
-                      size="sm"
-                      onClick={() => handleDeleteClick(workout)}
-                    >
-                      Delete
-                    </Button>
-                  </td>
-                </tr>
-              ))}
+            {workouts.map((workout) => (
+              <tr key={workout.id}>
+                <td>{new Date(workout.date_logged).toLocaleDateString()}</td>
+                <td>{workout.workout_type}</td>
+                <td>{workout.duration} min</td>
+                <td>{workout.calories}</td>
+                <td>
+                  <Link to={`/workouts/edit/${workout.id}`} className="btn btn-sm btn-info me-2">Edit</Link>
+                  <Button 
+                    variant="danger" 
+                    size="sm" 
+                    onClick={() => handleDelete(workout.id)}
+                    disabled={deleting === workout.id}
+                  >
+                    {deleting === workout.id ? <Spinner animation="border" size="sm" /> : 'Delete'}
+                  </Button>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </Table>
       )}
-
-      {/* Delete Confirmation Modal */}
-      <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Confirm Delete</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          Are you sure you want to delete this workout? This action cannot be
-          undone.
-        </Modal.Body>
-        <Modal.Footer>
-          <Button
-            variant="secondary"
-            onClick={() => setShowDeleteModal(false)}
-          >
-            Cancel
-          </Button>
-          <Button variant="danger" onClick={handleDeleteConfirm}>
-            Delete
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    </Container>
+    </div>
   );
 }
 

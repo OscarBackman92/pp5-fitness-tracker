@@ -1,8 +1,11 @@
 import axios from 'axios';
-import { refreshToken } from './auth';
+import { refreshToken, logout } from './auth';
 
 const api = axios.create({
   baseURL: process.env.REACT_APP_API_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
 api.interceptors.request.use(
@@ -23,16 +26,15 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-    if (error.response.status === 401 && !originalRequest._retry) {
+    if (error.response && error.response.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
       try {
         const newToken = await refreshToken();
         originalRequest.headers.Authorization = `Token ${newToken}`;
         return api(originalRequest);
       } catch (refreshError) {
-        // Handle refresh token failure (e.g., redirect to login)
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('refreshToken');
+        console.error('Token refresh failed:', refreshError);
+        await logout();
         window.location.href = '/login';
         return Promise.reject(refreshError);
       }
