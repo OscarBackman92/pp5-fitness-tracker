@@ -3,7 +3,7 @@ import api from './api';
 export const getWorkouts = async () => {
   try {
     const response = await api.get('/workouts/');
-    return response;
+    return response.data;  // Return only the data part
   } catch (error) {
     console.error('Error fetching workouts:', error);
     throw error;

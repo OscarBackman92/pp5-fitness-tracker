@@ -18,7 +18,14 @@ function WorkoutList() {
     try {
       setIsLoading(true);
       const response = await getWorkouts();
-      setWorkouts(response.data);
+      console.log('API response:', response); // Log the entire response object
+  
+      // Ensure the response contains the results array
+      if (response.data && Array.isArray(response.data.results)) {
+        setWorkouts(response.data.results); // Use the 'results' array
+      } else {
+        throw new Error('Data format is incorrect');
+      }
     } catch (error) {
       console.error('Fetch workouts error:', error);
       setError('Failed to fetch workouts. Please try again.');
@@ -35,7 +42,7 @@ function WorkoutList() {
   const handleDeleteConfirm = async () => {
     try {
       await deleteWorkout(workoutToDelete.id);
-      setWorkouts(workouts.filter(w => w.id !== workoutToDelete.id));
+      setWorkouts(workouts.filter((w) => w.id !== workoutToDelete.id));
       setShowDeleteModal(false);
     } catch (error) {
       console.error('Delete workout error:', error);
@@ -50,8 +57,11 @@ function WorkoutList() {
     <Container>
       <h2 className="mb-4">Your Workouts</h2>
       <Link to="/workouts/new">
-        <Button variant="primary" className="mb-3">Log New Workout</Button>
+        <Button variant="primary" className="mb-3">
+          Log New Workout
+        </Button>
       </Link>
+
       {workouts.length === 0 ? (
         <p>No workouts found. Start by logging a new workout!</p>
       ) : (
@@ -66,20 +76,29 @@ function WorkoutList() {
             </tr>
           </thead>
           <tbody>
-            {workouts.map((workout) => (
-              <tr key={workout.id}>
-                <td>{new Date(workout.date_logged).toLocaleDateString()}</td>
-                <td>{workout.workout_type_display}</td>
-                <td>{workout.duration} minutes</td>
-                <td>{workout.calories}</td>
-                <td>
-                  <Link to={`/workouts/${workout.id}`}>
-                    <Button variant="info" size="sm" className="mr-2">View</Button>
-                  </Link>
-                  <Button variant="danger" size="sm" onClick={() => handleDeleteClick(workout)}>Delete</Button>
-                </td>
-              </tr>
-            ))}
+            {Array.isArray(workouts) &&
+              workouts.map((workout) => (
+                <tr key={workout.id}>
+                  <td>{new Date(workout.date_logged).toLocaleDateString()}</td>
+                  <td>{workout.workout_type_display}</td>
+                  <td>{workout.duration} minutes</td>
+                  <td>{workout.calories}</td>
+                  <td>
+                    <Link to={`/workouts/${workout.id}`}>
+                      <Button variant="info" size="sm" className="mr-2">
+                        View
+                      </Button>
+                    </Link>
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      onClick={() => handleDeleteClick(workout)}
+                    >
+                      Delete
+                    </Button>
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </Table>
       )}
@@ -89,9 +108,15 @@ function WorkoutList() {
         <Modal.Header closeButton>
           <Modal.Title>Confirm Delete</Modal.Title>
         </Modal.Header>
-        <Modal.Body>Are you sure you want to delete this workout? This action cannot be undone.</Modal.Body>
+        <Modal.Body>
+          Are you sure you want to delete this workout? This action cannot be
+          undone.
+        </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
+          <Button
+            variant="secondary"
+            onClick={() => setShowDeleteModal(false)}
+          >
             Cancel
           </Button>
           <Button variant="danger" onClick={handleDeleteConfirm}>
