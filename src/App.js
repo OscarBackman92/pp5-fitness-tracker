@@ -6,8 +6,9 @@ import Login from './components/Login';
 import Register from './components/Register';
 import Dashboard from './components/Dashboard';
 import WorkoutList from './components/WorkoutList';
-import LogWorkout from './components/LogWorkout';
 import WorkoutDetails from './components/WorkoutDetails';
+import LogWorkout from './components/LogWorkout';
+import EditWorkout from './components/EditWorkout';
 import Navbar from './components/Navbar';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -49,6 +50,11 @@ function App() {
             <Route path="/workouts/:id" element={
               <PrivateRoute>
                 <WorkoutDetails />
+              </PrivateRoute>
+            } />
+            <Route path="/workouts/edit/:id" element={
+              <PrivateRoute>
+                <EditWorkout />
               </PrivateRoute>
             } />
           </Routes>

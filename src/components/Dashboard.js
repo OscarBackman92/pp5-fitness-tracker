@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Alert, ProgressBar } from 'react-bootstrap';
+import { Container, Row, Col, Card, Alert, Button, Spinner } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 import { getWorkoutSummary } from '../services/workouts';
 
 function Dashboard() {
@@ -8,9 +9,7 @@ function Dashboard() {
     recent_workouts: [],
     total_calories: 0,
     total_duration: 0,
-    avg_duration: 0,
-    workouts_this_week: 0,
-    workouts_this_month: 0
+    avg_duration: 0
   });
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
@@ -22,10 +21,7 @@ function Dashboard() {
   const fetchWorkoutSummary = async () => {
     try {
       setIsLoading(true);
-      console.log('Fetching workout summary...');
-      console.log('Current token:', localStorage.getItem('authToken'));
       const response = await getWorkoutSummary();
-      console.log('Workout summary response:', response);
       setSummary(response.data);
     } catch (error) {
       console.error('Error fetching workout summary:', error);
@@ -36,15 +32,22 @@ function Dashboard() {
   };
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <Container className="text-center mt-5">
+        <Spinner animation="border" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </Spinner>
+      </Container>
+    );
   }
 
   return (
     <Container>
       <h1 className="mb-4">Dashboard</h1>
       {error && <Alert variant="danger">{error}</Alert>}
+      
       <Row className="mb-4">
-        <Col md={3}>
+        <Col md={3} sm={6} className="mb-3">
           <Card>
             <Card.Body>
               <Card.Title>Total Workouts</Card.Title>
@@ -52,7 +55,7 @@ function Dashboard() {
             </Card.Body>
           </Card>
         </Col>
-        <Col md={3}>
+        <Col md={3} sm={6} className="mb-3">
           <Card>
             <Card.Body>
               <Card.Title>Calories Burned</Card.Title>
@@ -60,7 +63,7 @@ function Dashboard() {
             </Card.Body>
           </Card>
         </Col>
-        <Col md={3}>
+        <Col md={3} sm={6} className="mb-3">
           <Card>
             <Card.Body>
               <Card.Title>Total Duration</Card.Title>
@@ -68,7 +71,7 @@ function Dashboard() {
             </Card.Body>
           </Card>
         </Col>
-        <Col md={3}>
+        <Col md={3} sm={6} className="mb-3">
           <Card>
             <Card.Body>
               <Card.Title>Avg. Duration</Card.Title>
@@ -77,27 +80,8 @@ function Dashboard() {
           </Card>
         </Col>
       </Row>
+
       <Row className="mb-4">
-        <Col md={6}>
-          <Card>
-            <Card.Body>
-              <Card.Title>Weekly Progress</Card.Title>
-              <ProgressBar now={(summary.workouts_this_week / 7) * 100} label={`${summary.workouts_this_week}/7`} />
-              <Card.Text className="mt-2">{summary.workouts_this_week} workouts this week</Card.Text>
-            </Card.Body>
-          </Card>
-        </Col>
-        <Col md={6}>
-          <Card>
-            <Card.Body>
-              <Card.Title>Monthly Progress</Card.Title>
-              <ProgressBar now={(summary.workouts_this_month / 30) * 100} label={`${summary.workouts_this_month}/30`} />
-              <Card.Text className="mt-2">{summary.workouts_this_month} workouts this month</Card.Text>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
-      <Row>
         <Col>
           <Card>
             <Card.Body>
@@ -106,15 +90,26 @@ function Dashboard() {
                 <ul className="list-unstyled">
                   {summary.recent_workouts.map((workout) => (
                     <li key={workout.id} className="mb-2">
-                      <strong>{workout.workout_type_display}</strong> - {new Date(workout.date_logged).toLocaleDateString()} - {workout.duration_hours.toFixed(2)} hours
+                      <Link to={`/workouts/${workout.id}`}>
+                        <strong>{workout.workout_type_display}</strong> - {new Date(workout.date_logged).toLocaleDateString()} - {workout.duration} minutes
+                      </Link>
                     </li>
                   ))}
                 </ul>
               ) : (
                 <p>No recent workouts found.</p>
               )}
+              <Link to="/workouts" className="btn btn-primary mt-3">View All Workouts</Link>
             </Card.Body>
           </Card>
+        </Col>
+      </Row>
+
+      <Row className="mt-4">
+        <Col>
+          <Link to="/workouts/new" className="d-grid">
+            <Button variant="success" size="lg">Log New Workout</Button>
+          </Link>
         </Col>
       </Row>
     </Container>

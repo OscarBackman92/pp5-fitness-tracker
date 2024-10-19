@@ -55,12 +55,12 @@ export const register = async (userData) => {
   }
 };
 
-export const getWorkoutDetails = async (id) => {
+export const deleteWorkout = async (id) => {
   try {
-    const response = await api.get(`/workouts/${id}/`);
+    const response = await api.delete(`/workouts/${id}/`);
     return response;
   } catch (error) {
-    console.error('Error fetching workout details:', error);
+    console.error('Error deleting workout:', error);
     throw error;
   }
 };

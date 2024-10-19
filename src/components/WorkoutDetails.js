@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
-import { Container, Row, Col, Card } from 'react-bootstrap';
-import { getWorkoutDetails } from '../services/workouts';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Container, Row, Col, Card, Button, Modal } from 'react-bootstrap';
+import { getWorkoutDetails, deleteWorkout } from '../services/workouts';
 
 function WorkoutDetails() {
   const [workout, setWorkout] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const fetchWorkoutDetails = useCallback(async () => {
     try {
@@ -25,6 +27,20 @@ function WorkoutDetails() {
   useEffect(() => {
     fetchWorkoutDetails();
   }, [fetchWorkoutDetails]);
+
+  const handleEdit = () => {
+    navigate(`/workouts/edit/${id}`);
+  };
+
+  const handleDelete = async () => {
+    try {
+      await deleteWorkout(id);
+      navigate('/workouts');
+    } catch (error) {
+      console.error('Error deleting workout:', error);
+      setError('Failed to delete workout. Please try again.');
+    }
+  };
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
@@ -47,8 +63,26 @@ function WorkoutDetails() {
               <p>{workout.notes || 'No notes for this workout.'}</p>
             </Col>
           </Row>
+          <Button onClick={handleEdit} variant="primary" className="mr-2">Edit Workout</Button>
+          <Button onClick={() => setShowDeleteModal(true)} variant="danger">Delete Workout</Button>
         </Card.Body>
       </Card>
+
+      {/* Delete Confirmation Modal */}
+      <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm Delete</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Are you sure you want to delete this workout? This action cannot be undone.</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
+            Cancel
+          </Button>
+          <Button variant="danger" onClick={handleDelete}>
+            Delete
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Container>
   );
 }

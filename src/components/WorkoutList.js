@@ -1,143 +1,106 @@
-import React, { useState } from 'react';
-import { Form, Button, Container, Alert, Row, Col } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
-import { createWorkout } from '../services/workouts';
+import React, { useState, useEffect } from 'react';
+import { Table, Button, Container, Alert, Modal } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
+import { getWorkouts, deleteWorkout } from '../services/workouts';
 
-// This should match the choices in your Django model
-const WORKOUT_TYPES = [
-  'Cardio',
-  'Strength',
-  'Flexibility',
-  'Balance',
-  'HIIT',
-  'Yoga',
-  'Pilates',
-  'Running',
-  'Cycling',
-  'Swimming'
-];
-
-function LogWorkout() {
-  const [workoutData, setWorkoutData] = useState({
-    workout_type: '',
-    duration: '',
-    calories: '',
-    date_logged: new Date().toISOString().split('T')[0],
-    notes: ''
-  });
+function WorkoutList() {
+  const [workouts, setWorkouts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [workoutToDelete, setWorkoutToDelete] = useState(null);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setWorkoutData(prevData => ({
-      ...prevData,
-      [name]: value
-    }));
-  };
+  useEffect(() => {
+    fetchWorkouts();
+  }, []);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    setIsLoading(true);
+  const fetchWorkouts = async () => {
     try {
-      console.log('Submitting workout data:', workoutData);
-      const response = await createWorkout(workoutData);
-      console.log('Workout created:', response.data);
-      navigate('/workouts');
+      setIsLoading(true);
+      const response = await getWorkouts();
+      setWorkouts(response.data);
     } catch (error) {
-      console.error('Log workout error:', error);
-      if (error.response && error.response.data) {
-        setError(`Failed to log workout: ${JSON.stringify(error.response.data)}`);
-      } else {
-        setError('Failed to log workout. Please try again.');
-      }
+      console.error('Fetch workouts error:', error);
+      setError('Failed to fetch workouts. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
 
+  const handleDeleteClick = (workout) => {
+    setWorkoutToDelete(workout);
+    setShowDeleteModal(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    try {
+      await deleteWorkout(workoutToDelete.id);
+      setWorkouts(workouts.filter(w => w.id !== workoutToDelete.id));
+      setShowDeleteModal(false);
+    } catch (error) {
+      console.error('Delete workout error:', error);
+      setError('Failed to delete workout. Please try again.');
+    }
+  };
+
+  if (isLoading) return <div>Loading workouts...</div>;
+  if (error) return <Alert variant="danger">{error}</Alert>;
+
   return (
     <Container>
-      <h2 className="mb-4">Log New Workout</h2>
-      {error && <Alert variant="danger">{error}</Alert>}
-      <Form onSubmit={handleSubmit}>
-        <Row>
-          <Col md={6}>
-            <Form.Group className="mb-3">
-              <Form.Label>Workout Type</Form.Label>
-              <Form.Control
-                as="select"
-                name="workout_type"
-                value={workoutData.workout_type}
-                onChange={handleChange}
-                required
-              >
-                <option value="">Select a workout type</option>
-                {WORKOUT_TYPES.map(type => (
-                  <option key={type} value={type}>{type}</option>
-                ))}
-              </Form.Control>
-            </Form.Group>
-          </Col>
-          <Col md={6}>
-            <Form.Group className="mb-3">
-              <Form.Label>Date</Form.Label>
-              <Form.Control
-                type="date"
-                name="date_logged"
-                value={workoutData.date_logged}
-                onChange={handleChange}
-                required
-              />
-            </Form.Group>
-          </Col>
-        </Row>
-        <Row>
-          <Col md={6}>
-            <Form.Group className="mb-3">
-              <Form.Label>Duration (minutes)</Form.Label>
-              <Form.Control
-                type="number"
-                name="duration"
-                value={workoutData.duration}
-                onChange={handleChange}
-                required
-                min="1"
-              />
-            </Form.Group>
-          </Col>
-          <Col md={6}>
-            <Form.Group className="mb-3">
-              <Form.Label>Calories Burned</Form.Label>
-              <Form.Control
-                type="number"
-                name="calories"
-                value={workoutData.calories}
-                onChange={handleChange}
-                required
-                min="0"
-              />
-            </Form.Group>
-          </Col>
-        </Row>
-        <Form.Group className="mb-3">
-          <Form.Label>Notes</Form.Label>
-          <Form.Control
-            as="textarea"
-            rows={3}
-            name="notes"
-            value={workoutData.notes}
-            onChange={handleChange}
-          />
-        </Form.Group>
-        <Button variant="primary" type="submit" disabled={isLoading}>
-          {isLoading ? 'Logging...' : 'Log Workout'}
-        </Button>
-      </Form>
+      <h2 className="mb-4">Your Workouts</h2>
+      <Link to="/workouts/new">
+        <Button variant="primary" className="mb-3">Log New Workout</Button>
+      </Link>
+      {workouts.length === 0 ? (
+        <p>No workouts found. Start by logging a new workout!</p>
+      ) : (
+        <Table striped bordered hover>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Type</th>
+              <th>Duration</th>
+              <th>Calories Burned</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {workouts.map((workout) => (
+              <tr key={workout.id}>
+                <td>{new Date(workout.date_logged).toLocaleDateString()}</td>
+                <td>{workout.workout_type_display}</td>
+                <td>{workout.duration} minutes</td>
+                <td>{workout.calories}</td>
+                <td>
+                  <Link to={`/workouts/${workout.id}`}>
+                    <Button variant="info" size="sm" className="mr-2">View</Button>
+                  </Link>
+                  <Button variant="danger" size="sm" onClick={() => handleDeleteClick(workout)}>Delete</Button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm Delete</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Are you sure you want to delete this workout? This action cannot be undone.</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
+            Cancel
+          </Button>
+          <Button variant="danger" onClick={handleDeleteConfirm}>
+            Delete
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Container>
   );
 }
 
-export default LogWorkout;
+export default WorkoutList;
