@@ -13,18 +13,27 @@ api.interceptors.request.use(
     const token = localStorage.getItem('authToken');
     if (token) {
       config.headers.Authorization = `Token ${token}`;
-      console.log('Sending request with token:', token);
+      console.log('Sending request to:', config.url);
+      console.log('With headers:', config.headers);
     } else {
       console.log('No token found in localStorage');
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => {
+    console.error('Request interceptor error:', error);
+    return Promise.reject(error);
+  }
 );
 
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    console.log('Received response from:', response.config.url);
+    console.log('Response status:', response.status);
+    return response;
+  },
   async (error) => {
+    console.error('Response error:', error.response?.status, error.response?.data);
     const originalRequest = error.config;
     if (error.response && error.response.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
@@ -42,5 +51,8 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+// Log the base URL
+console.log('API Base URL:', process.env.REACT_APP_API_URL);
 
 export default api;

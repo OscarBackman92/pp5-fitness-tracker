@@ -77,6 +77,7 @@ src/
    ```
 
 5. Start the development server:
+
    ```
    npm start
    ```
@@ -118,4 +119,5 @@ This project is licensed under the MIT License.
 ## Acknowledgments
 
 - React Bootstrap for providing a robust UI component library
+
 - Lucide React for the icon set

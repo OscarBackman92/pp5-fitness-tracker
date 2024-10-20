@@ -1,13 +1,80 @@
 import React from 'react';
-import { Container, Row, Col, Button, Card } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button, Alert } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { Activity, BarChart2, Users, Award } from 'lucide-react';
-import '../Styles/HomePage.css';
+import Loading from '../components/Loading'; // Assume you've created this component
 
-const HomePage = () => {
+const HomePage = ({ isLoggedIn, userInfo, loading, error }) => {
+  if (loading) {
+    return <Loading />;
+  }
+
+  if (error) {
+    return (
+      <Container className="mt-4">
+        <Alert variant="danger">{error}</Alert>
+      </Container>
+    );
+  }
+
+  if (isLoggedIn && userInfo) {
+    return (
+      <Container className="mt-4">
+        <h1>Welcome back, {userInfo.username || 'User'}!</h1>
+        <Row className="mt-4">
+          <Col md={6} lg={3} className="mb-4">
+            <Card className="h-100">
+              <Card.Body>
+                <Card.Title>Quick Stats</Card.Title>
+                <Card.Text>
+                  Total Workouts: {userInfo.total_workouts || 0}<br />
+                  This Week: {userInfo.workouts_this_week || 0}
+                </Card.Text>
+              </Card.Body>
+            </Card>
+          </Col>
+          <Col md={6} lg={3} className="mb-4">
+            <Card className="h-100">
+              <Card.Body>
+                <Card.Title>Recent Activity</Card.Title>
+                <Card.Text>
+                  Last Workout: {userInfo.last_workout_date || 'N/A'}<br />
+                  Type: {userInfo.last_workout_type || 'N/A'}
+                </Card.Text>
+              </Card.Body>
+            </Card>
+          </Col>
+          <Col md={6} lg={3} className="mb-4">
+            <Card className="h-100">
+              <Card.Body>
+                <Card.Title>Goals</Card.Title>
+                <Card.Text>
+                  Weekly Goal: {userInfo.weekly_goal || 'Not set'}<br />
+                  Progress: {userInfo.goal_progress || '0%'}
+                </Card.Text>
+              </Card.Body>
+            </Card>
+          </Col>
+          <Col md={6} lg={3} className="mb-4">
+            <Card className="h-100">
+              <Card.Body>
+                <Card.Title>Quick Actions</Card.Title>
+                <Link to="/workouts/new">
+                  <Button variant="primary" className="mb-2 w-100">Log Workout</Button>
+                </Link>
+                <Link to="/workouts">
+                  <Button variant="outline-primary" className="w-100">View History</Button>
+                </Link>
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
+      </Container>
+    );
+  }
+
   return (
     <div className="home-page">
-      {/* Hero Section */}
       <section className="hero">
         <Container>
           <Row className="align-items-center">
@@ -25,7 +92,6 @@ const HomePage = () => {
         </Container>
       </section>
 
-      {/* Features Section */}
       <section className="features">
         <Container>
           <h2 className="section-title">Why Choose Fitness Tracker?</h2>
@@ -50,22 +116,6 @@ const HomePage = () => {
         </Container>
       </section>
 
-      {/* Testimonial Section */}
-      <section className="testimonial">
-        <Container>
-          <Row className="justify-content-center">
-            <Col md={8} className="text-center">
-              <h2 className="section-title">What Our Users Say</h2>
-              <blockquote className="testimonial-quote">
-                <p>"Fitness Tracker has revolutionized my workout routine. I've never been more consistent and motivated!"</p>
-                <footer className="testimonial-author">Sarah J., lost 20 lbs in 3 months</footer>
-              </blockquote>
-            </Col>
-          </Row>
-        </Container>
-      </section>
-
-      {/* CTA Section */}
       <section className="cta">
         <Container>
           <Row className="justify-content-center">

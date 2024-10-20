@@ -92,3 +92,34 @@ export const register = async (userData) => {
 export const getAuthToken = () => {
   return localStorage.getItem('authToken');
 };
+
+export const getUserProfile = async () => {
+  try {
+    const response = await api.get('/user/profile/');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching user profile:', error);
+    throw error;
+  }
+};
+
+export const updateUserProfile = async (profileData) => {
+  try {
+    const response = await api.put('/user/profile/', profileData);
+    return response.data;
+  } catch (error) {
+    console.error('Error updating user profile:', error);
+    throw error;
+  }
+};
+
+
+export const getUserInfo = async () => {
+  try {
+    const response = await api.get('user/info/');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching user info:', error);
+    throw error;
+  }
+};
