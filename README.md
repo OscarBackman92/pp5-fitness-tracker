@@ -5,6 +5,7 @@ Fitness Tracker is a web application that helps users log and track their workou
 ## Features
 
 - User authentication (login, register, logout)
+- Attractive landing page showcasing app features
 - Dashboard with workout summary
 - List view of all workouts
 - Detailed view of individual workouts
@@ -20,6 +21,31 @@ Fitness Tracker is a web application that helps users log and track their workou
 - React Bootstrap for UI components
 - Axios for API requests
 - CSS for custom styling
+- Lucide React for icons
+
+## Project Structure
+
+```
+src/
+  components/
+    Navbar.js
+  pages/
+    HomePage.js
+    Dashboard.js
+    Login.js
+    Register.js
+    WorkoutList.js
+    WorkoutDetails.js
+    LogWorkout.js
+    EditWorkout.js
+  services/
+    api.js
+    auth.js
+    workouts.js
+  styles/
+    HomePage.css
+  App.js
+```
 
 ## Getting Started
 
@@ -36,7 +62,6 @@ Fitness Tracker is a web application that helps users log and track their workou
    ```
 
 2. Navigate to the project directory:
-
    ```
    cd fitness-tracker
    ```
@@ -58,19 +83,13 @@ Fitness Tracker is a web application that helps users log and track their workou
 
 The application should now be running on [http://localhost:3000](http://localhost:3000).
 
-## Project Structure
+## Usage
 
-- `src/components/`: React components
-- `src/services/`: API service functions
-- `src/styles/`: CSS files for styling
-
-Key components:
-- `App.js`: Main component with routing
-- `Dashboard.js`: User's dashboard with workout summary
-- `WorkoutList.js`: Displays list of workouts
-- `WorkoutDetails.js`: Shows details of a specific workout
-- `LogWorkout.js`: Form for logging a new workout
-- `EditWorkout.js`: Form for editing an existing workout
+- Visit the homepage to learn about the app's features
+- Register for a new account or log in with existing credentials
+- Use the dashboard to view your workout summary
+- Navigate to the workout list to see all your logged workouts
+- Add new workouts, edit existing ones, or delete workouts as needed
 
 ## API Integration
 
@@ -82,7 +101,7 @@ User authentication is managed through the `auth.js` service, which provides fun
 
 ## Styling
 
-The application uses a combination of React Bootstrap components and custom CSS for styling. The `auth-card` class provides a consistent style for authentication forms.
+The application uses a combination of React Bootstrap components and custom CSS for styling. The `HomePage.css` file provides custom styles for the landing page.
 
 ## Contributing
 
@@ -96,3 +115,7 @@ The application uses a combination of React Bootstrap components and custom CSS 
 
 This project is licensed under the MIT License.
 
+## Acknowledgments
+
+- React Bootstrap for providing a robust UI component library
+- Lucide React for the icon set
