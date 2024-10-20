@@ -12,6 +12,7 @@ import WorkoutDetails from './pages/WorkoutDetails';
 import LogWorkout from './pages/LogWorkout';
 import EditWorkout from './pages/EditWorkout';
 import Navbar from './components/Navbar';
+import Footer from './components/Footer'; // Import Footer
 import Loading from './components/Loading';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -54,17 +55,14 @@ function App() {
 
   return (
     <Router>
-      <div className="App">
+      <div className="App d-flex flex-column min-vh-100">
         <Navbar auth={auth} setAuth={setAuth} userInfo={userInfo} />
         {error && <Alert variant="danger" dismissible onClose={() => setError(null)}>{error}</Alert>}
-        <Container className="mt-4">
+        <Container className="mt-4 flex-grow-1">
           <Routes>
-            {/* Public routes */}
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<Login setAuth={setAuth} setUserInfo={setUserInfo} />} />
             <Route path="/register" element={<Register />} />
-
-            {/* Private routes */}
             <Route path="/dashboard" element={
               <PrivateRoute>
                 <Dashboard userInfo={userInfo} />
@@ -97,6 +95,7 @@ function App() {
             } />
           </Routes>
         </Container>
+        <Footer /> {/* Add the Footer here */}
       </div>
     </Router>
   );

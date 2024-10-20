@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 function Dashboard({ userInfo }) {
   return (
     <Container className="mt-4">
-      <h1>Welcome back, {userInfo?.name || userInfo?.username}!</h1>
+      <h1>Welcome back, {userInfo?.username || userInfo?.name || 'User'}!</h1>
       
       <Row className="mt-4">
         <Col md={6} lg={3} className="mb-4">
