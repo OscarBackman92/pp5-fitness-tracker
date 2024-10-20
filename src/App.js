@@ -22,23 +22,26 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        setLoading(true);
-        const isAuth = isAuthenticated();
-        setAuth(isAuth);
-        if (isAuth) {
-          const info = await getUserInfo();
-          setUserInfo(info);
-        }
-      } catch (err) {
-        console.error('Error fetching user info:', err);
-        setError('Failed to load user information. Please try refreshing the page.');
-      } finally {
-        setLoading(false);
+  const checkAuth = async () => {
+    try {
+      setLoading(true);
+      const isAuth = isAuthenticated();
+      setAuth(isAuth);
+      if (isAuth) {
+        const info = await getUserInfo();
+        setUserInfo(info);
+      } else {
+        setUserInfo(null);
       }
-    };
+    } catch (err) {
+      console.error('Error fetching user info:', err);
+      setError('Failed to load user information. Please try refreshing the page.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     checkAuth();
   }, []);
 
@@ -53,64 +56,47 @@ function App() {
     <Router>
       <div className="App">
         <Navbar auth={auth} setAuth={setAuth} userInfo={userInfo} />
-        {error && <Alert variant="danger">{error}</Alert>}
-        <Routes>
-          <Route 
-            path="/" 
-            element={
-              <HomePage 
-                isLoggedIn={auth} 
-                userInfo={userInfo} 
-                loading={loading} 
-                error={error} 
-              />
-            } 
-          />
-          <Route path="/login" element={<Login setAuth={setAuth} setUserInfo={setUserInfo} />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/dashboard" element={
-            <PrivateRoute>
-              <Container className="mt-4">
+        {error && <Alert variant="danger" dismissible onClose={() => setError(null)}>{error}</Alert>}
+        <Container className="mt-4">
+          <Routes>
+            {/* Public routes */}
+            <Route path="/" element={<HomePage />} />
+            <Route path="/login" element={<Login setAuth={setAuth} setUserInfo={setUserInfo} />} />
+            <Route path="/register" element={<Register />} />
+
+            {/* Private routes */}
+            <Route path="/dashboard" element={
+              <PrivateRoute>
                 <Dashboard userInfo={userInfo} />
-              </Container>
-            </PrivateRoute>
-          } />
-          <Route path="/profile" element={
-            <PrivateRoute>
-              <Container className="mt-4">
+              </PrivateRoute>
+            } />
+            <Route path="/profile" element={
+              <PrivateRoute>
                 <Profile userInfo={userInfo} setUserInfo={setUserInfo} />
-              </Container>
-            </PrivateRoute>
-          } />
-          <Route path="/workouts" element={
-            <PrivateRoute>
-              <Container className="mt-4">
+              </PrivateRoute>
+            } />
+            <Route path="/workouts" element={
+              <PrivateRoute>
                 <WorkoutList />
-              </Container>
-            </PrivateRoute>
-          } />
-          <Route path="/workouts/new" element={
-            <PrivateRoute>
-              <Container className="mt-4">
+              </PrivateRoute>
+            } />
+            <Route path="/workouts/new" element={
+              <PrivateRoute>
                 <LogWorkout userInfo={userInfo} />
-              </Container>
-            </PrivateRoute>
-          } />
-          <Route path="/workouts/:id" element={
-            <PrivateRoute>
-              <Container className="mt-4">
+              </PrivateRoute>
+            } />
+            <Route path="/workouts/:id" element={
+              <PrivateRoute>
                 <WorkoutDetails />
-              </Container>
-            </PrivateRoute>
-          } />
-          <Route path="/workouts/edit/:id" element={
-            <PrivateRoute>
-              <Container className="mt-4">
+              </PrivateRoute>
+            } />
+            <Route path="/workouts/edit/:id" element={
+              <PrivateRoute>
                 <EditWorkout />
-              </Container>
-            </PrivateRoute>
-          } />
-        </Routes>
+              </PrivateRoute>
+            } />
+          </Routes>
+        </Container>
       </div>
     </Router>
   );

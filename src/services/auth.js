@@ -116,10 +116,18 @@ export const updateUserProfile = async (profileData) => {
 
 export const getUserInfo = async () => {
   try {
+    console.log('Attempting to fetch user info from:', `${process.env.REACT_APP_API_URL}user/info/`);
     const response = await api.get('user/info/');
+    console.log('User info response:', response.data);
     return response.data;
   } catch (error) {
     console.error('Error fetching user info:', error);
+    console.error('Error details:', {
+      status: error.response?.status,
+      data: error.response?.data,
+      headers: error.response?.headers,
+      config: error.config
+    });
     throw error;
   }
 };

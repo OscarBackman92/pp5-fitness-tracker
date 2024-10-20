@@ -1,10 +1,10 @@
 import React from 'react';
-import { Navbar, Nav, Container } from 'react-bootstrap';
+import { Navbar, Nav, Container, NavDropdown } from 'react-bootstrap';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { logout } from '../services/auth';
-import '../Styles/Navbar.css'
+import '../Styles/Navbar.css';
 
-function NavBar({ auth, setAuth }) {
+function NavBar({ auth, setAuth, userInfo }) {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -23,11 +23,16 @@ function NavBar({ auth, setAuth }) {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="ms-auto">
+            <Nav.Link as={Link} to="/" className={isActive('/')}>Home</Nav.Link>
             {auth ? (
               <>
-                <Nav.Link as={Link} to="/" className={isActive('/')}>Dashboard</Nav.Link>
+                <Nav.Link as={Link} to="/dashboard" className={isActive('/dashboard')}>Dashboard</Nav.Link>
                 <Nav.Link as={Link} to="/workouts" className={isActive('/workouts')}>Workouts</Nav.Link>
-                <button onClick={handleLogout} className="logout-button">Logout</button>
+                <NavDropdown title={userInfo?.name || userInfo?.username || 'Profile'} id="basic-nav-dropdown">
+                  <NavDropdown.Item as={Link} to="/profile">View Profile</NavDropdown.Item>
+                  <NavDropdown.Divider />
+                  <NavDropdown.Item onClick={handleLogout}>Logout</NavDropdown.Item>
+                </NavDropdown>
               </>
             ) : (
               <>
