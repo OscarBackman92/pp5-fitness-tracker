@@ -2,9 +2,9 @@ import React from 'react';
 import { Navbar, Nav, Container } from 'react-bootstrap';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { logout } from '../services/auth';
-import '../Styles/AppNavbar.css'
+import '../Styles/Navbar.css'
 
-function AppNavbar({ auth, setAuth }) {
+function NavBar({ auth, setAuth }) {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -42,4 +42,4 @@ function AppNavbar({ auth, setAuth }) {
   );
 }
 
-export default AppNavbar;
+export default NavBar;
