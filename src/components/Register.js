@@ -16,10 +16,11 @@ function Register() {
     setError('');
     setIsLoading(true);
     try {
-      await register(username, email, password);
+      const userData = { username, email, password };
+      await register(userData);
       navigate('/login');
     } catch (error) {
-      setError('Registration failed. Please try again.');
+      setError(error.response?.data?.message || 'Registration failed. Please try again.');
       console.error('Registration error:', error.response?.data || error.message);
     } finally {
       setIsLoading(false);

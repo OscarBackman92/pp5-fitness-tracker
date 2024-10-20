@@ -16,7 +16,7 @@ export const login = async (username, password) => {
     }
     return response;
   } catch (error) {
-    console.error('Login error:', error);
+    console.error('Login error:', error.response?.data || error.message);
     throw error;
   }
 };
@@ -32,7 +32,7 @@ export const refreshToken = async () => {
     localStorage.setItem('authToken', newToken);
     return newToken;
   } catch (error) {
-    console.error('Token refresh error:', error);
+    console.error('Token refresh error:', error.response?.data || error.message);
     throw error;
   }
 };
@@ -46,7 +46,7 @@ export const logout = async () => {
       });
     }
   } catch (error) {
-    console.error('Logout error:', error);
+    console.error('Logout error:', error.response?.data || error.message);
   } finally {
     localStorage.removeItem('authToken');
     localStorage.removeItem('refreshToken');
@@ -59,11 +59,32 @@ export const isAuthenticated = () => {
 
 export const register = async (userData) => {
   try {
-    const response = await api.post('auth/register/', userData);
+    // Ensure userData is an object, not a string
+    if (typeof userData === 'string') {
+      userData = JSON.parse(userData);
+    }
+
+    const response = await api.post('auth/register/', userData, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
     console.log('Registration response:', response.data);
     return response;
   } catch (error) {
-    console.error('Registration error:', error);
+    console.error('Full error object:', error);
+    console.error('Registration error:', error.response?.data || error.message);
+    if (error.response && error.response.data) {
+      if (error.response.data.errors) {
+        console.error('Specific errors:', error.response.data.errors);
+        if (error.response.data.errors.non_field_errors) {
+          console.error('Non-field errors:', error.response.data.errors.non_field_errors);
+        }
+      }
+      if (error.response.data.message) {
+        console.error('Error message:', error.response.data.message);
+      }
+    }
     throw error;
   }
 };
