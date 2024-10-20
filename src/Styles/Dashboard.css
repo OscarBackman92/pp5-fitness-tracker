@@ -1,0 +1,77 @@
+.dashboard-container {
+    padding: 20px 0;
+  }
+  
+  .dashboard-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+    color: #333;
+  }
+  
+  .summary-card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .summary-card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .summary-card .card-body {
+    padding: 1.5rem;
+  }
+  
+  .summary-card .card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #6c757d;
+  }
+  
+  .summary-card .card-text {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #007bff;
+    margin-top: 0.5rem;
+  }
+  
+  .recent-workouts-card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .recent-workouts-card .card-body {
+    padding: 1.5rem;
+  }
+  
+  .recent-workouts-card .card-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+  }
+  
+  .recent-workout-item {
+    padding: 10px 0;
+    border-bottom: 1px solid #e9ecef;
+  }
+  
+  .recent-workout-item:last-child {
+    border-bottom: none;
+  }
+  
+  .recent-workout-item a {
+    color: #495057;
+    text-decoration: none;
+    transition: color 0.3s ease-in-out;
+  }
+  
+  .recent-workout-item a:hover {
+    color: #007bff;
+  }
+  
+  .log-workout-btn {
+    margin-top: 2rem;
+  }

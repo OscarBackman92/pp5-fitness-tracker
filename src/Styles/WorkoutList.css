@@ -1,0 +1,39 @@
+.workout-list-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .workout-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .workout-table {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .workout-table th {
+    background-color: #f8f9fa;
+  }
+  
+  .workout-actions {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .workout-spinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+  }
+  
+  .no-workouts-alert {
+    text-align: center;
+    padding: 20px;
+    background-color: #e9ecef;
+    border-radius: 5px;
+  }

@@ -1,0 +1,56 @@
+.navbar {
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .navbar-brand {
+    font-weight: 700;
+    color: #007bff;
+    font-size: 1.5rem;
+  }
+  
+  .nav-link {
+    color: #495057;
+    font-weight: 500;
+    transition: color 0.3s ease;
+  }
+  
+  .nav-link:hover {
+    color: #007bff;
+  }
+  
+  .navbar-toggler {
+    border: none;
+  }
+  
+  .navbar-toggler:focus {
+    box-shadow: none;
+  }
+  
+  .active-link {
+    color: #007bff;
+  }
+  
+  .logout-button {
+    background: none;
+    border: none;
+    color: #495057;
+    font-weight: 500;
+    transition: color 0.3s ease;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+  }
+  
+  .logout-button:hover {
+    color: #007bff;
+  }
+  
+  @media (max-width: 991px) {
+    .navbar-nav {
+      padding-top: 1rem;
+    }
+    
+    .nav-link {
+      padding: 0.5rem 0;
+    }
+  }

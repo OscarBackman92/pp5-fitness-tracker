@@ -1,10 +1,12 @@
 import React from 'react';
 import { Navbar, Nav, Container } from 'react-bootstrap';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { logout } from '../services/auth';
+import '../Styles/AppNavbar.css'
 
 function AppNavbar({ auth, setAuth }) {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = async () => {
     await logout();
@@ -12,8 +14,10 @@ function AppNavbar({ auth, setAuth }) {
     navigate('/login');
   };
 
+  const isActive = (path) => location.pathname === path ? 'active-link' : '';
+
   return (
-    <Navbar bg="light" expand="lg">
+    <Navbar expand="lg" className="navbar">
       <Container>
         <Navbar.Brand as={Link} to="/">Fitness Tracker</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -21,14 +25,14 @@ function AppNavbar({ auth, setAuth }) {
           <Nav className="ms-auto">
             {auth ? (
               <>
-                <Nav.Link as={Link} to="/">Dashboard</Nav.Link>
-                <Nav.Link as={Link} to="/workouts">Workouts</Nav.Link>
-                <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
+                <Nav.Link as={Link} to="/" className={isActive('/')}>Dashboard</Nav.Link>
+                <Nav.Link as={Link} to="/workouts" className={isActive('/workouts')}>Workouts</Nav.Link>
+                <button onClick={handleLogout} className="logout-button">Logout</button>
               </>
             ) : (
               <>
-                <Nav.Link as={Link} to="/login">Login</Nav.Link>
-                <Nav.Link as={Link} to="/register">Register</Nav.Link>
+                <Nav.Link as={Link} to="/login" className={isActive('/login')}>Login</Nav.Link>
+                <Nav.Link as={Link} to="/register" className={isActive('/register')}>Register</Nav.Link>
               </>
             )}
           </Nav>

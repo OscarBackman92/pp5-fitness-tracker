@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Form, Button, Alert } from 'react-bootstrap';
+import { Form, Button, Alert, Container, Spinner } from 'react-bootstrap';
 import { getWorkoutDetails, updateWorkout } from '../services/workouts';
+import '../Styles/EditWorkout.css';
 
 const WORKOUT_TYPES = [
   { value: 'cardio', label: 'Cardio' },
@@ -23,6 +24,7 @@ function EditWorkout() {
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const fetchWorkout = async () => {
@@ -49,23 +51,34 @@ function EditWorkout() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
     try {
       await updateWorkout(id, workout);
       navigate('/workouts');
     } catch (error) {
       console.error('Error updating workout:', error);
       setError('Failed to update workout. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) {
+    return (
+      <div className="loading-spinner">
+        <Spinner animation="border" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </Spinner>
+      </div>
+    );
+  }
 
   return (
-    <div>
-      <h2>Edit Workout</h2>
-      {error && <Alert variant="danger">{error}</Alert>}
-      <Form onSubmit={handleSubmit}>
-        <Form.Group className="mb-3">
+    <Container className="edit-workout-container">
+      <h2 className="edit-workout-title">Edit Workout</h2>
+      {error && <Alert variant="danger" className="error-alert">{error}</Alert>}
+      <Form onSubmit={handleSubmit} className="edit-workout-form">
+        <Form.Group className="form-group">
           <Form.Label>Workout Type</Form.Label>
           <Form.Control
             as="select"
@@ -80,7 +93,7 @@ function EditWorkout() {
             ))}
           </Form.Control>
         </Form.Group>
-        <Form.Group className="mb-3">
+        <Form.Group className="form-group">
           <Form.Label>Duration (minutes)</Form.Label>
           <Form.Control
             type="number"
@@ -90,7 +103,7 @@ function EditWorkout() {
             required
           />
         </Form.Group>
-        <Form.Group className="mb-3">
+        <Form.Group className="form-group">
           <Form.Label>Calories Burned</Form.Label>
           <Form.Control
             type="number"
@@ -100,7 +113,7 @@ function EditWorkout() {
             required
           />
         </Form.Group>
-        <Form.Group className="mb-3">
+        <Form.Group className="form-group">
           <Form.Label>Date</Form.Label>
           <Form.Control
             type="date"
@@ -110,7 +123,7 @@ function EditWorkout() {
             required
           />
         </Form.Group>
-        <Form.Group className="mb-3">
+        <Form.Group className="form-group">
           <Form.Label>Notes</Form.Label>
           <Form.Control
             as="textarea"
@@ -120,11 +133,11 @@ function EditWorkout() {
             onChange={handleChange}
           />
         </Form.Group>
-        <Button variant="primary" type="submit">
-          Update Workout
+        <Button variant="primary" type="submit" disabled={isSubmitting} className="btn-submit">
+          {isSubmitting ? 'Updating...' : 'Update Workout'}
         </Button>
       </Form>
-    </div>
+    </Container>
   );
 }
 

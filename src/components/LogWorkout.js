@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Form, Button, Container, Alert } from 'react-bootstrap';
 import { createWorkout } from '../services/workouts';
 import { useNavigate } from 'react-router-dom';
+import '../Styles/LogWorkout.css';
 
 const WORKOUT_TYPES = [
   { value: 'cardio', label: 'Cardio' },
@@ -52,10 +53,10 @@ function LogWorkout() {
   };
 
   return (
-    <Container>
-      <h2 className="mb-4">Log New Workout</h2>
-      <Form onSubmit={handleSubmit}>
-        <Form.Group className="mb-3">
+    <Container className="log-workout-container">
+      <h2 className="log-workout-title">Log New Workout</h2>
+      <Form onSubmit={handleSubmit} className="log-workout-form">
+        <Form.Group className="form-group">
           <Form.Label>Workout Type</Form.Label>
           <Form.Control
             as="select"
@@ -70,7 +71,7 @@ function LogWorkout() {
             ))}
           </Form.Control>
         </Form.Group>
-        <Form.Group className="mb-3">
+        <Form.Group className="form-group">
           <Form.Label>Duration (minutes)</Form.Label>
           <Form.Control
             type="number"
@@ -82,7 +83,7 @@ function LogWorkout() {
             max="1440"
           />
         </Form.Group>
-        <Form.Group className="mb-3">
+        <Form.Group className="form-group">
           <Form.Label>Calories Burned</Form.Label>
           <Form.Control
             type="number"
@@ -93,7 +94,7 @@ function LogWorkout() {
             min="0"
           />
         </Form.Group>
-        <Form.Group className="mb-3">
+        <Form.Group className="form-group">
           <Form.Label>Date</Form.Label>
           <Form.Control
             type="date"
@@ -103,7 +104,7 @@ function LogWorkout() {
             required
           />
         </Form.Group>
-        <Form.Group className="mb-3">
+        <Form.Group className="form-group">
           <Form.Label>Notes</Form.Label>
           <Form.Control
             as="textarea"
@@ -113,8 +114,8 @@ function LogWorkout() {
             onChange={handleChange}
           />
         </Form.Group>
-        {error && <Alert variant="danger">{error}</Alert>}
-        <Button variant="primary" type="submit" disabled={isSubmitting}>
+        {error && <Alert variant="danger" className="error-alert">{error}</Alert>}
+        <Button variant="primary" type="submit" disabled={isSubmitting} className="btn-submit">
           {isSubmitting ? 'Logging...' : 'Log Workout'}
         </Button>
       </Form>

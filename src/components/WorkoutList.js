@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Alert, Spinner } from 'react-bootstrap';
+import { Table, Button, Alert, Spinner, Container } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { getWorkouts, deleteWorkout } from '../services/workouts';
+import '../Styles/WorkoutList.css';
 
 function WorkoutList() {
   const [workouts, setWorkouts] = useState([]);
@@ -42,17 +43,25 @@ function WorkoutList() {
     }
   };
 
-  if (loading) return <div className="text-center mt-5"><Spinner animation="border" /></div>;
+  if (loading) return (
+    <div className="workout-spinner">
+      <Spinner animation="border" />
+    </div>
+  );
 
   return (
-    <div>
-      <h2 className="mb-4">Your Workouts</h2>
+    <Container className="workout-list-container">
+      <div className="workout-list-header">
+        <h2>Your Workouts</h2>
+        <Link to="/workouts/new" className="btn btn-primary">Log New Workout</Link>
+      </div>
       {error && <Alert variant="danger" onClose={() => setError('')} dismissible>{error}</Alert>}
-      <Link to="/workouts/new" className="btn btn-primary mb-3">Log New Workout</Link>
       {workouts.length === 0 ? (
-        <Alert variant="info">No workouts logged yet. Start by logging a new workout!</Alert>
+        <div className="no-workouts-alert">
+          <Alert variant="info">No workouts logged yet. Start by logging a new workout!</Alert>
+        </div>
       ) : (
-        <Table responsive striped bordered hover>
+        <Table responsive striped bordered hover className="workout-table">
           <thead>
             <tr>
               <th>Date</th>
@@ -70,22 +79,24 @@ function WorkoutList() {
                 <td>{workout.duration} min</td>
                 <td>{workout.calories}</td>
                 <td>
-                  <Link to={`/workouts/edit/${workout.id}`} className="btn btn-sm btn-info me-2">Edit</Link>
-                  <Button 
-                    variant="danger" 
-                    size="sm" 
-                    onClick={() => handleDelete(workout.id)}
-                    disabled={deleting === workout.id}
-                  >
-                    {deleting === workout.id ? <Spinner animation="border" size="sm" /> : 'Delete'}
-                  </Button>
+                  <div className="workout-actions">
+                    <Link to={`/workouts/edit/${workout.id}`} className="btn btn-sm btn-info">Edit</Link>
+                    <Button 
+                      variant="danger" 
+                      size="sm" 
+                      onClick={() => handleDelete(workout.id)}
+                      disabled={deleting === workout.id}
+                    >
+                      {deleting === workout.id ? <Spinner animation="border" size="sm" /> : 'Delete'}
+                    </Button>
+                  </div>
                 </td>
               </tr>
             ))}
           </tbody>
         </Table>
       )}
-    </div>
+    </Container>
   );
 }
 
