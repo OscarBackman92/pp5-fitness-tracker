@@ -1,0 +1,59 @@
+.auth-card {
+  max-width: 400px;
+  width: 100%;
+  margin: auto;
+  transition: all 0.3s ease;
+}
+
+.auth-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.auth-card .form-control {
+  border-radius: 20px;
+  transition: all 0.3s ease;
+}
+
+.auth-card .form-control:focus {
+  box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+  transform: translateY(-2px);
+}
+
+.auth-card .btn-primary {
+  border-radius: 20px;
+  transition: all 0.3s ease;
+}
+
+.auth-card .btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,123,255,0.3);
+}
+
+.auth-card h2 {
+  color: #333;
+  font-weight: 600;
+}
+
+.auth-card .form-label {
+  font-weight: 500;
+}
+
+.auth-card .alert {
+  border-radius: 15px;
+}
+
+.auth-card a {
+  color: #007bff;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.auth-card a:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
+body {
+  background-color: #f8f9fa;
+}

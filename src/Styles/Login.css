@@ -1,0 +1,56 @@
+@import './AuthForms.css';
+
+.login-card {
+    max-width: 400px;
+    width: 100%;
+    transition: all 0.3s ease;
+  }
+  
+  .login-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  }
+  
+  .login-card .form-control {
+    border-radius: 20px;
+    transition: all 0.3s ease;
+  }
+  
+  .login-card .form-control:focus {
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+    transform: translateY(-2px);
+  }
+  
+  .login-card .btn-primary {
+    border-radius: 20px;
+    transition: all 0.3s ease;
+  }
+  
+  .login-card .btn-primary:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,123,255,0.3);
+  }
+  
+  .login-card h2 {
+    color: #333;
+    font-weight: 600;
+  }
+  
+  .login-card .form-label {
+    font-weight: 500;
+  }
+  
+  .login-card .alert {
+    border-radius: 15px;
+  }
+  
+  .login-card a {
+    color: #007bff;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+  
+  .login-card a:hover {
+    color: #0056b3;
+    text-decoration: underline;
+  }

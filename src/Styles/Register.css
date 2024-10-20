@@ -1,0 +1,36 @@
+@import './AuthForms.css';
+
+.register-card {
+    max-width: 400px;
+    margin: auto;
+    transition: all 0.3s ease;
+  }
+  
+  .register-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  }
+  
+  .register-form input {
+    border-radius: 20px;
+    transition: all 0.3s ease;
+  }
+  
+  .register-form input:focus {
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+    transform: translateY(-2px);
+  }
+  
+  .register-button {
+    border-radius: 20px;
+    transition: all 0.3s ease;
+  }
+  
+  .register-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,123,255,0.3);
+  }
+  
+  body {
+    background-color: #f8f9fa;
+  }
