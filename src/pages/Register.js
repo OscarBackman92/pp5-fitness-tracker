@@ -86,41 +86,36 @@ function Register() {
 
     setIsLoading(true);
     try {
-      const registrationData = {
-        username: formData.username,
-        email: formData.email,
-        password: formData.password,
-        profile: formData.profile.name ? { name: formData.profile.name } : {}
-      };
+        const registrationData = {
+            username: formData.username,
+            email: formData.email,
+            password: formData.password,
+            profile: formData.profile.name ? { name: formData.profile.name } : {}
+        };
 
-      await register(registrationData);
-      setSuccess('Registration successful! Redirecting to login...');
-      setTimeout(() => navigate('/login'), 2000);
+        await register(registrationData);
+        setSuccess('Registration successful! Redirecting to login...');
+        setTimeout(() => navigate('/login'), 2000);
     } catch (error) {
-      console.error('Registration error:', error);
-      
-      if (error.response?.data) {
-        const serverErrors = error.response.data;
-        const newErrors = {};
+        console.error('Registration error:', error);
         
-        Object.entries(serverErrors).forEach(([key, value]) => {
-          if (typeof value === 'object') {
-            Object.entries(value).forEach(([nestedKey, nestedValue]) => {
-              newErrors[`${key}.${nestedKey}`] = Array.isArray(nestedValue) ? nestedValue[0] : nestedValue;
+        if (typeof error === 'object' && error !== null) {
+            // Handle structured error response
+            const newErrors = {};
+            Object.entries(error).forEach(([key, value]) => {
+                newErrors[key] = Array.isArray(value) ? value[0] : value;
             });
-          } else {
-            newErrors[key] = Array.isArray(value) ? value[0] : value;
-          }
-        });
-
-        setErrors(newErrors);
-      } else {
-        setErrors({ form: 'Registration failed. Please try again later.' });
-      }
+            setErrors(newErrors);
+        } else {
+            // Handle string error or connection errors
+            setErrors({ 
+                form: error.message || 'Registration failed. Please check your connection and try again.' 
+            });
+        }
     } finally {
-      setIsLoading(false);
+        setIsLoading(false);
     }
-  };
+};
 
   return (
     <Container className="d-flex justify-content-center align-items-center min-vh-100">

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { socialService } from '../services/social';
 
 const SocialFeed = () => {
@@ -7,11 +7,7 @@ const SocialFeed = () => {
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
 
-    useEffect(() => {
-        fetchFeed();
-    }, [page]);
-
-    const fetchFeed = async () => {
+    const fetchFeed = useCallback(async () => {
         try {
             const response = await socialService.getFeed(page);
             if (page === 1) {
@@ -25,7 +21,11 @@ const SocialFeed = () => {
             console.error('Error fetching feed:', error);
             setLoading(false);
         }
-    };
+    }, [page]); // Include page as dependency
+
+    useEffect(() => {
+        fetchFeed();
+    }, [fetchFeed]); // Now fetchFeed is memoized with useCallback
 
     const loadMore = () => {
         if (hasMore) {
@@ -55,13 +55,16 @@ const SocialFeed = () => {
                         >
                             {item.likes_count} Likes
                         </button>
-                        {/* Add comment section */}
                     </div>
                 </div>
             ))}
             {hasMore && (
-                <button onClick={loadMore} className="load-more">
-                    Load More
+                <button 
+                    onClick={loadMore} 
+                    className="load-more"
+                    disabled={loading}
+                >
+                    {loading ? 'Loading...' : 'Load More'}
                 </button>
             )}
         </div>
