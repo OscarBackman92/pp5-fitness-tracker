@@ -41,53 +41,43 @@ function Login({ setAuth, setUserInfo }) {  // Added setUserInfo prop
 
     setIsLoading(true);
     try {
-      const response = await login(formData.username, formData.password);
-      
-      // Check if response contains the expected data
-      if (response && response.access) {
-        // Store tokens
-        localStorage.setItem('access_token', response.access);
-        if (response.refresh) {
-          localStorage.setItem('refresh_token', response.refresh);
-        }
+        const response = await login(formData.username, formData.password);
 
-        // Update authentication state
-        setAuth(true);
+        // Store tokens and update authentication state
+        if (response && response.key) {  // Change 'access' to 'key'
+            localStorage.setItem('access_token', response.key);
 
-        // Update user info if it's included in the response
-        if (response.user) {
-          setUserInfo(response.user);
-        }
+            // Update authentication state
+            setAuth(true);
 
-        // Redirect to dashboard instead of home
-        navigate('/dashboard');
-      } else {
-        throw new Error('Invalid response format');
-      }
-    } catch (error) {
-      console.error('Login error:', error);
-      
-      // Handle different types of errors
-      if (error.response) {
-        // Server responded with an error
-        if (error.response.status === 401) {
-          setErrors({ form: 'Invalid username or password' });
-        } else if (error.response.data?.detail) {
-          setErrors({ form: error.response.data.detail });
+            // If user info is returned in the response
+            if (response.user) {
+                setUserInfo(response.user);
+            }
+
+            navigate('/dashboard');
         } else {
-          setErrors({ form: 'Login failed. Please try again.' });
+            throw new Error('Invalid response format');
         }
-      } else if (error.request) {
-        // Request was made but no response
-        setErrors({ form: 'Network error. Please check your connection.' });
-      } else {
-        // Something else went wrong
-        setErrors({ form: 'An unexpected error occurred. Please try again.' });
-      }
+    } catch (error) {
+        console.error('Login error:', error);
+        if (error.response) {
+            if (error.response.status === 401) {
+                setErrors({ form: 'Invalid username or password' });
+            } else if (error.response.data?.detail) {
+                setErrors({ form: error.response.data.detail });
+            } else {
+                setErrors({ form: 'Login failed. Please try again.' });
+            }
+        } else if (error.request) {
+            setErrors({ form: 'Network error. Please check your connection.' });
+        } else {
+            setErrors({ form: 'An unexpected error occurred. Please try again.' });
+        }
     } finally {
-      setIsLoading(false);
+        setIsLoading(false);
     }
-  };
+};
 
   return (
     <Container className="d-flex justify-content-center align-items-center min-vh-100">
