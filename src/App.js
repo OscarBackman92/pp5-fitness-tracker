@@ -11,12 +11,15 @@ import WorkoutList from './pages/WorkoutList';
 import WorkoutDetails from './pages/WorkoutDetails';
 import LogWorkout from './pages/LogWorkout';
 import EditWorkout from './pages/EditWorkout';
-import SocialFeed from './pages/SocialFeed';  // Add new social feed page
+import SocialFeed from './pages/SocialFeed';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Loading from './components/Loading';
 
+
 import 'bootstrap/dist/css/bootstrap.min.css';
+
+console.log('API URL:', process.env.REACT_APP_API_URL);
 
 function App() {
   const [auth, setAuth] = useState(false);
