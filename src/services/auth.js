@@ -1,4 +1,5 @@
 import api from './api';
+import axios from 'axios';
 
 // Login function to authenticate a user
 const login = async (username, password) => {
@@ -47,9 +48,15 @@ const logout = async () => {
 };
 
 // Fetch the authenticated user's profile
-const getUserProfile = async () => {
+const getUserProfile = async (token) => {
     try {
-        const response = await api.get('/profiles/me/');
+        const response = await axios.get('https://fitnessapi-d773a1148384.herokuapp.com/api/profiles/me/', {
+            headers: {
+                Authorization: `Bearer ${token}`,  // Ensure token is correctly passed
+                'Content-Type': 'application/json',
+            },
+            withCredentials: true, // Include this if your API needs cookies
+        });
         return response.data;
     } catch (error) {
         console.error('Error fetching user profile:', error);
