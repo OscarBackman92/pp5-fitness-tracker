@@ -1,0 +1,62 @@
+.profile-picture-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .profile-picture {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border: 3px solid #f8f9fa;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+  
+  .btn-outline-primary:hover {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .profile-picture {
+      width: 120px;
+      height: 120px;
+    }
+  }
+  
+  /* Animation for success message */
+  .alert-success {
+    animation: fadeIn 0.5s ease-in;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Form styling */
+  .form-control:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+  }
+  
+  .form-label {
+    font-weight: 500;
+  }
+  
+  /* Card styling */
+  .card {
+    border: none;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+  }
+  
+  .card-body {
+    padding: 2rem;
+  }

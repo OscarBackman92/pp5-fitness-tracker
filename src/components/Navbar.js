@@ -1,50 +1,38 @@
 import React from 'react';
-import { Navbar, Nav, Container, NavDropdown } from 'react-bootstrap';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { logout } from '../services/auth';
-import '../Styles/Navbar.css';
+import { Link, useNavigate } from 'react-router-dom';
+import { logout, isAuthenticated } from '../services/auth';
 
-function NavBar({ auth, setAuth, userInfo }) {
-  const navigate = useNavigate();
-  const location = useLocation();
+const Navbar = () => {
+    const navigate = useNavigate();
 
-  const handleLogout = async () => {
-    await logout();
-    setAuth(false);
-    navigate('/login');
-  };
+    const handleLogout = async () => {
+        try {
+            await logout();
+            navigate('/login');
+        } catch (error) {
+            console.error('Logout error:', error);
+        }
+    };
 
-  const isActive = (path) => location.pathname === path ? 'active-link' : '';
-
-  return (
-    <Navbar expand="lg" className="navbar">
-      <Container>
-        <Navbar.Brand as={Link} to="/">Fitness Tracker</Navbar.Brand>
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="ms-auto">
-            <Nav.Link as={Link} to="/" className={isActive('/')}>Home</Nav.Link>
-            {auth ? (
-              <>
-                <Nav.Link as={Link} to="/dashboard" className={isActive('/dashboard')}>Dashboard</Nav.Link>
-                <Nav.Link as={Link} to="/workouts" className={isActive('/workouts')}>Workouts</Nav.Link>
-                <NavDropdown title={userInfo?.name || userInfo?.username || 'Profile'} id="basic-nav-dropdown">
-                  <NavDropdown.Item as={Link} to="/profile">View Profile</NavDropdown.Item>
-                  <NavDropdown.Divider />
-                  <NavDropdown.Item onClick={handleLogout}>Logout</NavDropdown.Item>
-                </NavDropdown>
-              </>
+    return (
+        <nav className="navbar">
+            <Link to="/" className="nav-brand">Fitness Tracker</Link>
+            {isAuthenticated() ? (
+                <div className="nav-links">
+                    <Link to="/dashboard">Dashboard</Link>
+                    <Link to="/workouts">Workouts</Link>
+                    <Link to="/feed">Social Feed</Link>
+                    <Link to="/profile">Profile</Link>
+                    <button onClick={handleLogout}>Logout</button>
+                </div>
             ) : (
-              <>
-                <Nav.Link as={Link} to="/login" className={isActive('/login')}>Login</Nav.Link>
-                <Nav.Link as={Link} to="/register" className={isActive('/register')}>Register</Nav.Link>
-              </>
+                <div className="nav-links">
+                    <Link to="/login">Login</Link>
+                    <Link to="/register">Register</Link>
+                </div>
             )}
-          </Nav>
-        </Navbar.Collapse>
-      </Container>
-    </Navbar>
-  );
-}
+        </nav>
+    );
+};
 
-export default NavBar;
+export default Navbar;

@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { Form, Button, Alert, Container, Card } from 'react-bootstrap';
 import { useNavigate, Link } from 'react-router-dom';
 import { login } from '../services/auth';
-import '../Styles/Login.css'; // Assuming you'll create a Login.css file
+import '../Styles/Login.css';
 
-function Login({ setAuth }) {
+function Login({ setAuth, setUserInfo }) {  // Added setUserInfo prop
   const [formData, setFormData] = useState({
     username: '',
     password: ''
@@ -19,12 +19,17 @@ function Login({ setAuth }) {
       ...prevState,
       [name]: value
     }));
+    // Clear errors when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: null, form: null }));
+    }
   };
 
   const validateForm = () => {
     const newErrors = {};
     if (!formData.username.trim()) newErrors.username = 'Username is required';
     if (!formData.password) newErrors.password = 'Password is required';
+    else if (formData.password.length < 8) newErrors.password = 'Password must be at least 8 characters';
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -37,13 +42,48 @@ function Login({ setAuth }) {
     setIsLoading(true);
     try {
       const response = await login(formData.username, formData.password);
-      console.log('Login response:', response);
-      console.log('Token stored:', localStorage.getItem('authToken'));
-      setAuth(true);
-      navigate('/');
+      
+      // Check if response contains the expected data
+      if (response && response.access) {
+        // Store tokens
+        localStorage.setItem('access_token', response.access);
+        if (response.refresh) {
+          localStorage.setItem('refresh_token', response.refresh);
+        }
+
+        // Update authentication state
+        setAuth(true);
+
+        // Update user info if it's included in the response
+        if (response.user) {
+          setUserInfo(response.user);
+        }
+
+        // Redirect to dashboard instead of home
+        navigate('/dashboard');
+      } else {
+        throw new Error('Invalid response format');
+      }
     } catch (error) {
-      setErrors({ form: 'Login failed. Please check your credentials.' });
-      console.error('Login error:', error.response?.data || error.message);
+      console.error('Login error:', error);
+      
+      // Handle different types of errors
+      if (error.response) {
+        // Server responded with an error
+        if (error.response.status === 401) {
+          setErrors({ form: 'Invalid username or password' });
+        } else if (error.response.data?.detail) {
+          setErrors({ form: error.response.data.detail });
+        } else {
+          setErrors({ form: 'Login failed. Please try again.' });
+        }
+      } else if (error.request) {
+        // Request was made but no response
+        setErrors({ form: 'Network error. Please check your connection.' });
+      } else {
+        // Something else went wrong
+        setErrors({ form: 'An unexpected error occurred. Please try again.' });
+      }
     } finally {
       setIsLoading(false);
     }
@@ -63,9 +103,13 @@ function Login({ setAuth }) {
               value={formData.username}
               onChange={handleChange}
               isInvalid={!!errors.username}
+              disabled={isLoading}
               required
+              autoFocus
             />
-            <Form.Control.Feedback type="invalid">{errors.username}</Form.Control.Feedback>
+            <Form.Control.Feedback type="invalid">
+              {errors.username}
+            </Form.Control.Feedback>
           </Form.Group>
 
           <Form.Group className="mb-3">
@@ -77,19 +121,45 @@ function Login({ setAuth }) {
               value={formData.password}
               onChange={handleChange}
               isInvalid={!!errors.password}
+              disabled={isLoading}
               required
             />
-            <Form.Control.Feedback type="invalid">{errors.password}</Form.Control.Feedback>
+            <Form.Control.Feedback type="invalid">
+              {errors.password}
+            </Form.Control.Feedback>
           </Form.Group>
 
-          {errors.form && <Alert variant="danger">{errors.form}</Alert>}
+          {errors.form && (
+            <Alert variant="danger" className="mb-3">
+              {errors.form}
+            </Alert>
+          )}
 
-          <Button variant="primary" type="submit" disabled={isLoading} className="w-100">
-            {isLoading ? 'Logging in...' : 'Login'}
+          <Button 
+            variant="primary" 
+            type="submit" 
+            disabled={isLoading} 
+            className="w-100 mb-3"
+          >
+            {isLoading ? (
+              <>
+                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Logging in...
+              </>
+            ) : (
+              'Login'
+            )}
           </Button>
         </Form>
-        <div className="mt-3 text-center">
-          Don't have an account? <Link to="/register">Register</Link>
+        
+        <div className="text-center mt-3">
+          <div>
+            Don't have an account? <Link to="/register">Register</Link>
+          </div>
+          {/* You might want to add these features later */}
+          {/* <div className="mt-2">
+            <Link to="/forgot-password">Forgot Password?</Link>
+          </div> */}
         </div>
       </Card>
     </Container>

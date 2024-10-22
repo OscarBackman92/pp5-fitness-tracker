@@ -1,36 +1,96 @@
-@import './AuthForms.css';
-
 .register-card {
-    max-width: 400px;
-    margin: auto;
-    transition: all 0.3s ease;
+  max-width: 450px;
+  width: 100%;
+  margin: 2rem auto;
+  background-color: #fff;
+  border-radius: 10px;
+}
+
+.auth-card {
+  background-color: #fff;
+  border: none;
+  box-shadow: 0 0 20px rgba(0,0,0,0.1);
+}
+
+.form-control:focus {
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+}
+
+.form-label {
+  font-weight: 500;
+  color: #495057;
+}
+
+.form-text {
+  color: #6c757d;
+  font-size: 0.875rem;
+}
+
+.btn-primary {
+  padding: 10px 0;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.btn-primary:disabled {
+  cursor: not-allowed;
+}
+
+.alert {
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
   }
-  
-  .register-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
-  
-  .register-form input {
-    border-radius: 20px;
-    transition: all 0.3s ease;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .register-card {
+    margin: 1rem;
+    padding: 1.5rem !important;
   }
-  
-  .register-form input:focus {
-    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
-    transform: translateY(-2px);
+
+  .row {
+    flex-direction: column;
   }
-  
-  .register-button {
-    border-radius: 20px;
-    transition: all 0.3s ease;
+
+  .col-md-6 {
+    padding: 0;
   }
-  
-  .register-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(0,123,255,0.3);
-  }
-  
-  body {
-    background-color: #f8f9fa;
-  }
+}
+
+/* Password strength indicator could be added here */
+.password-strength {
+  height: 5px;
+  margin-top: 5px;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+.strength-weak {
+  background-color: #dc3545;
+  width: 33%;
+}
+
+.strength-medium {
+  background-color: #ffc107;
+  width: 66%;
+}
+
+.strength-strong {
+  background-color: #28a745;
+  width: 100%;
+}
