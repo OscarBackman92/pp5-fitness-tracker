@@ -36,21 +36,19 @@ function LogWorkout() {
     e.preventDefault();
     setIsSubmitting(true);
     setError('');
-  
+
     try {
-      console.log('Submitting workout data:', workoutData);
-      await createWorkout(workoutData);
-      navigate('/workouts');
+        console.log('Submitting workout data:', workoutData);
+        await createWorkout(workoutData);
+        navigate('/workouts');
     } catch (error) {
-      console.error('Log workout error:', error.response?.data || error.message);
-      setError(error.response?.data?.message || 'Failed to log workout. Please check your input and try again.');
-      if (error.response?.data?.errors) {
-        console.error('Validation errors:', error.response.data.errors);
-      }
+        console.error('Log workout error:', error);
+        const errorMessage = error.response?.data?.detail || 'Failed to log workout. Please check your input and try again.';
+        setError(errorMessage);
     } finally {
-      setIsSubmitting(false);
+        setIsSubmitting(false);
     }
-  };
+};
 
   return (
     <Container className="log-workout-container">

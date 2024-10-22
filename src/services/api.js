@@ -1,3 +1,4 @@
+// api.js
 import axios from 'axios';
 
 const baseURL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
@@ -6,12 +7,12 @@ const axiosInstance = axios.create({
     baseURL,
     timeout: 5000,
     headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
     },
-    withCredentials: true
+    withCredentials: true,
 });
 
-// Request interceptor
+// Request interceptor to attach the access token
 axiosInstance.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('access_token');
@@ -20,39 +21,37 @@ axiosInstance.interceptors.request.use(
         }
         return config;
     },
-    (error) => {
-        return Promise.reject(error);
-    }
+    (error) => Promise.reject(error)
 );
 
-// Response interceptor
+// Response interceptor to handle token refresh logic
 axiosInstance.interceptors.response.use(
     (response) => response,
     async (error) => {
         const originalRequest = error.config;
 
-        // If error is 401 and we haven't tried to refresh token yet
-        if (error.response.status === 401 && !originalRequest._retry) {
+        // Check for 401 Unauthorized error
+        if (error.response && error.response.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
 
             try {
                 const refreshToken = localStorage.getItem('refresh_token');
                 const response = await axios.post(`${baseURL}/auth/token/refresh/`, {
-                    refresh: refreshToken
+                    refresh: refreshToken,
                 });
 
                 const { access } = response.data;
                 localStorage.setItem('access_token', access);
 
-                // Retry original request with new token
+                // Retry original request with the new access token
                 originalRequest.headers.Authorization = `Bearer ${access}`;
                 return axiosInstance(originalRequest);
-            } catch (error) {
-                // Refresh token failed, redirect to login
+            } catch (refreshError) {
+                console.error('Failed to refresh token:', refreshError);
                 localStorage.removeItem('access_token');
                 localStorage.removeItem('refresh_token');
                 window.location.href = '/login';
-                return Promise.reject(error);
+                return Promise.reject(refreshError);
             }
         }
 
