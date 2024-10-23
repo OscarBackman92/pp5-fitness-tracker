@@ -8,11 +8,11 @@ const getUserProfile = async () => {
         if (!token) {
             throw new Error('No authentication token found');
         }
-
+        console.log('Token found:', token);
         // Make a direct axios call instead of using instance
         const response = await axios({
             method: 'GET',
-            url: `${BASE_URL}/profiles/me/`,
+            url: `${BASE_URL}/profiles/`,
             headers: {
                 'Authorization': `Token ${token}`,
                 'Content-Type': 'application/json',
@@ -38,6 +38,7 @@ const getUserProfile = async () => {
 };
 
 const login = async (username, password) => {
+    console.log('Login attempt:', { username, password });
     try {
         const response = await axios.post(`${BASE_URL}/auth/login/`, {
             username,

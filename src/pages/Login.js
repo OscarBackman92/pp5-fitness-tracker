@@ -47,7 +47,7 @@ function Login({ setAuth, setUserInfo }) {
       console.log('Login successful:', response);
       
       setAuth(true);
-      navigate('/dashboard');
+      navigate('/');
     } catch (error) {
       console.error('Login error:', error);
       setErrors({
