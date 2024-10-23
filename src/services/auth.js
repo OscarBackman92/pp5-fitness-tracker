@@ -1,33 +1,81 @@
-import api from './api';
 import axios from 'axios';
 
-// Login function to authenticate a user
+const BASE_URL = process.env.REACT_APP_API_URL;
+
+const getUserProfile = async () => {
+    try {
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+            throw new Error('No authentication token found');
+        }
+
+        // Make a direct axios call instead of using instance
+        const response = await axios({
+            method: 'GET',
+            url: `${BASE_URL}/profiles/me/`,
+            headers: {
+                'Authorization': `Token ${token}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        });
+
+        console.log('Profile request successful:', {
+            headers: response.config.headers,
+            data: response.data
+        });
+
+        return response.data;
+    } catch (error) {
+        console.error('Profile fetch error details:', {
+            status: error.response?.status,
+            data: error.response?.data,
+            headers: error.config?.headers,
+            fullError: error
+        });
+        throw error;
+    }
+};
+
 const login = async (username, password) => {
     try {
-        const response = await api.post('/auth/login/', { username, password });
+        const response = await axios.post(`${BASE_URL}/auth/login/`, {
+            username,
+            password
+        });
 
-        // Assuming 'key' is what needs to be stored as the access token
+        console.log('Login response:', response.data);
+
         if (response.data.key) {
-            localStorage.setItem('access_token', response.data.key); // Store 'key' as 'access_token'
-
-            // If there's a refresh token, store it as well (if your API supports this)
-            if (response.data.refresh) {
-                localStorage.setItem('refresh_token', response.data.refresh);
-            }
-        } else {
-            throw new Error('Invalid response format');
+            localStorage.setItem('access_token', response.data.key);
+            console.log('Token stored:', response.data.key);
+            return response.data;
         }
-        return response.data;
+        throw new Error('Invalid response format');
     } catch (error) {
         console.error('Login error:', error);
         throw error;
     }
 };
 
-// Register function to create a new user account
+const logout = async () => {
+    try {
+        const token = localStorage.getItem('access_token');
+        if (token) {
+            await axios.post(`${BASE_URL}/auth/logout/`, null, {
+                headers: {
+                    'Authorization': `Token ${token}`
+                }
+            });
+        }
+    } finally {
+        localStorage.removeItem('access_token');
+    }
+};
+
 const register = async (userData) => {
     try {
-        const response = await api.post('/auth/register/', userData);
+        const response = await axios.post(`${BASE_URL}/auth/register/`, userData);
         return response.data;
     } catch (error) {
         console.error('Registration error:', error);
@@ -35,60 +83,28 @@ const register = async (userData) => {
     }
 };
 
-// Logout function to terminate the user's session
-const logout = async () => {
-    try {
-        await api.post('/auth/logout/');
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
-    } catch (error) {
-        console.error('Logout error:', error);
-        throw error;
+const updateUserProfile = async (profileData) => {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+        throw new Error('No authentication token found');
     }
-};
 
-// Fetch the authenticated user's profile
-const getUserProfile = async (token) => {
     try {
-        const response = await axios.get('https://fitnessapi-d773a1148384.herokuapp.com/api/profiles/me/', {
+        const response = await axios.put(`${BASE_URL}/profiles/me/`, profileData, {
             headers: {
-                Authorization: `Bearer ${token}`,  // Ensure token is correctly passed
-                'Content-Type': 'application/json',
-            },
-            withCredentials: true, // Include this if your API needs cookies
+                'Authorization': `Token ${token}`,
+                'Content-Type': 'application/json'
+            }
         });
         return response.data;
     } catch (error) {
-        console.error('Error fetching user profile:', error);
+        console.error('Profile update error:', error);
         throw error;
     }
 };
 
-// Update the authenticated user's profile
-const updateUserProfile = async (profileData) => {
-    try {
-        const response = await api.put('/profiles/me/', profileData);
-        return response.data;
-    } catch (error) {
-        console.error('Error updating user profile:', error);
-        throw error;
-    }
-};
-
-// Check if a user is authenticated
 const isAuthenticated = () => {
     return !!localStorage.getItem('access_token');
-};
-
-// Get user information
-const getUserInfo = async () => {
-    try {
-        const response = await api.get('/auth/user/');
-        return response.data;
-    } catch (error) {
-        console.error('Error fetching user information:', error);
-        throw error;
-    }
 };
 
 export {
@@ -97,6 +113,5 @@ export {
     logout,
     getUserProfile,
     updateUserProfile,
-    isAuthenticated,
-    getUserInfo,
+    isAuthenticated
 };

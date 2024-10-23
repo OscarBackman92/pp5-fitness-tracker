@@ -4,7 +4,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { login } from '../services/auth';
 import '../Styles/Login.css';
 
-function Login({ setAuth, setUserInfo }) {  // Added setUserInfo prop
+function Login({ setAuth, setUserInfo }) {
   const [formData, setFormData] = useState({
     username: '',
     password: ''
@@ -19,7 +19,7 @@ function Login({ setAuth, setUserInfo }) {  // Added setUserInfo prop
       ...prevState,
       [name]: value
     }));
-    // Clear errors when user starts typing
+    // Clear errors when user types
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: null, form: null }));
     }
@@ -29,7 +29,6 @@ function Login({ setAuth, setUserInfo }) {  // Added setUserInfo prop
     const newErrors = {};
     if (!formData.username.trim()) newErrors.username = 'Username is required';
     if (!formData.password) newErrors.password = 'Password is required';
-    else if (formData.password.length < 8) newErrors.password = 'Password must be at least 8 characters';
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -40,90 +39,72 @@ function Login({ setAuth, setUserInfo }) {  // Added setUserInfo prop
     if (!validateForm()) return;
 
     setIsLoading(true);
+    setErrors({});
+
     try {
-        const response = await login(formData.username, formData.password);
-
-        // Store tokens and update authentication state
-        if (response && response.key) {  // Change 'access' to 'key'
-            localStorage.setItem('access_token', response.key);
-
-            // Update authentication state
-            setAuth(true);
-
-            // If user info is returned in the response
-            if (response.user) {
-                setUserInfo(response.user);
-            }
-
-            navigate('/dashboard');
-        } else {
-            throw new Error('Invalid response format');
-        }
+      console.log('Attempting login with:', formData.username);
+      const response = await login(formData.username, formData.password);
+      console.log('Login successful:', response);
+      
+      setAuth(true);
+      navigate('/dashboard');
     } catch (error) {
-        console.error('Login error:', error);
-        if (error.response) {
-            if (error.response.status === 401) {
-                setErrors({ form: 'Invalid username or password' });
-            } else if (error.response.data?.detail) {
-                setErrors({ form: error.response.data.detail });
-            } else {
-                setErrors({ form: 'Login failed. Please try again.' });
-            }
-        } else if (error.request) {
-            setErrors({ form: 'Network error. Please check your connection.' });
-        } else {
-            setErrors({ form: 'An unexpected error occurred. Please try again.' });
-        }
+      console.error('Login error:', error);
+      setErrors({
+        form: error.response?.data?.non_field_errors?.[0] || 
+              error.response?.data?.detail ||
+              'Login failed. Please try again.'
+      });
     } finally {
-        setIsLoading(false);
+      setIsLoading(false);
     }
-};
+  };
 
   return (
     <Container className="d-flex justify-content-center align-items-center min-vh-100">
       <Card className="p-4 shadow auth-card login-card">
         <h2 className="text-center mb-4">Login</h2>
+        
+        {errors.form && (
+          <Alert variant="danger" className="mb-4">
+            {errors.form}
+          </Alert>
+        )}
+        
         <Form onSubmit={handleSubmit} noValidate>
           <Form.Group className="mb-3">
-            <Form.Label htmlFor="username">Username</Form.Label>
+            <Form.Label>Username</Form.Label>
             <Form.Control
-              id="username"
-              name="username"
               type="text"
+              name="username"
               value={formData.username}
               onChange={handleChange}
               isInvalid={!!errors.username}
               disabled={isLoading}
+              autoComplete="username"
               required
-              autoFocus
             />
             <Form.Control.Feedback type="invalid">
               {errors.username}
             </Form.Control.Feedback>
           </Form.Group>
 
-          <Form.Group className="mb-3">
-            <Form.Label htmlFor="password">Password</Form.Label>
+          <Form.Group className="mb-4">
+            <Form.Label>Password</Form.Label>
             <Form.Control
-              id="password"
-              name="password"
               type="password"
+              name="password"
               value={formData.password}
               onChange={handleChange}
               isInvalid={!!errors.password}
               disabled={isLoading}
+              autoComplete="current-password"
               required
             />
             <Form.Control.Feedback type="invalid">
               {errors.password}
             </Form.Control.Feedback>
           </Form.Group>
-
-          {errors.form && (
-            <Alert variant="danger" className="mb-3">
-              {errors.form}
-            </Alert>
-          )}
 
           <Button 
             variant="primary" 
@@ -141,15 +122,16 @@ function Login({ setAuth, setUserInfo }) {  // Added setUserInfo prop
             )}
           </Button>
         </Form>
-        
+
         <div className="text-center mt-3">
           <div>
             Don't have an account? <Link to="/register">Register</Link>
           </div>
-          {/* You might want to add these features later */}
-          {/* <div className="mt-2">
+          {/* Uncomment when implementing forgot password
+          <div className="mt-2">
             <Link to="/forgot-password">Forgot Password?</Link>
-          </div> */}
+          </div>
+          */}
         </div>
       </Card>
     </Container>
