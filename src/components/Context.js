@@ -41,7 +41,7 @@ export const AuthProvider = ({ children }) => {
             console.log('Login response:', response);
             setIsAuthenticated(true);
             console.log('Set authenticated to true');
-            navigate('/dashboard');
+            navigate('/');
             console.log('Navigating to dashboard');
             return response;
         } catch (err) {
