@@ -1,9 +1,11 @@
+// src/pages/Profile.js
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Button, Form, Alert, Image } from 'react-bootstrap';
-import { getUserProfile, updateUserProfile } from '../services/auth';
+import { useAuth } from '../components/Context';
 import '../Styles/Profile.css';
 
-const Profile = ({ userInfo, setUserInfo }) => {
+const Profile = () => {
+  const { user, updateProfile, error: contextError } = useAuth();
   const [profile, setProfile] = useState({
     name: '',
     weight: '',
@@ -16,27 +18,17 @@ const Profile = ({ userInfo, setUserInfo }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
 
   useEffect(() => {
-    fetchProfile();
-  }, []);
-
-  const fetchProfile = async () => {
-    try {
-      setLoading(true);
-      const data = await getUserProfile();
-      setProfile(data);
-      if (data.profile_picture) {
-        setImagePreview(data.profile_picture);
+    if (user) {
+      setProfile(user);
+      if (user.profile_picture) {
+        setImagePreview(user.profile_picture);
       }
-    } catch (err) {
-      setError('Failed to fetch profile. Please try again.');
-    } finally {
-      setLoading(false);
     }
-  };
+  }, [user]);
 
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
@@ -47,7 +39,6 @@ const Profile = ({ userInfo, setUserInfo }) => {
         profile_picture: files[0]
       }));
       
-      // Create preview URL for image
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result);
@@ -62,13 +53,13 @@ const Profile = ({ userInfo, setUserInfo }) => {
       }));
     }
     
-    // Clear any errors when user makes changes
     if (error) setError('');
     if (success) setSuccess('');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const formData = new FormData();
       Object.keys(profile).forEach(key => {
@@ -77,14 +68,13 @@ const Profile = ({ userInfo, setUserInfo }) => {
         }
       });
 
-      const updatedProfile = await updateUserProfile(formData);
-      setProfile(updatedProfile);
-      setUserInfo(prev => ({ ...prev, profile: updatedProfile }));
+      await updateProfile(formData);
       setSuccess('Profile updated successfully!');
       setIsEditing(false);
     } catch (err) {
       setError('Failed to update profile. Please try again.');
-      console.error('Update error:', err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -97,6 +87,7 @@ const Profile = ({ userInfo, setUserInfo }) => {
       <h1 className="mb-4">User Profile</h1>
       {error && <Alert variant="danger" onClose={() => setError('')} dismissible>{error}</Alert>}
       {success && <Alert variant="success" onClose={() => setSuccess('')} dismissible>{success}</Alert>}
+      {contextError && <Alert variant="danger" dismissible>{contextError}</Alert>}
       
       <Card>
         <Card.Body>
@@ -107,6 +98,7 @@ const Profile = ({ userInfo, setUserInfo }) => {
                   src={imagePreview || '/default-profile.png'} 
                   roundedCircle 
                   className="profile-picture mb-2"
+                  alt="Profile"
                 />
                 {isEditing && (
                   <Form.Group>

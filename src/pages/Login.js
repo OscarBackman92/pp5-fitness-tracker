@@ -1,17 +1,18 @@
+// src/pages/Login.js
 import React, { useState } from 'react';
 import { Form, Button, Alert, Container, Card } from 'react-bootstrap';
-import { useNavigate, Link } from 'react-router-dom';
-import { login } from '../services/auth';
+import { Link } from 'react-router-dom';
+import { useAuth } from '../components/Context';
 import '../Styles/Login.css';
 
-function Login({ setAuth, setUserInfo }) {
+function Login() {
+  const { login, error: contextError } = useAuth();
   const [formData, setFormData] = useState({
     username: '',
     password: ''
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -19,7 +20,6 @@ function Login({ setAuth, setUserInfo }) {
       ...prevState,
       [name]: value
     }));
-    // Clear errors when user types
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: null, form: null }));
     }
@@ -42,14 +42,8 @@ function Login({ setAuth, setUserInfo }) {
     setErrors({});
 
     try {
-      console.log('Attempting login with:', formData.username);
-      const response = await login(formData.username, formData.password);
-      console.log('Login successful:', response);
-      
-      setAuth(true);
-      navigate('/');
+      await login(formData.username, formData.password);
     } catch (error) {
-      console.error('Login error:', error);
       setErrors({
         form: error.response?.data?.non_field_errors?.[0] || 
               error.response?.data?.detail ||
@@ -65,9 +59,9 @@ function Login({ setAuth, setUserInfo }) {
       <Card className="p-4 shadow auth-card login-card">
         <h2 className="text-center mb-4">Login</h2>
         
-        {errors.form && (
+        {(errors.form || contextError) && (
           <Alert variant="danger" className="mb-4">
-            {errors.form}
+            {errors.form || contextError}
           </Alert>
         )}
         
@@ -127,11 +121,6 @@ function Login({ setAuth, setUserInfo }) {
           <div>
             Don't have an account? <Link to="/register">Register</Link>
           </div>
-          {/* Uncomment when implementing forgot password
-          <div className="mt-2">
-            <Link to="/forgot-password">Forgot Password?</Link>
-          </div>
-          */}
         </div>
       </Card>
     </Container>

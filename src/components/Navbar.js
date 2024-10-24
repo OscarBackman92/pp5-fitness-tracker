@@ -1,16 +1,17 @@
+// src/components/Navbar.js
 import React from 'react';
-import { Navbar, Nav, Container, Button } from 'react-bootstrap';
+import { Navbar, Nav, Container, Button, NavDropdown } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
-import { logout } from '../services/auth';
+import { useAuth } from './Context';
 import '../Styles/Navbar.css';
 
-function Navigation({ auth, setAuth, userInfo }) {
+function Navigation() {
+  const { isAuthenticated, user, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
     try {
       await logout();
-      setAuth(false);
       navigate('/login');
     } catch (error) {
       console.error('Logout error:', error);
@@ -20,13 +21,13 @@ function Navigation({ auth, setAuth, userInfo }) {
   return (
     <Navbar expand="lg" className="custom-navbar" variant="dark" fixed="top">
       <Container>
-        <Navbar.Brand as={Link} to="/" className="brand">
+        <Navbar.Brand as={Link} to={isAuthenticated ? "/dashboard" : "/"} className="brand">
           FitnessTracker
         </Navbar.Brand>
         
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
-          {auth ? (
+          {isAuthenticated ? (
             <>
               <Nav className="me-auto">
                 <Nav.Link as={Link} to="/dashboard" className="nav-link">
@@ -40,31 +41,47 @@ function Navigation({ auth, setAuth, userInfo }) {
                 </Nav.Link>
               </Nav>
               <Nav>
-                <Nav.Link as={Link} to="/profile" className="nav-link profile-link">
-                  {userInfo?.profile?.name || userInfo?.username || 'Profile'}
-                </Nav.Link>
-                <Button 
-                  variant="outline-light" 
-                  onClick={handleLogout}
-                  className="logout-btn"
+                <NavDropdown 
+                  title={
+                    <span className="text-light">
+                      {user?.profile?.name || user?.username || 'Profile'}
+                    </span>
+                  } 
+                  id="nav-dropdown"
+                  className="nav-dropdown"
                 >
-                  Logout
-                </Button>
+                  <NavDropdown.Item as={Link} to="/profile">
+                    Profile Settings
+                  </NavDropdown.Item>
+                  <NavDropdown.Divider />
+                  <NavDropdown.Item onClick={handleLogout} className="text-danger">
+                    Logout
+                  </NavDropdown.Item>
+                </NavDropdown>
               </Nav>
             </>
           ) : (
-            <Nav className="ms-auto">
-              <Nav.Link as={Link} to="/login" className="nav-link">
-                Login
-              </Nav.Link>
-              <Nav.Link 
-                as={Link} 
-                to="/register" 
-                className="nav-link register-link"
-              >
-                Register
-              </Nav.Link>
-            </Nav>
+            <>
+              <Nav className="me-auto">
+                <Nav.Link as={Link} to="/about" className="nav-link">
+                  About
+                </Nav.Link>
+                {/* Add more public navigation links here */}
+              </Nav>
+              <Nav className="ms-auto">
+                <Nav.Link as={Link} to="/login" className="nav-link">
+                  Login
+                </Nav.Link>
+                <Button 
+                  as={Link} 
+                  to="/register" 
+                  variant="outline-light"
+                  className="ms-2 register-btn"
+                >
+                  Register
+                </Button>
+              </Nav>
+            </>
           )}
         </Navbar.Collapse>
       </Container>
