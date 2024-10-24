@@ -1,104 +1,100 @@
-// src/components/Context.js
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as authService from '../services/auth';
-import * as workoutService from '../services/workouts';
+import axios from 'axios';
 
-// Create contexts
 const AuthContext = createContext(null);
-const WorkoutContext = createContext(null);
 
-
-// Auth Provider Component
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [user, setUser] = useState(null);
+    const [error, setError] = useState(null);
     const navigate = useNavigate();
-
-    const clearError = () => setError(null);
-
-    const checkAuth = useCallback(() => {
-        const token = localStorage.getItem('access_token');
-        if (token) {
-            setIsAuthenticated(true);
-        } else {
-            setIsAuthenticated(false);
-            setUser(null);
-        }
-        setLoading(false);
-    }, []);
-
-    useEffect(() => {
-        checkAuth();
-    }, [checkAuth]);
 
     const login = async (username, password) => {
         try {
-            console.log('Starting login process...');
             const response = await authService.login(username, password);
-            console.log('Login response:', response);
-            setIsAuthenticated(true);
-            console.log('Set authenticated to true');
-            navigate('/');
-            console.log('Navigating to dashboard');
+            if (response.key) {
+                localStorage.setItem('access_token', response.key);
+                localStorage.setItem('username', username);
+                setUser({ username });
+                setIsAuthenticated(true);
+                navigate('/dashboard'); // Redirect to dashboard after login
+            }
             return response;
         } catch (err) {
-            console.log('Login error:', err);
             setError(err.response?.data?.detail || 'Login failed');
             throw err;
         }
     };
 
-    const logout = async () => {
+    const logout = useCallback(async () => {
         try {
             await authService.logout();
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('username');
             setUser(null);
             setIsAuthenticated(false);
-            localStorage.removeItem('access_token');
-            navigate('/login');
+            navigate('/login'); // Redirect to login after logout
         } catch (err) {
-            setError(err.message);
+            console.error('Logout error:', err);
             throw err;
         }
-    };
+    }, [navigate]); // Add navigate to dependencies
 
-    const register = async (userData) => {
-        try {
-            const response = await authService.register(userData);
-            // After successful registration, log them in automatically
-            await login(userData.username, userData.password);
-            return response;
-        } catch (err) {
-            setError(err.response?.data?.detail || 'Registration failed');
-            throw err;
-        }
-    };
+    const clearError = () => setError(null);
 
-    const updateProfile = async (profileData) => {
-        try {
-            const updatedProfile = await authService.updateUserProfile(profileData);
-            setUser(updatedProfile);
-            return updatedProfile;
-        } catch (err) {
-            setError(err.message);
-            throw err;
+    useEffect(() => {
+        const tokenRefreshInterval = setInterval(async () => {
+            try {
+                const response = await axios.post("/auth/token/refresh/");
+                localStorage.setItem('access_token', response.data.key);
+            } catch (err) {
+                logout(); // Logout if refreshing the token fails
+            }
+        }, 60 * 1000); // Refresh token every minute
+
+        return () => clearInterval(tokenRefreshInterval);
+    }, [logout]); // Use logout from useCallback
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                const { data } = await axios.get("/profiles/");
+                setUser(data);
+            } catch (err) {
+                console.error('Failed to fetch user data:', err);
+            }
+        };
+
+        if (isAuthenticated) {
+            fetchUserData();
         }
-    };
+    }, [isAuthenticated]);
+
+    useEffect(() => {
+        const checkTokenValidity = async () => {
+            try {
+                await axios.get("/profiles/", { validateToken: true });
+                setIsAuthenticated(true);
+            } catch (err) {
+                if (err.response?.status === 401) {
+                    logout(); // Call logout if token is invalid
+                }
+            }
+        };
+
+        checkTokenValidity();
+    }, [logout]); // Use logout from useCallback
 
     return (
         <AuthContext.Provider 
             value={{
                 user,
-                setUser,
-                loading,
                 error,
                 isAuthenticated,
                 login,
                 logout,
-                register,
-                updateProfile,
                 clearError
             }}
         >
@@ -107,123 +103,10 @@ export const AuthProvider = ({ children }) => {
     );
 };
 
-// Workout Provider Component
-export const WorkoutProvider = ({ children }) => {
-    const [workouts, setWorkouts] = useState([]);
-    const [currentWorkout, setCurrentWorkout] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
-    const navigate = useNavigate();
-
-    const fetchWorkouts = async () => {
-        setLoading(true);
-        try {
-            const data = await workoutService.getWorkouts();
-            setWorkouts(data);
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const fetchWorkoutDetails = async (id) => {
-        setLoading(true);
-        try {
-            const data = await workoutService.getWorkoutDetails(id);
-            setCurrentWorkout(data);
-            return data;
-        } catch (err) {
-            setError(err.message);
-            throw err;
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const createWorkout = async (workoutData) => {
-        try {
-            const newWorkout = await workoutService.createWorkout(workoutData);
-            setWorkouts(prev => [...prev, newWorkout]);
-            navigate('/workouts');
-            return newWorkout;
-        } catch (err) {
-            setError(err.message);
-            throw err;
-        }
-    };
-
-    const updateWorkout = async (id, workoutData) => {
-        try {
-            const updatedWorkout = await workoutService.updateWorkout(id, workoutData);
-            setWorkouts(prev => 
-                prev.map(workout => 
-                    workout.id === id ? updatedWorkout : workout
-                )
-            );
-            setCurrentWorkout(updatedWorkout);
-            navigate(`/workouts/${id}`);
-            return updatedWorkout;
-        } catch (err) {
-            setError(err.message);
-            throw err;
-        }
-    };
-
-    const deleteWorkout = async (id) => {
-        try {
-            await workoutService.deleteWorkout(id);
-            setWorkouts(prev => prev.filter(workout => workout.id !== id));
-            navigate('/workouts');
-        } catch (err) {
-            setError(err.message);
-            throw err;
-        }
-    };
-
-    return (
-        <WorkoutContext.Provider
-            value={{
-                workouts,
-                currentWorkout,
-                loading,
-                error,
-                fetchWorkouts,
-                fetchWorkoutDetails,
-                createWorkout,
-                updateWorkout,
-                deleteWorkout
-            }}
-        >
-            {children}
-        </WorkoutContext.Provider>
-    );
-};
-
-// Export hooks and providers
 export const useAuth = () => {
     const context = useContext(AuthContext);
     if (!context) {
         throw new Error('useAuth must be used within an AuthProvider');
     }
     return context;
-};
-
-export const useWorkout = () => {
-    const context = useContext(WorkoutContext);
-    if (!context) {
-        throw new Error('useWorkout must be used within a WorkoutProvider');
-    }
-    return context;
-};
-
-// Combined provider
-export const AppProvider = ({ children }) => {
-    return (
-        <AuthProvider>
-            <WorkoutProvider>
-                {children}
-            </WorkoutProvider>
-        </AuthProvider>
-    );
 };
