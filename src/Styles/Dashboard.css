@@ -1,6 +1,8 @@
 /* src/Styles/Dashboard.css */
-.dashboard-container {
-  padding-top: 2rem;
+.dashboard-wrapper {
+  padding: 20px 0;
+  background-color: #f8f9fa;
+  min-height: calc(100vh - 56px);
 }
 
 .welcome-text {
@@ -10,42 +12,80 @@
   margin-bottom: 0.5rem;
 }
 
+.primary-action-card {
+  background-color: #fff;
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+  margin-bottom: 2rem;
+}
+
+.main-action-button {
+  padding: 0.8rem 2.5rem;
+  font-size: 1.1rem;
+}
+
+.stat-card {
+  background-color: #fff;
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+}
+
+.stat-number {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #3498db;
+  margin-bottom: 0.5rem;
+}
+
+.stat-label {
+  color: #7f8c8d;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+  margin: 0;
+}
+
 .section-title {
-  font-size: 1.75rem;
+  font-size: 1.5rem;
+  font-weight: 600;
   color: #2c3e50;
   margin-bottom: 1.5rem;
 }
 
-.quick-action-card {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  border: none;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.quick-action-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-
 .workout-card {
-  transition: transform 0.2s ease;
+  background-color: #fff;
   border: none;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease;
 }
 
 .workout-card:hover {
   transform: translateY(-3px);
 }
 
-.card-title {
-  color: #2c3e50;
-  font-weight: 600;
+.quick-link-card {
+  background-color: #fff;
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease;
+}
+
+.quick-link-card:hover {
+  transform: translateY(-3px);
 }
 
 .btn-primary {
   background-color: #3498db;
   border-color: #3498db;
-  padding: 0.5rem 1.5rem;
 }
 
 .btn-primary:hover {
@@ -61,19 +101,23 @@
 .btn-outline-primary:hover {
   background-color: #3498db;
   border-color: #3498db;
+  color: #fff;
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
   .welcome-text {
       font-size: 2rem;
   }
 
-  .section-title {
+  .stat-number {
       font-size: 1.5rem;
   }
 
-  .dashboard-container {
-      padding-top: 1rem;
+  .dashboard-wrapper {
+      padding: 10px;
+  }
+
+  .primary-action-card {
+      margin-bottom: 1rem;
   }
 }
