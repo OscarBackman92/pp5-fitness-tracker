@@ -33,14 +33,16 @@ export const AuthProvider = ({ children }) => {
 
             try {
                 const userProfile = await authService.getUserProfile();
-                setUser(userProfile);
-                setIsAuthenticated(true);
+                if (userProfile) {
+                    setUser(userProfile);
+                    setIsAuthenticated(true);
+                }
             } catch (error) {
+                console.error('Auth check error:', error);
                 if (error.response?.status === 403) {
                     localStorage.removeItem('access_token');
                     setIsAuthenticated(false);
                     setUser(null);
-                    navigate('/login');
                 }
             }
         } catch (err) {
@@ -50,7 +52,7 @@ export const AuthProvider = ({ children }) => {
         } finally {
             setLoading(false);
         }
-    }, [navigate]);
+    }, []);
 
     useEffect(() => {
         checkAuth();
@@ -59,13 +61,11 @@ export const AuthProvider = ({ children }) => {
     const login = async (username, password) => {
         try {
             const response = await authService.login(username, password);
-            const profile = await authService.getUserProfile();
-            setUser(profile);
-            setIsAuthenticated(true);
+            await checkAuth();
             navigate('/dashboard');
             return response;
         } catch (err) {
-            setError(err.message);
+            setError(err.response?.data?.detail || 'Login failed');
             throw err;
         }
     };
@@ -75,7 +75,6 @@ export const AuthProvider = ({ children }) => {
             await authService.logout();
             setUser(null);
             setIsAuthenticated(false);
-            localStorage.removeItem('access_token');
             navigate('/login');
         } catch (err) {
             setError(err.message);
@@ -86,9 +85,10 @@ export const AuthProvider = ({ children }) => {
     const register = async (userData) => {
         try {
             const response = await authService.register(userData);
+            // Let the register component handle the navigation
             return response;
         } catch (err) {
-            setError(err.message);
+            setError(err.response?.data?.detail || 'Registration failed');
             throw err;
         }
     };
@@ -122,6 +122,7 @@ export const AuthProvider = ({ children }) => {
         </AuthContext.Provider>
     );
 };
+
 
 // Workout Provider Component
 export const WorkoutProvider = ({ children }) => {
@@ -317,22 +318,6 @@ export const useSocial = () => {
         throw new Error('useSocial must be used within a SocialProvider');
     }
     return context;
-};
-
-// PrivateRoute component
-export const PrivateRoute = ({ children }) => {
-    const { loading, isAuthenticated } = useAuth();
-    const navigate = useNavigate();
-
-    useEffect(() => {
-        if (!loading && !isAuthenticated) {
-            navigate('/login');
-        }
-    }, [loading, isAuthenticated, navigate]);
-
-    if (loading) return <div>Loading...</div>;
-    
-    return isAuthenticated ? children : null;
 };
 
 // Combined provider
