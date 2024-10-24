@@ -1,3 +1,4 @@
+// src/services/auth.js
 import axios from 'axios';
 
 const BASE_URL = process.env.REACT_APP_API_URL;
@@ -8,20 +9,18 @@ const getUserProfile = async () => {
         if (!token) {
             throw new Error('No authentication token found');
         }
-        console.log('Token found:', token);
-        // Make a direct axios call instead of using instance
+        
+        // Changed from /profiles/ to /profiles/me/
         const response = await axios({
             method: 'GET',
-            url: `${BASE_URL}/profiles/`,
+            url: `${BASE_URL}/profiles/me/`,  // Changed this line
             headers: {
                 'Authorization': `Token ${token}`,
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
+                'Content-Type': 'application/json'
             }
         });
 
         console.log('Profile request successful:', {
-            headers: response.config.headers,
             data: response.data
         });
 
@@ -38,14 +37,11 @@ const getUserProfile = async () => {
 };
 
 const login = async (username, password) => {
-    console.log('Login attempt:', { username, password });
     try {
         const response = await axios.post(`${BASE_URL}/auth/login/`, {
             username,
             password
         });
-
-        console.log('Login response:', response.data);
 
         if (response.data.key) {
             localStorage.setItem('access_token', response.data.key);

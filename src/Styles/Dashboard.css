@@ -1,77 +1,79 @@
+/* src/Styles/Dashboard.css */
 .dashboard-container {
-    padding: 20px 0;
+  padding-top: 2rem;
+}
+
+.welcome-text {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+}
+
+.section-title {
+  font-size: 1.75rem;
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+}
+
+.quick-action-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: none;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.quick-action-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.workout-card {
+  transition: transform 0.2s ease;
+  border: none;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.workout-card:hover {
+  transform: translateY(-3px);
+}
+
+.card-title {
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.btn-primary {
+  background-color: #3498db;
+  border-color: #3498db;
+  padding: 0.5rem 1.5rem;
+}
+
+.btn-primary:hover {
+  background-color: #2980b9;
+  border-color: #2980b9;
+}
+
+.btn-outline-primary {
+  color: #3498db;
+  border-color: #3498db;
+}
+
+.btn-outline-primary:hover {
+  background-color: #3498db;
+  border-color: #3498db;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .welcome-text {
+      font-size: 2rem;
   }
-  
-  .dashboard-title {
-    font-size: 2.5rem;
-    font-weight: bold;
-    margin-bottom: 1.5rem;
-    color: #333;
+
+  .section-title {
+      font-size: 1.5rem;
   }
-  
-  .summary-card {
-    border: none;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease-in-out;
+
+  .dashboard-container {
+      padding-top: 1rem;
   }
-  
-  .summary-card:hover {
-    transform: translateY(-5px);
-  }
-  
-  .summary-card .card-body {
-    padding: 1.5rem;
-  }
-  
-  .summary-card .card-title {
-    font-size: 1rem;
-    font-weight: 600;
-    color: #6c757d;
-  }
-  
-  .summary-card .card-text {
-    font-size: 2rem;
-    font-weight: bold;
-    color: #007bff;
-    margin-top: 0.5rem;
-  }
-  
-  .recent-workouts-card {
-    border: none;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  
-  .recent-workouts-card .card-body {
-    padding: 1.5rem;
-  }
-  
-  .recent-workouts-card .card-title {
-    font-size: 1.5rem;
-    font-weight: bold;
-    margin-bottom: 1rem;
-  }
-  
-  .recent-workout-item {
-    padding: 10px 0;
-    border-bottom: 1px solid #e9ecef;
-  }
-  
-  .recent-workout-item:last-child {
-    border-bottom: none;
-  }
-  
-  .recent-workout-item a {
-    color: #495057;
-    text-decoration: none;
-    transition: color 0.3s ease-in-out;
-  }
-  
-  .recent-workout-item a:hover {
-    color: #007bff;
-  }
-  
-  .log-workout-btn {
-    margin-top: 2rem;
-  }
+}

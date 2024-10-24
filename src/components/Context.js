@@ -3,12 +3,11 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import { useNavigate } from 'react-router-dom';
 import * as authService from '../services/auth';
 import * as workoutService from '../services/workouts';
-import { socialService } from '../services/social';
 
 // Create contexts
 const AuthContext = createContext(null);
 const WorkoutContext = createContext(null);
-const SocialContext = createContext(null);
+
 
 // Auth Provider Component
 export const AuthProvider = ({ children }) => {
@@ -20,38 +19,15 @@ export const AuthProvider = ({ children }) => {
 
     const clearError = () => setError(null);
 
-    const checkAuth = useCallback(async () => {
-        try {
-            setLoading(true);
-            const token = localStorage.getItem('access_token');
-            
-            if (!token) {
-                setIsAuthenticated(false);
-                setUser(null);
-                return;
-            }
-
-            try {
-                const userProfile = await authService.getUserProfile();
-                if (userProfile) {
-                    setUser(userProfile);
-                    setIsAuthenticated(true);
-                }
-            } catch (error) {
-                console.error('Auth check error:', error);
-                if (error.response?.status === 403) {
-                    localStorage.removeItem('access_token');
-                    setIsAuthenticated(false);
-                    setUser(null);
-                }
-            }
-        } catch (err) {
-            setError(err.message);
+    const checkAuth = useCallback(() => {
+        const token = localStorage.getItem('access_token');
+        if (token) {
+            setIsAuthenticated(true);
+        } else {
             setIsAuthenticated(false);
             setUser(null);
-        } finally {
-            setLoading(false);
         }
+        setLoading(false);
     }, []);
 
     useEffect(() => {
@@ -60,11 +36,16 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (username, password) => {
         try {
+            console.log('Starting login process...');
             const response = await authService.login(username, password);
-            await checkAuth();
+            console.log('Login response:', response);
+            setIsAuthenticated(true);
+            console.log('Set authenticated to true');
             navigate('/dashboard');
+            console.log('Navigating to dashboard');
             return response;
         } catch (err) {
+            console.log('Login error:', err);
             setError(err.response?.data?.detail || 'Login failed');
             throw err;
         }
@@ -75,6 +56,7 @@ export const AuthProvider = ({ children }) => {
             await authService.logout();
             setUser(null);
             setIsAuthenticated(false);
+            localStorage.removeItem('access_token');
             navigate('/login');
         } catch (err) {
             setError(err.message);
@@ -85,7 +67,8 @@ export const AuthProvider = ({ children }) => {
     const register = async (userData) => {
         try {
             const response = await authService.register(userData);
-            // Let the register component handle the navigation
+            // After successful registration, log them in automatically
+            await login(userData.username, userData.password);
             return response;
         } catch (err) {
             setError(err.response?.data?.detail || 'Registration failed');
@@ -108,6 +91,7 @@ export const AuthProvider = ({ children }) => {
         <AuthContext.Provider 
             value={{
                 user,
+                setUser,
                 loading,
                 error,
                 isAuthenticated,
@@ -122,7 +106,6 @@ export const AuthProvider = ({ children }) => {
         </AuthContext.Provider>
     );
 };
-
 
 // Workout Provider Component
 export const WorkoutProvider = ({ children }) => {
@@ -217,85 +200,7 @@ export const WorkoutProvider = ({ children }) => {
     );
 };
 
-// Social Provider Component
-export const SocialProvider = ({ children }) => {
-    const [feed, setFeed] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
-
-    const getFeed = async (page = 1) => {
-        setLoading(true);
-        try {
-            const response = await socialService.getFeed(page);
-            setFeed(prev => page === 1 ? response.data : [...prev, ...response.data]);
-            return response;
-        } catch (err) {
-            setError(err.message);
-            throw err;
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const followUser = async (userId) => {
-        try {
-            const response = await socialService.followUser(userId);
-            return response;
-        } catch (err) {
-            setError(err.message);
-            throw err;
-        }
-    };
-
-    const unfollowUser = async (userId) => {
-        try {
-            const response = await socialService.unfollowUser(userId);
-            return response;
-        } catch (err) {
-            setError(err.message);
-            throw err;
-        }
-    };
-
-    const likeWorkout = async (workoutId) => {
-        try {
-            const response = await socialService.likeWorkout(workoutId);
-            return response;
-        } catch (err) {
-            setError(err.message);
-            throw err;
-        }
-    };
-
-    const unlikeWorkout = async (workoutId) => {
-        try {
-            const response = await socialService.unlikeWorkout(workoutId);
-            return response;
-        } catch (err) {
-            setError(err.message);
-            throw err;
-        }
-    };
-
-    return (
-        <SocialContext.Provider
-            value={{
-                feed,
-                loading,
-                error,
-                getFeed,
-                followUser,
-                unfollowUser,
-                likeWorkout,
-                unlikeWorkout
-            }}
-        >
-            {children}
-        </SocialContext.Provider>
-    );
-};
-
-// Custom hooks
+// Export hooks and providers
 export const useAuth = () => {
     const context = useContext(AuthContext);
     if (!context) {
@@ -312,22 +217,12 @@ export const useWorkout = () => {
     return context;
 };
 
-export const useSocial = () => {
-    const context = useContext(SocialContext);
-    if (!context) {
-        throw new Error('useSocial must be used within a SocialProvider');
-    }
-    return context;
-};
-
 // Combined provider
 export const AppProvider = ({ children }) => {
     return (
         <AuthProvider>
             <WorkoutProvider>
-                <SocialProvider>
-                    {children}
-                </SocialProvider>
+                {children}
             </WorkoutProvider>
         </AuthProvider>
     );

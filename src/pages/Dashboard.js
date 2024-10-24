@@ -1,94 +1,163 @@
-import React from 'react';
-import { Container, Row, Col, Card } from 'react-bootstrap';
+// src/pages/Dashboard.js
+import React, { useEffect } from 'react';
+import { Container, Row, Col, Card, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import { Line } from 'react-chartjs-2';
-import { Chart, registerables } from 'chart.js';
+import { useAuth } from '../components/Context';
+import { useWorkout } from '../components/Context';
+import '../Styles/Dashboard.css';
 
-Chart.register(...registerables);
+const Dashboard = () => {
+  const { user } = useAuth();
+  const { workouts, loading, fetchWorkouts } = useWorkout();
 
-function Dashboard({ userInfo }) {
-  const data = {
-    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], // Example labels
-    datasets: [
-      {
-        label: 'Workouts',
-        data: userInfo?.weekly_workout_data || [0, 0, 0, 0, 0, 0, 0], // Example data
-        fill: false,
-        backgroundColor: 'rgba(75,192,192,1)',
-        borderColor: 'rgba(75,192,192,1)',
-      },
-    ],
-  };
+  useEffect(() => {
+    fetchWorkouts();
+  }, [fetchWorkouts]);
+
+  // Get recent workouts (last 3)
+  const recentWorkouts = workouts?.slice(0, 3) || [];
+
+  if (loading) {
+    return (
+      <Container className="d-flex justify-content-center align-items-center" style={{ minHeight: '80vh' }}>
+        <div className="text-center">
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+          <p className="mt-3">Loading your dashboard...</p>
+        </div>
+      </Container>
+    );
+  }
 
   return (
-    <Container className="mt-4">
-      <h1>Welcome back, {userInfo?.username || userInfo?.name || 'User'}!</h1>
-      
-      <Row className="mt-4">
-        {/* Quick Stats Card */}
-        <Col md={6} lg={3} className="mb-4">
-          <Card>
-            <Card.Body>
-              <Card.Title>Quick Stats</Card.Title>
+    <Container className="dashboard-container py-5">
+      {/* Welcome Section */}
+      <Row className="mb-4">
+        <Col>
+          <h1 className="welcome-text">Welcome, {user?.username || 'Fitness Enthusiast'}!</h1>
+          <p className="text-muted">Track your fitness journey and stay motivated</p>
+        </Col>
+      </Row>
+
+      {/* Quick Actions */}
+      <Row className="mb-5">
+        <Col md={4} className="mb-3">
+          <Card className="quick-action-card h-100">
+            <Card.Body className="d-flex flex-column">
+              <Card.Title>Log Workout</Card.Title>
               <Card.Text>
-                Total Workouts: {userInfo?.total_workouts || 0}<br />
-                This Week: {userInfo?.workouts_this_week || 0}
+                Record your latest workout session and track your progress.
               </Card.Text>
+              <div className="mt-auto">
+                <Button 
+                  as={Link} 
+                  to="/workouts/new" 
+                  variant="primary"
+                  className="w-100"
+                >
+                  Start Logging
+                </Button>
+              </div>
             </Card.Body>
           </Card>
         </Col>
-
-        {/* Recent Activity Card */}
-        <Col md={6} lg={3} className="mb-4">
-          <Card>
-            <Card.Body>
-              <Card.Title>Recent Activity</Card.Title>
+        <Col md={4} className="mb-3">
+          <Card className="quick-action-card h-100">
+            <Card.Body className="d-flex flex-column">
+              <Card.Title>View Progress</Card.Title>
               <Card.Text>
-                Last Workout: {userInfo?.last_workout_date || 'N/A'}<br />
-                Type: {userInfo?.last_workout_type || 'N/A'}
+                Check your workout history and track your improvements.
               </Card.Text>
+              <div className="mt-auto">
+                <Button 
+                  as={Link} 
+                  to="/workouts" 
+                  variant="outline-primary"
+                  className="w-100"
+                >
+                  See Workouts
+                </Button>
+              </div>
             </Card.Body>
           </Card>
         </Col>
-
-        {/* Goals Card */}
-        <Col md={6} lg={3} className="mb-4">
-          <Card>
-            <Card.Body>
-              <Card.Title>Goals</Card.Title>
+        <Col md={4} className="mb-3">
+          <Card className="quick-action-card h-100">
+            <Card.Body className="d-flex flex-column">
+              <Card.Title>Update Profile</Card.Title>
               <Card.Text>
-                Weekly Goal: {userInfo?.weekly_goal || 'Not set'}<br />
-                Progress: {userInfo?.goal_progress || '0%'}
+                Set your fitness goals and update your profile information.
               </Card.Text>
-            </Card.Body>
-          </Card>
-        </Col>
-
-        {/* Quick Actions Card */}
-        <Col md={6} lg={3} className="mb-4">
-          <Card>
-            <Card.Body>
-              <Card.Title>Quick Actions</Card.Title>
-              <Link to="/workouts/new" className="btn btn-primary d-block mb-2">Log Workout</Link>
-              <Link to="/workouts" className="btn btn-outline-primary d-block">View History</Link>
+              <div className="mt-auto">
+                <Button 
+                  as={Link} 
+                  to="/profile" 
+                  variant="outline-primary"
+                  className="w-100"
+                >
+                  Edit Profile
+                </Button>
+              </div>
             </Card.Body>
           </Card>
         </Col>
       </Row>
 
-      {/* Progress Chart */}
-      <Row>
+      {/* Recent Activity Section */}
+      <Row className="mb-4">
         <Col>
-          <Card>
-            <Card.Body>
-              <Card.Title>Weekly Progress</Card.Title>
-              <Line data={data} />
-            </Card.Body>
-          </Card>
+          <h2 className="section-title">Recent Workouts</h2>
         </Col>
+      </Row>
+      <Row>
+        {recentWorkouts.length > 0 ? (
+          recentWorkouts.map((workout) => (
+            <Col md={4} key={workout.id} className="mb-3">
+              <Card className="workout-card h-100">
+                <Card.Body>
+                  <Card.Title>{workout.title}</Card.Title>
+                  <Card.Subtitle className="mb-2 text-muted">
+                    {new Date(workout.date).toLocaleDateString()}
+                  </Card.Subtitle>
+                  <Card.Text>
+                    {workout.description?.slice(0, 100)}
+                    {workout.description?.length > 100 ? '...' : ''}
+                  </Card.Text>
+                  <Button 
+                    as={Link} 
+                    to={`/workouts/${workout.id}`}
+                    variant="outline-primary" 
+                    size="sm"
+                  >
+                    View Details
+                  </Button>
+                </Card.Body>
+              </Card>
+            </Col>
+          ))
+        ) : (
+          <Col>
+            <Card className="text-center p-4">
+              <Card.Body>
+                <Card.Title>No workouts yet</Card.Title>
+                <Card.Text>
+                  Start tracking your fitness journey by logging your first workout!
+                </Card.Text>
+                <Button 
+                  as={Link} 
+                  to="/workouts/new" 
+                  variant="primary"
+                >
+                  Log Your First Workout
+                </Button>
+              </Card.Body>
+            </Card>
+          </Col>
+        )}
       </Row>
     </Container>
   );
-}
+};
 
 export default Dashboard;
