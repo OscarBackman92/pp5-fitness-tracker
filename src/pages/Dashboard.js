@@ -1,38 +1,71 @@
-import React from 'react';
-import { useAuth } from '../components/Context'; // Ensure this path is correct
-import Navbar from '../components/Navbar'; // Ensure this path is correct
-import Footer from '../components/Footer'; // Ensure this path is correct
-// import LandingPage from './LandingPage'; // Ensure this path is correct
-// import Login from './Login'; // Ensure this path is correct
-// import Register from './Register'; // Ensure this path is correct
-// import Profile from './Profile'; // Ensure this path is correct
-// import WorkoutList from './WorkoutList'; // Ensure this path is correct
-// import WorkoutDetails from './WorkoutDetails'; // Ensure this path is correct
-// import LogWorkout from './LogWorkout'; // Ensure this path is correct
-// import EditWorkout from './EditWorkout'; // Ensure this path is correct
-// import './App.css'; // Ensure this path is correct
+import React, { useState, useEffect } from 'react';
+import { Container, Row, Col, Card, Button, Spinner, Alert } from 'react-bootstrap';
+import axiosInstance from '../services/api';
+import { useAuth } from '../context/AuthContext';
 
 const Dashboard = () => {
-    const { user, isAuthenticated } = useAuth();
+  const [workouts, setWorkouts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const { user } = useAuth();
 
+  useEffect(() => {
+    const fetchWorkouts = async () => {
+      try {
+        const response = await axiosInstance.get('/workouts/');
+        setWorkouts(response.data.results);
+      } catch (error) {
+        setError('Failed to fetch workouts');
+        console.error('Error fetching workouts:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchWorkouts();
+  }, []);
+
+  if (loading) {
     return (
-        <div>
-            <Navbar />
-            <h1>Welcome to the Dashboard</h1>
-            {isAuthenticated ? (
-                <div>
-                    <h2>Hello, {user.username}</h2>
-                    {/* You can add more components like WorkoutList or Profile here */}
-                </div>
-            ) : (
-                <div>
-                    <h2>Please log in to access your dashboard</h2>
-                    {/* Optionally redirect to Login or show a link to the login page */}
-                </div>
-            )}
-            <Footer />
-        </div>
+      <Container className="text-center mt-5">
+        <Spinner animation="border" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </Spinner>
+      </Container>
     );
+  }
+
+  if (error) {
+    return (
+      <Container>
+        <Alert variant="danger">{error}</Alert>
+      </Container>
+    );
+  }
+
+  return (
+    <Container>
+      <h1 className="mb-4">Welcome, {user?.username}!</h1>
+      <Row>
+        {workouts.map((workout) => (
+          <Col key={workout.id} md={4} className="mb-4">
+            <Card>
+              <Card.Body>
+                <Card.Title>{workout.title}</Card.Title>
+                <Card.Text>{workout.description}</Card.Text>
+                <Card.Text>
+                  <small className="text-muted">
+                    Duration: {workout.duration} min
+                  </small>
+                </Card.Text>
+                <Button variant="primary">View Details</Button>
+              </Card.Body>
+            </Card>
+          </Col>
+        ))}
+      </Row>
+    </Container>
+  );
 };
 
 export default Dashboard;

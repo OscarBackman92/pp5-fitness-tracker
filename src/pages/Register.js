@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Form, Button, Alert, Container, Card } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../components/Context';
+import { useAuth } from '../context/AuthContext';
 import '../Styles/Register.css';
 
 function Register() {
