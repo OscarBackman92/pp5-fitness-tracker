@@ -1,7 +1,7 @@
-// src/services/api.js
 import axios from 'axios';
+import { tokenService } from './tokenService';  // Changed to named import
 
-const baseURL = process.env.REACT_APP_API_URL;
+const baseURL = process.env.REACT_APP_API_URL || 'https://fitnessapi-d773a1148384.herokuapp.com/api';
 
 const axiosInstance = axios.create({
     baseURL,
@@ -13,9 +13,9 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
     (config) => {
-        const token = localStorage.getItem('access_token');
+        const token = tokenService.getToken();
         if (token) {
-            config.headers.Authorization = `Token ${token}`; // Ensure 'Bearer' is used
+            config.headers.Authorization = `Token ${token}`;
         }
         console.log('Request Config:', {
             url: config.url,
@@ -41,11 +41,11 @@ axiosInstance.interceptors.response.use(
             url: error.config?.url,
             status: error.response?.status,
             data: error.response?.data,
-            token: localStorage.getItem('access_token') // Log token for debugging
+            token: tokenService.getToken()
         });
 
         if (error.response?.status === 403) {
-            localStorage.removeItem('access_token');
+            tokenService.clearAll();
             window.location.href = '/login';
         }
 

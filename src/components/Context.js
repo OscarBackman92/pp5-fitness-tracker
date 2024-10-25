@@ -1,12 +1,13 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as authService from '../services/auth';
-import axios from 'axios';
+import axiosInstance from '../services/api';
+import { tokenService } from '../services/tokenService';
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(tokenService.isValid());
     const [user, setUser] = useState(null);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
@@ -15,11 +16,11 @@ export const AuthProvider = ({ children }) => {
         try {
             const response = await authService.login(username, password);
             if (response.key) {
-                localStorage.setItem('access_token', response.key);
-                localStorage.setItem('username', username);
+                tokenService.setToken(response.key);
+                tokenService.setUsername(username);
                 setUser({ username });
                 setIsAuthenticated(true);
-                navigate('/dashboard'); // Redirect to dashboard after login
+                navigate('/dashboard');
             }
             return response;
         } catch (err) {
@@ -31,36 +32,34 @@ export const AuthProvider = ({ children }) => {
     const logout = useCallback(async () => {
         try {
             await authService.logout();
-            localStorage.removeItem('access_token');
-            localStorage.removeItem('username');
             setUser(null);
             setIsAuthenticated(false);
-            navigate('/login'); // Redirect to login after logout
+            navigate('/login');
         } catch (err) {
             console.error('Logout error:', err);
             throw err;
         }
-    }, [navigate]); // Add navigate to dependencies
+    }, [navigate]);
 
     const clearError = () => setError(null);
 
     useEffect(() => {
         const tokenRefreshInterval = setInterval(async () => {
             try {
-                const response = await axios.post("/auth/token/refresh/");
-                localStorage.setItem('access_token', response.data.key);
+                const response = await axiosInstance.post("/auth/token/refresh/");
+                tokenService.setToken(response.data.key);
             } catch (err) {
-                logout(); // Logout if refreshing the token fails
+                logout();
             }
-        }, 60 * 1000); // Refresh token every minute
+        }, 60 * 1000);
 
         return () => clearInterval(tokenRefreshInterval);
-    }, [logout]); // Use logout from useCallback
+    }, [logout]);
 
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const { data } = await axios.get("/profiles/");
+                const { data } = await axiosInstance.get("/profiles/");
                 setUser(data);
             } catch (err) {
                 console.error('Failed to fetch user data:', err);
@@ -75,17 +74,20 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         const checkTokenValidity = async () => {
             try {
-                await axios.get("/profiles/", { validateToken: true });
+                await axiosInstance.get("/profiles/", { validateToken: true });
                 setIsAuthenticated(true);
             } catch (err) {
                 if (err.response?.status === 401) {
-                    logout(); // Call logout if token is invalid
+                    logout();
                 }
             }
         };
 
-        checkTokenValidity();
-    }, [logout]); // Use logout from useCallback
+        const token = tokenService.getToken();
+        if (token) {
+            checkTokenValidity();
+        }
+    }, [logout]);
 
     return (
         <AuthContext.Provider 
