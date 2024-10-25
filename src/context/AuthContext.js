@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axiosInstance from '../services/api';
+import { authApi, profileApi } from '../services/api/apiService';
+import { tokenService } from '../services/tokenService';
 
 const AuthContext = createContext(null);
 
@@ -12,14 +13,13 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (username, password) => {
         try {
-            const response = await axiosInstance.post('/auth/login/', {
-                username,
-                password,
-            });
-            localStorage.setItem('access_token', response.data.key);
-            setUser({ username });
-            setIsAuthenticated(true);
-            return response.data;
+            const response = await authApi.login({ username, password });
+            if (response.data.key) {
+                tokenService.setToken(response.data.key);
+                setUser({ username });
+                setIsAuthenticated(true);
+                return response.data;
+            }
         } catch (error) {
             throw error;
         }
@@ -27,11 +27,11 @@ export const AuthProvider = ({ children }) => {
 
     const logout = useCallback(async () => {
         try {
-            await axiosInstance.post('/auth/logout/');
+            await authApi.logout();
         } catch (error) {
             console.error('Logout error:', error);
         } finally {
-            localStorage.removeItem('access_token');
+            tokenService.clearAll();
             setUser(null);
             setIsAuthenticated(false);
             navigate('/login');
@@ -40,14 +40,13 @@ export const AuthProvider = ({ children }) => {
 
     useEffect(() => {
         const checkAuth = async () => {
-            const token = localStorage.getItem('access_token');
-            if (token) {
+            if (tokenService.isValid()) {
                 try {
-                    const response = await axiosInstance.get('/profiles/');
+                    const response = await profileApi.getAll();
                     setUser(response.data);
                     setIsAuthenticated(true);
                 } catch (error) {
-                    localStorage.removeItem('access_token');
+                    tokenService.clearAll();
                     setUser(null);
                     setIsAuthenticated(false);
                 }
@@ -61,9 +60,9 @@ export const AuthProvider = ({ children }) => {
     const value = {
         user,
         isAuthenticated,
+        loading,
         login,
-        logout,
-        loading
+        logout
     };
 
     return (

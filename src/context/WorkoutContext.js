@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useReducer, useCallback } from 'react';
-import axiosInstance from '../services/api';
+import { workoutApi } from '../services/api/apiService';
 
 const WORKOUT_ACTIONS = {
     SET_WORKOUTS: 'SET_WORKOUTS',
@@ -66,7 +66,7 @@ function workoutReducer(state, action) {
     }
 }
 
-const WorkoutContext = createContext(null);
+export const WorkoutContext = createContext(null);
 
 export const WorkoutProvider = ({ children }) => {
     const [state, dispatch] = useReducer(workoutReducer, initialState);
@@ -74,7 +74,7 @@ export const WorkoutProvider = ({ children }) => {
     const fetchWorkouts = useCallback(async () => {
         try {
             dispatch({ type: WORKOUT_ACTIONS.SET_LOADING });
-            const response = await axiosInstance.get('/workouts/');
+            const response = await workoutApi.getAll();
             dispatch({ 
                 type: WORKOUT_ACTIONS.SET_WORKOUTS, 
                 payload: response.data.results || [] 
@@ -91,7 +91,7 @@ export const WorkoutProvider = ({ children }) => {
     const createWorkout = useCallback(async (workoutData) => {
         try {
             dispatch({ type: WORKOUT_ACTIONS.SET_LOADING });
-            const response = await axiosInstance.post('/workouts/', workoutData);
+            const response = await workoutApi.create(workoutData);
             dispatch({ 
                 type: WORKOUT_ACTIONS.ADD_WORKOUT, 
                 payload: response.data 
@@ -106,52 +106,12 @@ export const WorkoutProvider = ({ children }) => {
         }
     }, []);
 
-    const updateWorkout = useCallback(async (id, workoutData) => {
-        try {
-            dispatch({ type: WORKOUT_ACTIONS.SET_LOADING });
-            const response = await axiosInstance.put(`/workouts/${id}/`, workoutData);
-            dispatch({ 
-                type: WORKOUT_ACTIONS.UPDATE_WORKOUT, 
-                payload: response.data 
-            });
-            return response.data;
-        } catch (error) {
-            dispatch({ 
-                type: WORKOUT_ACTIONS.SET_ERROR, 
-                payload: error.response?.data?.detail || 'Failed to update workout' 
-            });
-            throw error;
-        }
-    }, []);
-
-    const deleteWorkout = useCallback(async (id) => {
-        try {
-            dispatch({ type: WORKOUT_ACTIONS.SET_LOADING });
-            await axiosInstance.delete(`/workouts/${id}/`);
-            dispatch({ 
-                type: WORKOUT_ACTIONS.DELETE_WORKOUT, 
-                payload: id 
-            });
-        } catch (error) {
-            dispatch({ 
-                type: WORKOUT_ACTIONS.SET_ERROR, 
-                payload: error.response?.data?.detail || 'Failed to delete workout' 
-            });
-            throw error;
-        }
-    }, []);
-
-    const clearError = () => dispatch({ type: WORKOUT_ACTIONS.CLEAR_ERROR });
-
     const value = {
         workouts: state.workouts,
         loading: state.loading,
         error: state.error,
         fetchWorkouts,
-        createWorkout,
-        updateWorkout,
-        deleteWorkout,
-        clearError
+        createWorkout
     };
 
     return (

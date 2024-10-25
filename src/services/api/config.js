@@ -17,5 +17,6 @@ export const API_ENDPOINTS = {
     PROFILES: {
         ME: '/profiles/me/',
         DETAIL: (id) => `/profiles/${id}/`,
+        LIST: '/profiles/',
     }
 };
