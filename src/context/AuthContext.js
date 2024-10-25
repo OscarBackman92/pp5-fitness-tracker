@@ -1,7 +1,8 @@
+// src/context/AuthContext.js
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authApi, profileApi } from '../services/api/apiService';
-import { tokenService } from '../services/tokenService';
+import axiosInstance from '../services/api/axiosInstance';
 
 const AuthContext = createContext(null);
 
@@ -9,60 +10,80 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const navigate = useNavigate();
 
     const login = async (username, password) => {
         try {
+            setError(null);
             const response = await authApi.login({ username, password });
-            if (response.data.key) {
-                tokenService.setToken(response.data.key);
-                setUser({ username });
+            
+            if (response.data?.key) {
+                const token = response.data.key;
+                localStorage.setItem('access_token', token);
+                axiosInstance.defaults.headers.common['Authorization'] = `Token ${token}`;
+                
+                // Get user profile after successful login
+                const userProfile = await profileApi.getMe();
+                setUser(userProfile.data);
                 setIsAuthenticated(true);
                 return response.data;
             }
         } catch (error) {
+            console.error('Login error:', error);
+            setError(error.response?.data?.detail || 'Login failed');
             throw error;
         }
     };
 
     const logout = useCallback(async () => {
         try {
-            await authApi.logout();
+            const token = localStorage.getItem('access_token');
+            if (token) {
+                await authApi.logout();
+            }
         } catch (error) {
             console.error('Logout error:', error);
         } finally {
-            tokenService.clearAll();
+            localStorage.removeItem('access_token');
+            delete axiosInstance.defaults.headers.common['Authorization'];
             setUser(null);
             setIsAuthenticated(false);
             navigate('/login');
         }
     }, [navigate]);
 
-    useEffect(() => {
-        const checkAuth = async () => {
-            if (tokenService.isValid()) {
-                try {
-                    const response = await profileApi.getAll();
-                    setUser(response.data);
-                    setIsAuthenticated(true);
-                } catch (error) {
-                    tokenService.clearAll();
-                    setUser(null);
-                    setIsAuthenticated(false);
-                }
+    const checkAuth = useCallback(async () => {
+        const token = localStorage.getItem('access_token');
+        if (token) {
+            try {
+                axiosInstance.defaults.headers.common['Authorization'] = `Token ${token}`;
+                const userProfile = await profileApi.getMe();
+                setUser(userProfile.data);
+                setIsAuthenticated(true);
+            } catch (error) {
+                console.error('Auth check failed:', error);
+                localStorage.removeItem('access_token');
+                delete axiosInstance.defaults.headers.common['Authorization'];
+                setUser(null);
+                setIsAuthenticated(false);
             }
-            setLoading(false);
-        };
-
-        checkAuth();
+        }
+        setLoading(false);
     }, []);
+
+    useEffect(() => {
+        checkAuth();
+    }, [checkAuth]);
 
     const value = {
         user,
         isAuthenticated,
         loading,
+        error,
         login,
-        logout
+        logout,
+        checkAuth
     };
 
     return (

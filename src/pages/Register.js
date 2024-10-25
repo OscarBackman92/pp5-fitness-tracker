@@ -1,231 +1,141 @@
-// src/pages/Register.js
 import React, { useState } from 'react';
-import { Form, Button, Alert, Container, Card } from 'react-bootstrap';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import '../Styles/Register.css';
+import { Form, Button, Card, Alert, Container, Row, Col } from 'react-bootstrap';
+import { useNavigate, Link } from 'react-router-dom';
+import { authApi } from '../services/api/apiService';
 
-function Register() {
-  const { register, login } = useAuth();
-  const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    profile: {
-      name: ''
-    }
-  });
-  const [errors, setErrors] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
-  const [success, setSuccess] = useState('');
+const Register = () => {
+    const [formData, setFormData] = useState({
+        username: '',
+        email: '',
+        password1: '',
+        password2: ''
+    });
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    if (name === 'profile.name') {
-      setFormData(prev => ({
-        ...prev,
-        profile: {
-          ...prev.profile,
-          name: value
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError('');
+        setLoading(true);
+
+        // Validate form
+        if (formData.password1 !== formData.password2) {
+            setError('Passwords do not match');
+            setLoading(false);
+            return;
         }
-      }));
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        [name]: value
-      }));
-    }
-    if (errors[name]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: null,
-        form: null
-      }));
-    }
-  };
 
-  const validateForm = () => {
-    const newErrors = {};
-    
-    if (!formData.username.trim()) {
-      newErrors.username = 'Username is required';
-    } else if (formData.username.length < 3) {
-      newErrors.username = 'Username must be at least 3 characters';
-    }
+        try {
+            // Log the data being sent
+            console.log('Submitting registration data:', formData);
+            
+            const response = await authApi.register(formData);
+            console.log('Registration success:', response);
+            navigate('/login');
+        } catch (error) {
+            console.error('Registration error details:', error.response?.data);
+            
+            // Handle different types of error responses
+            if (error.response?.data) {
+                const errorData = error.response.data;
+                const errorMessage = Object.entries(errorData)
+                    .map(([key, value]) => `${key}: ${value}`)
+                    .join('\n');
+                setError(errorMessage || 'Registration failed');
+            } else {
+                setError('Registration failed. Please try again.');
+            }
+        } finally {
+            setLoading(false);
+        }
+    };
 
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(formData.email)) {
-      newErrors.email = 'Invalid email address';
-    }
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
 
-    if (!formData.password) {
-      newErrors.password = 'Password is required';
-    } else if (formData.password.length < 8) {
-      newErrors.password = 'Password must be at least 8 characters';
-    } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.password)) {
-      newErrors.password = 'Password must contain uppercase, lowercase and numbers';
-    }
+    return (
+        <Container>
+            <Row className="justify-content-md-center mt-5">
+                <Col md={6}>
+                    <Card>
+                        <Card.Body>
+                            <h2 className="text-center mb-4">Register</h2>
+                            {error && (
+                                <Alert variant="danger" style={{ whiteSpace: 'pre-line' }}>
+                                    {error}
+                                </Alert>
+                            )}
+                            <Form onSubmit={handleSubmit}>
+                                <Form.Group className="mb-3">
+                                    <Form.Label>Username</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        name="username"
+                                        value={formData.username}
+                                        onChange={handleChange}
+                                        required
+                                        minLength={3}
+                                    />
+                                </Form.Group>
 
-    if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
-    }
+                                <Form.Group className="mb-3">
+                                    <Form.Label>Email</Form.Label>
+                                    <Form.Control
+                                        type="email"
+                                        name="email"
+                                        value={formData.email}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </Form.Group>
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+                                <Form.Group className="mb-3">
+                                    <Form.Label>Password</Form.Label>
+                                    <Form.Control
+                                        type="password"
+                                        name="password1"
+                                        value={formData.password1}
+                                        onChange={handleChange}
+                                        required
+                                        minLength={8}
+                                    />
+                                </Form.Group>
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validateForm()) return;
+                                <Form.Group className="mb-3">
+                                    <Form.Label>Confirm Password</Form.Label>
+                                    <Form.Control
+                                        type="password"
+                                        name="password2"
+                                        value={formData.password2}
+                                        onChange={handleChange}
+                                        required
+                                        minLength={8}
+                                    />
+                                </Form.Group>
 
-    setIsLoading(true);
-    try {
-      const registrationData = {
-        username: formData.username,
-        email: formData.email,
-        password: formData.password,
-        profile: formData.profile.name ? { name: formData.profile.name } : {}
-      };
-
-      // Register the user
-      await register(registrationData);
-      setSuccess('Registration successful!');
-
-      // Automatically log them in
-      try {
-        await login(formData.username, formData.password);
-        // The login function in context will handle navigation to dashboard
-      } catch (loginError) {
-        // If auto-login fails, navigate to login page
-        setSuccess('Registration successful! Please log in.');
-        setTimeout(() => navigate('/login'), 2000);
-      }
-    } catch (error) {
-      if (typeof error === 'object' && error !== null) {
-        const newErrors = {};
-        Object.entries(error).forEach(([key, value]) => {
-          newErrors[key] = Array.isArray(value) ? value[0] : value;
-        });
-        setErrors(newErrors);
-      } else {
-        setErrors({ 
-          form: error.message || 'Registration failed. Please check your connection and try again.' 
-        });
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  return (
-    <Container className="d-flex justify-content-center align-items-center min-vh-100">
-      <Card className="p-4 shadow auth-card register-card">
-        <h2 className="text-center mb-4">Create an Account</h2>
-        
-        {success && <Alert variant="success">{success}</Alert>}
-        {errors.form && <Alert variant="danger">{errors.form}</Alert>}
-        
-        <Form onSubmit={handleSubmit} noValidate>
-          <Form.Group className="mb-3">
-            <Form.Label>Username</Form.Label>
-            <Form.Control
-              name="username"
-              type="text"
-              value={formData.username}
-              onChange={handleChange}
-              isInvalid={!!errors.username}
-              disabled={isLoading}
-            />
-            <Form.Control.Feedback type="invalid">
-              {errors.username}
-            </Form.Control.Feedback>
-          </Form.Group>
-
-          <Form.Group className="mb-3">
-            <Form.Label>Email</Form.Label>
-            <Form.Control
-              name="email"
-              type="email"
-              value={formData.email}
-              onChange={handleChange}
-              isInvalid={!!errors.email}
-              disabled={isLoading}
-            />
-            <Form.Control.Feedback type="invalid">
-              {errors.email}
-            </Form.Control.Feedback>
-          </Form.Group>
-
-          <Form.Group className="mb-3">
-            <Form.Label>Display Name (Optional)</Form.Label>
-            <Form.Control
-              name="profile.name"
-              type="text"
-              value={formData.profile.name}
-              onChange={handleChange}
-              disabled={isLoading}
-            />
-          </Form.Group>
-
-          <Form.Group className="mb-3">
-            <Form.Label>Password</Form.Label>
-            <Form.Control
-              name="password"
-              type="password"
-              value={formData.password}
-              onChange={handleChange}
-              isInvalid={!!errors.password}
-              disabled={isLoading}
-            />
-            <Form.Control.Feedback type="invalid">
-              {errors.password}
-            </Form.Control.Feedback>
-            <Form.Text className="text-muted">
-              Must be at least 8 characters and include uppercase, lowercase, and numbers
-            </Form.Text>
-          </Form.Group>
-
-          <Form.Group className="mb-4">
-            <Form.Label>Confirm Password</Form.Label>
-            <Form.Control
-              name="confirmPassword"
-              type="password"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              isInvalid={!!errors.confirmPassword}
-              disabled={isLoading}
-            />
-            <Form.Control.Feedback type="invalid">
-              {errors.confirmPassword}
-            </Form.Control.Feedback>
-          </Form.Group>
-
-          <Button 
-            variant="primary" 
-            type="submit" 
-            disabled={isLoading} 
-            className="w-100 mb-3"
-          >
-            {isLoading ? (
-              <>
-                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                Creating Account...
-              </>
-            ) : (
-              'Create Account'
-            )}
-          </Button>
-        </Form>
-
-        <div className="text-center mt-3">
-          Already have an account? <Link to="/login">Log in</Link>
-        </div>
-      </Card>
-    </Container>
-  );
-}
+                                <Button 
+                                    className="w-100" 
+                                    type="submit"
+                                    disabled={loading}
+                                >
+                                    {loading ? 'Registering...' : 'Register'}
+                                </Button>
+                            </Form>
+                            <div className="w-100 text-center mt-2">
+                                Already have an account? <Link to="/login">Log In</Link>
+                            </div>
+                        </Card.Body>
+                    </Card>
+                </Col>
+            </Row>
+        </Container>
+    );
+};
 
 export default Register;

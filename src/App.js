@@ -1,8 +1,8 @@
+// src/App.js
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Container } from 'react-bootstrap';
 import { AuthProvider } from './context/AuthContext';
-import { WorkoutProvider } from './context/WorkoutContext';
 import Navbar from './components/Navbar';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -14,33 +14,31 @@ function App() {
   return (
     <Router>
       <AuthProvider>
-        <WorkoutProvider>
-          <div className="App">
-            <Navbar />
-            <Container className="mt-5 pt-3">
-              <Routes>
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-                <Route
-                  path="/"
-                  element={
-                    <PrivateRoute>
-                      <Dashboard />
-                    </PrivateRoute>
-                  }
-                />
-                <Route
-                  path="/dashboard"
-                  element={
-                    <PrivateRoute>
-                      <Dashboard />
-                    </PrivateRoute>
-                  }
-                />
-              </Routes>
-            </Container>
-          </div>
-        </WorkoutProvider>
+        <div className="App">
+          <Navbar />
+          <Container className="mt-5 pt-3">
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route
+                path="/"
+                element={
+                  <PrivateRoute>
+                    <Dashboard />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/dashboard"
+                element={
+                  <PrivateRoute>
+                    <Dashboard />
+                  </PrivateRoute>
+                }
+              />
+            </Routes>
+          </Container>
+        </div>
       </AuthProvider>
     </Router>
   );
