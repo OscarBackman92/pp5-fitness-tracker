@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Form, Button, Card, Alert, Container, Row, Col } from 'react-bootstrap';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import axiosInstance from '../services/api';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -27,19 +28,23 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      setError('');
-      setLoading(true);
-      const response = await login(formData.username, formData.password);
-      if (response?.key) {
-        localStorage.setItem('access_token', response.key);
-        navigate(from, { replace: true }); // Navigate to intended page
-      }
+        setError('');
+        setLoading(true);
+        const response = await login(formData.username, formData.password);
+        if (response?.key) {
+            // Make sure to store the token with 'Token' prefix
+            const token = response.key;
+            localStorage.setItem('access_token', token);
+            // Update axios instance headers immediately
+            axiosInstance.defaults.headers.common['Authorization'] = `Token ${token}`;
+            navigate(from, { replace: true });
+        }
     } catch (err) {
-      setError(err.response?.data?.detail || 'Failed to login');
+        setError(err.response?.data?.detail || 'Failed to login');
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
-  };
+};;
 
   return (
     <Container>

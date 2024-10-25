@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../services/api';
 
 const AuthContext = createContext(null);
@@ -7,40 +8,35 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
     const login = async (username, password) => {
         try {
-          const response = await axiosInstance.post('/auth/login/', {
-            username,
-            password,
-          });
-          
-          if (response.data.key) {
-            // Set token in axios defaults for subsequent requests
-            axiosInstance.defaults.headers.common['Authorization'] = `Token ${response.data.key}`;
+            const response = await axiosInstance.post('/auth/login/', {
+                username,
+                password,
+            });
+            localStorage.setItem('access_token', response.data.key);
             setUser({ username });
             setIsAuthenticated(true);
-          }
-          return response.data;
+            return response.data;
         } catch (error) {
-          throw error;
+            throw error;
         }
-      };
+    };
 
     const logout = useCallback(async () => {
         try {
             await axiosInstance.post('/auth/logout/');
-            localStorage.removeItem('access_token');
-            setUser(null);
-            setIsAuthenticated(false);
         } catch (error) {
             console.error('Logout error:', error);
-            // Clear user data even if logout fails
+        } finally {
             localStorage.removeItem('access_token');
             setUser(null);
             setIsAuthenticated(false);
+            navigate('/login');
         }
-    }, []);
+    }, [navigate]);
 
     useEffect(() => {
         const checkAuth = async () => {
