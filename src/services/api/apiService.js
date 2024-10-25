@@ -23,7 +23,29 @@ export const authApi = {
             throw error;
         }
     },
-    logout: () => axiosInstance.post(API_ENDPOINTS.AUTH.LOGOUT),
+
+    // Add the register function
+    register: async (userData) => {
+        try {
+            const formattedData = {
+                username: userData.username,
+                email: userData.email,
+                password: userData.password1,  // Changed from password1 to password
+                password2: userData.password2
+            };
+            console.log('Sending registration data:', formattedData);
+            return await axiosInstance.post(API_ENDPOINTS.AUTH.REGISTER, formattedData);
+        } catch (error) {
+            console.error('Registration error:', error.response?.data);
+            if (error.response?.data?.password) {
+                // Handle specific password field errors
+                throw new Error(`Password error: ${error.response.data.password.join(', ')}`);
+            }
+            throw error;
+        }
+    },
+
+    logout: () => axiosInstance.post(API_ENDPOINTS.AUTH.LOGOUT)
 };
 
 export const profileApi = {

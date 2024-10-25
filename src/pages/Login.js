@@ -1,7 +1,7 @@
 // src/pages/Login.js
-import React, { useState } from 'react';
-import { Form, Button, Card, Alert, Container, Row, Col } from 'react-bootstrap';
-import { useNavigate, Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Form, Button, Card, Alert, Container, Row, Col, Spinner } from 'react-bootstrap';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const Login = () => {
@@ -12,28 +12,63 @@ const Login = () => {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-    const { login } = useAuth();
+    const location = useLocation();
+    const { login, isAuthenticated } = useAuth();
+
+    // Redirect if already logged in
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate('/dashboard');
+        }
+    }, [isAuthenticated, navigate]);
 
     const handleChange = (e) => {
-        setFormData({
-            ...formData,
+        setFormData(prev => ({
+            ...prev,
             [e.target.name]: e.target.value
-        });
+        }));
+        // Clear error when user starts typing
+        if (error) setError('');
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (!formData.username || !formData.password) {
+            setError('Please fill in all fields');
+            return;
+        }
+
         try {
             setError('');
             setLoading(true);
+            console.log('Attempting login with:', formData.username);
             await login(formData.username, formData.password);
-            navigate('/dashboard');
+            
+            // Get the redirect path from location state or default to dashboard
+            const from = location.state?.from || '/dashboard';
+            navigate(from, { replace: true });
         } catch (err) {
-            setError(err.response?.data?.detail || 'Failed to login');
+            console.error('Login error:', err);
+            if (err.response?.status === 400) {
+                setError('Invalid username or password');
+            } else if (err.response?.status === 429) {
+                setError('Too many login attempts. Please try again later.');
+            } else {
+                setError(err.response?.data?.detail || 'Failed to login. Please try again.');
+            }
         } finally {
             setLoading(false);
         }
     };
+
+    if (isAuthenticated) {
+        return (
+            <Container className="text-center mt-5">
+                <Spinner animation="border" />
+                <p>Redirecting...</p>
+            </Container>
+        );
+    }
 
     return (
         <Container>
@@ -42,7 +77,15 @@ const Login = () => {
                     <Card>
                         <Card.Body>
                             <h2 className="text-center mb-4">Log In</h2>
-                            {error && <Alert variant="danger">{error}</Alert>}
+                            {error && (
+                                <Alert 
+                                    variant="danger" 
+                                    onClose={() => setError('')} 
+                                    dismissible
+                                >
+                                    {error}
+                                </Alert>
+                            )}
                             <Form onSubmit={handleSubmit}>
                                 <Form.Group className="mb-3">
                                     <Form.Label>Username</Form.Label>
@@ -52,6 +95,8 @@ const Login = () => {
                                         value={formData.username}
                                         onChange={handleChange}
                                         required
+                                        disabled={loading}
+                                        autoComplete="username"
                                     />
                                 </Form.Group>
 
@@ -63,6 +108,8 @@ const Login = () => {
                                         value={formData.password}
                                         onChange={handleChange}
                                         required
+                                        disabled={loading}
+                                        autoComplete="current-password"
                                     />
                                 </Form.Group>
 
@@ -71,7 +118,21 @@ const Login = () => {
                                     type="submit"
                                     disabled={loading}
                                 >
-                                    {loading ? 'Logging in...' : 'Log In'}
+                                    {loading ? (
+                                        <>
+                                            <Spinner
+                                                as="span"
+                                                animation="border"
+                                                size="sm"
+                                                role="status"
+                                                aria-hidden="true"
+                                                className="me-2"
+                                            />
+                                            Logging in...
+                                        </>
+                                    ) : (
+                                        'Log In'
+                                    )}
                                 </Button>
                             </Form>
                             <div className="text-center mt-3">
