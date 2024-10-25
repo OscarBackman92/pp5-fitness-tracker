@@ -1,7 +1,6 @@
-// src/pages/Login.js
 import React, { useState } from 'react';
 import { Form, Button, Card, Alert, Container, Row, Col } from 'react-bootstrap';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const Login = () => {
@@ -12,9 +11,12 @@ const Login = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { login } = useAuth();
 
-  // Add handleChange function
+  // Get the intended destination or default to dashboard
+  const from = location.state?.from || '/dashboard';
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -30,7 +32,7 @@ const Login = () => {
       const response = await login(formData.username, formData.password);
       if (response?.key) {
         localStorage.setItem('access_token', response.key);
-        navigate('/'); // Redirect to home/main page first
+        navigate(from, { replace: true }); // Navigate to intended page
       }
     } catch (err) {
       setError(err.response?.data?.detail || 'Failed to login');
