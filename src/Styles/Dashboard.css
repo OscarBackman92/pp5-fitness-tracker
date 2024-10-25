@@ -1,123 +1,190 @@
-/* src/Styles/Dashboard.css */
+/* src/styles/Dashboard.css */
 .dashboard-wrapper {
   padding: 20px 0;
   background-color: #f8f9fa;
   min-height: calc(100vh - 56px);
+  margin-top: 56px; /* Account for fixed navbar */
 }
 
-.welcome-text {
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: #2c3e50;
-  margin-bottom: 0.5rem;
-}
-
-.primary-action-card {
-  background-color: #fff;
+.stats-card {
+  background: white;
+  border-radius: 12px;
   border: none;
-  border-radius: 10px;
-  box-shadow: 0 2px 15px rgba(0,0,0,0.1);
-  margin-bottom: 2rem;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
 }
 
-.main-action-button {
-  padding: 0.8rem 2.5rem;
-  font-size: 1.1rem;
-}
-
-.stat-card {
-  background-color: #fff;
-  border: none;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  transition: transform 0.2s ease;
-}
-
-.stat-card:hover {
+.stats-card:hover {
   transform: translateY(-5px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
-.stat-number {
-  font-size: 1.8rem;
-  font-weight: 700;
+.stats-icon {
+  width: 48px;
+  height: 48px;
+  padding: 10px;
+  border-radius: 12px;
+  background: rgba(52, 152, 219, 0.1);
   color: #3498db;
-  margin-bottom: 0.5rem;
+  margin-bottom: 15px;
 }
 
-.stat-label {
-  color: #7f8c8d;
-  text-transform: uppercase;
-  font-size: 0.9rem;
-  letter-spacing: 1px;
-  margin: 0;
-}
-
-.section-title {
-  font-size: 1.5rem;
-  font-weight: 600;
+.stats-value {
+  font-size: 28px;
+  font-weight: 700;
   color: #2c3e50;
-  margin-bottom: 1.5rem;
+  margin-bottom: 5px;
+}
+
+.stats-label {
+  color: #7f8c8d;
+  font-size: 14px;
+  font-weight: 500;
 }
 
 .workout-card {
-  background-color: #fff;
+  background: white;
+  border-radius: 12px;
   border: none;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  transition: transform 0.2s ease;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  height: 100%;
 }
 
 .workout-card:hover {
-  transform: translateY(-3px);
+  transform: translateY(-5px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
-.quick-link-card {
-  background-color: #fff;
-  border: none;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  transition: transform 0.2s ease;
+.workout-type-badge {
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 20px;
 }
 
-.quick-link-card:hover {
-  transform: translateY(-3px);
+.workout-date {
+  color: #95a5a6;
+  font-size: 13px;
 }
 
-.btn-primary {
-  background-color: #3498db;
-  border-color: #3498db;
+.workout-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 10px 0;
 }
 
-.btn-primary:hover {
-  background-color: #2980b9;
-  border-color: #2980b9;
+.workout-stats {
+  font-size: 13px;
+  color: #7f8c8d;
 }
 
-.btn-outline-primary {
-  color: #3498db;
-  border-color: #3498db;
+.quick-actions {
+  margin: 20px 0;
 }
 
-.btn-outline-primary:hover {
-  background-color: #3498db;
-  border-color: #3498db;
-  color: #fff;
+.welcome-section {
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  color: white;
+  padding: 30px;
+  border-radius: 12px;
+  margin-bottom: 30px;
 }
 
+.welcome-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.section-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 30px 0 20px 0;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.empty-state-icon {
+  font-size: 48px;
+  color: #bdc3c7;
+  margin-bottom: 20px;
+}
+
+.empty-state-text {
+  color: #7f8c8d;
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+/* Loading state styles */
+.loading-state {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.loading-spinner {
+  margin-bottom: 15px;
+}
+
+/* Responsive adjustments */
 @media (max-width: 768px) {
-  .welcome-text {
-      font-size: 2rem;
-  }
-
-  .stat-number {
-      font-size: 1.5rem;
-  }
-
   .dashboard-wrapper {
-      padding: 10px;
+      padding: 15px;
   }
 
-  .primary-action-card {
-      margin-bottom: 1rem;
+  .stats-value {
+      font-size: 24px;
   }
+
+  .welcome-title {
+      font-size: 20px;
+  }
+
+  .section-title {
+      font-size: 18px;
+  }
+
+  .workout-card {
+      margin-bottom: 15px;
+  }
+
+  .stats-card {
+      margin-bottom: 15px;
+  }
+}
+
+/* Button styles */
+.btn-action {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-action:hover {
+  transform: translateY(-2px);
+}
+
+/* Color utilities */
+.text-highlight {
+  color: #3498db;
+}
+
+.bg-highlight {
+  background-color: #3498db;
+}
+
+/* Card hover effects */
+.hover-effect {
+  transition: all 0.3s ease;
+}
+
+.hover-effect:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }

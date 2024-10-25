@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useWorkouts } from '../context/WorkoutContext';
 import { Activity, Calendar, Clock, Flame } from 'lucide-react';
+import '../Styles/Dashboard.css';
 
 const Dashboard = () => {
     const { user, logout } = useAuth();
