@@ -52,6 +52,13 @@ const Dashboard = () => {
                         </Card>
                     </Col>
                 ))}
+                {workouts.length === 0 && !loading && !error && (
+                    <Col xs={12}>
+                        <Alert variant="info">
+                            No workouts found. Create your first workout!
+                        </Alert>
+                    </Col>
+                )}
             </Row>
         </Container>
     );
