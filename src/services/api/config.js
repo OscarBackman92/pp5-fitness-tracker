@@ -5,7 +5,6 @@ export const API_ENDPOINTS = {
         LOGIN: '/auth/login/',
         LOGOUT: '/auth/logout/',
         REGISTER: '/auth/register/',
-        REFRESH: '/auth/token/refresh/',
     },
     WORKOUTS: {
         LIST: '/workouts/',
@@ -18,4 +17,4 @@ export const API_ENDPOINTS = {
         ME: '/profiles/me/',
         LIST: '/profiles/',
     }
-}
+};
