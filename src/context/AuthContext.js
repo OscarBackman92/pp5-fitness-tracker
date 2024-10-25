@@ -3,6 +3,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import { useNavigate } from 'react-router-dom';
 import { authApi, profileApi } from '../services/api/apiService';
 import axiosInstance from '../services/api/axiosInstance';
+import { API_ENDPOINTS } from '../services/api/config';  
 
 const AuthContext = createContext(null);
 
@@ -16,25 +17,41 @@ export const AuthProvider = ({ children }) => {
     const login = async (username, password) => {
         try {
             setError(null);
+            console.log('Starting login process...');
+            
             const response = await authApi.login({ username, password });
+            console.log('Login response:', response.data);
             
             if (response.data?.key) {
                 const token = response.data.key;
+                // Store raw token
                 localStorage.setItem('access_token', token);
-                axiosInstance.defaults.headers.common['Authorization'] = `Token ${token}`;
+                // Set as Bearer token
+                axiosInstance.defaults.headers['Authorization'] = `Bearer ${token}`;
                 
-                // Get user profile after successful login
-                const userProfile = await profileApi.getMe();
-                setUser(userProfile.data);
-                setIsAuthenticated(true);
-                return response.data;
+                try {
+                    console.log('Fetching profile...');
+                    const userProfile = await profileApi.getMe();
+                    console.log('Profile response:', userProfile.data);
+                    setUser(userProfile.data);
+                    setIsAuthenticated(true);
+                    return response.data;
+                } catch (profileError) {
+                    console.error('Profile fetch error:', {
+                        status: profileError.response?.status,
+                        data: profileError.response?.data,
+                        headers: profileError.config?.headers
+                    });
+                    // Don't throw or clear token
+                    setError('Failed to fetch profile data');
+                }
             }
         } catch (error) {
-            console.error('Login error:', error);
+            console.error('Login error:', error.response?.data);
             setError(error.response?.data?.detail || 'Login failed');
-            throw error;
         }
     };
+    
 
     const logout = useCallback(async () => {
         try {
@@ -55,18 +72,27 @@ export const AuthProvider = ({ children }) => {
 
     const checkAuth = useCallback(async () => {
         const token = localStorage.getItem('access_token');
+        console.log('Checking auth with token:', token ? 'exists' : 'none');
+        
         if (token) {
             try {
-                axiosInstance.defaults.headers.common['Authorization'] = `Token ${token}`;
+                // Set as Bearer token
+                axiosInstance.defaults.headers['Authorization'] = `Bearer ${token}`;
                 const userProfile = await profileApi.getMe();
+                console.log('Auth check succeeded:', userProfile.data);
                 setUser(userProfile.data);
                 setIsAuthenticated(true);
             } catch (error) {
-                console.error('Auth check failed:', error);
-                localStorage.removeItem('access_token');
-                delete axiosInstance.defaults.headers.common['Authorization'];
-                setUser(null);
-                setIsAuthenticated(false);
+                console.error('Auth check failed:', {
+                    status: error.response?.status,
+                    data: error.response?.data
+                });
+                if (error.response?.status === 401 || error.response?.status === 403) {
+                    localStorage.removeItem('access_token');
+                    delete axiosInstance.defaults.headers['Authorization'];
+                    setUser(null);
+                    setIsAuthenticated(false);
+                }
             }
         }
         setLoading(false);

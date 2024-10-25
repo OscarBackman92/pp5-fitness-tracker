@@ -5,29 +5,35 @@ import { API_ENDPOINTS } from './config';
 export const workoutApi = {
     getAll: () => axiosInstance.get(API_ENDPOINTS.WORKOUTS.LIST),
     getById: (id) => axiosInstance.get(API_ENDPOINTS.WORKOUTS.DETAIL(id)),
-    create: (data) => axiosInstance.post(API_ENDPOINTS.WORKOUTS.CREATE, data),
+    create: (data) => axiosInstance.post(API_ENDPOINTS.WORKOUTS.LIST, data), // Using LIST since it's the same endpoint
     update: (id, data) => axiosInstance.put(API_ENDPOINTS.WORKOUTS.UPDATE(id), data),
-    delete: (id) => axiosInstance.delete(API_ENDPOINTS.WORKOUTS.DELETE(id)),
+    delete: (id) => axiosInstance.delete(API_ENDPOINTS.WORKOUTS.DELETE(id))
 };
 
 export const authApi = {
-    login: (credentials) => axiosInstance.post(API_ENDPOINTS.AUTH.LOGIN, credentials),
-    logout: () => axiosInstance.post(API_ENDPOINTS.AUTH.LOGOUT),
-    register: (userData) => {
-        const formattedData = {
-            username: userData.username,
-            email: userData.email,
-            password: userData.password1,
-            password2: userData.password2
-        };
-        return axiosInstance.post(API_ENDPOINTS.AUTH.REGISTER, formattedData);
+    login: async (credentials) => {
+        try {
+            const response = await axiosInstance.post(API_ENDPOINTS.AUTH.LOGIN, credentials);
+            if (response.data?.key) {
+                // Store the raw token
+                localStorage.setItem('access_token', response.data.key);
+                // Set the token in axios defaults
+                axiosInstance.defaults.headers['Authorization'] = `Token ${response.data.key}`;
+            }
+            return response;
+        } catch (error) {
+            console.error('Login error:', error.response?.data);
+            throw error;
+        }
     },
-    refreshToken: () => axiosInstance.post(API_ENDPOINTS.AUTH.REFRESH),
+    logout: () => axiosInstance.post(API_ENDPOINTS.AUTH.LOGOUT)
 };
 
 export const profileApi = {
-    getMe: () => axiosInstance.get(API_ENDPOINTS.PROFILES.ME),
-    getById: (id) => axiosInstance.get(API_ENDPOINTS.PROFILES.DETAIL(id)),
+    getMe: () => {
+        console.log('Getting profile from:', API_ENDPOINTS.PROFILES.ME);
+        return axiosInstance.get(API_ENDPOINTS.PROFILES.ME);
+    },
     updateMe: (data) => axiosInstance.put(API_ENDPOINTS.PROFILES.ME, data),
-    getAll: () => axiosInstance.get(API_ENDPOINTS.PROFILES.LIST),
+    getAll: () => axiosInstance.get(API_ENDPOINTS.PROFILES.LIST)
 };
