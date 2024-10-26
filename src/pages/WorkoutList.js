@@ -1,31 +1,50 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Alert, Spinner, Container } from 'react-bootstrap'; // Removed unused Button import
+import { Table, Alert, Spinner, Container, Button, Modal } from 'react-bootstrap';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useWorkouts } from '../context/WorkoutContext';
 
 function WorkoutList() {
-    const { workouts, loading, error, fetchWorkouts } = useWorkouts();
+    const { workouts, loading, error, fetchWorkouts, deleteWorkout } = useWorkouts();
     const location = useLocation();
     const [successMessage, setSuccessMessage] = useState('');
     const navigate = useNavigate();
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [workoutToDelete, setWorkoutToDelete] = useState(null);
+    const [deleteLoading, setDeleteLoading] = useState(false);
 
     useEffect(() => {
-        console.log('WorkoutList mounted, fetching workouts...');
         fetchWorkouts().catch(err => {
             console.error('Error fetching workouts:', err);
         });
-    }, [fetchWorkouts]); // Added fetchWorkouts to dependency array
+    }, [fetchWorkouts]);
 
-    // Handle success message from location state
     useEffect(() => {
         if (location.state?.message) {
             setSuccessMessage(location.state.message);
-            // Clear the message from navigation state
             navigate(location.pathname, { replace: true });
         }
     }, [location, navigate]);
 
-    console.log('Current workouts in state:', workouts);
+    const handleDeleteClick = (workout) => {
+        setWorkoutToDelete(workout);
+        setShowDeleteModal(true);
+    };
+
+    const handleDeleteConfirm = async () => {
+        if (!workoutToDelete) return;
+
+        setDeleteLoading(true);
+        try {
+            await deleteWorkout(workoutToDelete.id);
+            setSuccessMessage('Workout deleted successfully!');
+            setShowDeleteModal(false);
+        } catch (error) {
+            console.error('Error deleting workout:', error);
+        } finally {
+            setDeleteLoading(false);
+            setWorkoutToDelete(null);
+        }
+    };
 
     if (loading) {
         return (
@@ -89,12 +108,59 @@ function WorkoutList() {
                                     >
                                         View
                                     </Link>
+                                    <Button
+                                        variant="danger"
+                                        size="sm"
+                                        onClick={() => handleDeleteClick(workout)}
+                                    >
+                                        Delete
+                                    </Button>
                                 </td>
                             </tr>
                         ))}
                     </tbody>
                 </Table>
             )}
+
+            {/* Delete Confirmation Modal */}
+            <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Confirm Delete</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    Are you sure you want to delete this workout? This action cannot be undone.
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button 
+                        variant="secondary" 
+                        onClick={() => setShowDeleteModal(false)}
+                        disabled={deleteLoading}
+                    >
+                        Cancel
+                    </Button>
+                    <Button 
+                        variant="danger" 
+                        onClick={handleDeleteConfirm}
+                        disabled={deleteLoading}
+                    >
+                        {deleteLoading ? (
+                            <>
+                                <Spinner
+                                    as="span"
+                                    animation="border"
+                                    size="sm"
+                                    role="status"
+                                    aria-hidden="true"
+                                    className="me-2"
+                                />
+                                Deleting...
+                            </>
+                        ) : (
+                            'Delete Workout'
+                        )}
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </Container>
     );
 }
