@@ -8,6 +8,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import LogWorkout from './pages/LogWorkout';
+import EditWorkout from './pages/EditWorkout';
 import WorkoutList from './pages/WorkoutList';
 import WorkoutDetails from './pages/WorkoutDetails';
 import PrivateRoute from './components/PrivateRoute';
@@ -45,6 +46,14 @@ function App() {
                   element={
                     <PrivateRoute>
                       <WorkoutDetails />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  path="/workouts/edit/:id"
+                  element={
+                    <PrivateRoute>
+                      <EditWorkout />
                     </PrivateRoute>
                   }
                 />

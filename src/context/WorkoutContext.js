@@ -146,11 +146,18 @@ export const WorkoutProvider = ({ children }) => {
     const updateWorkout = useCallback(async (id, workoutData) => {
         try {
             dispatch({ type: WORKOUT_ACTIONS.SET_LOADING });
+            console.log('Updating workout:', id, workoutData);
             const response = await workoutApi.update(id, workoutData);
+            console.log('Update response:', response);
+            
             dispatch({ 
                 type: WORKOUT_ACTIONS.UPDATE_WORKOUT, 
                 payload: response.data 
             });
+            
+            // Fetch updated list after update
+            await fetchWorkouts();
+            
             return response.data;
         } catch (error) {
             console.error('Error updating workout:', error);
@@ -160,7 +167,7 @@ export const WorkoutProvider = ({ children }) => {
             });
             throw error;
         }
-    }, []);
+    }, [fetchWorkouts]);
 
     const deleteWorkout = useCallback(async (id) => {
         try {
