@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect  } from 'react';
 import { Table, Button, Alert, Spinner, Container } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { useWorkouts } from '../context/WorkoutContext';
@@ -7,13 +7,17 @@ import '../Styles/WorkoutList.css';
 function WorkoutList() {
   const { workouts, loading, error, fetchWorkouts, deleteWorkout } = useWorkouts();
   const [deleting, setDeleting] = useState(null);
-  const [localError, setLocalError] = useState('');  // Add local error state
+  const [localError, setLocalError] = useState('');
+  const initialFetchRef = React.useRef(false);
 
   useEffect(() => {
-    fetchWorkouts().catch(err => {
-      setLocalError('Failed to fetch workouts');
-    });
-  }, [fetchWorkouts]);
+    if (!initialFetchRef.current) {
+      initialFetchRef.current = true;
+      fetchWorkouts().catch(err => {
+        setLocalError('Failed to fetch workouts');
+      });
+    }
+  }, [fetchWorkouts]); // Include fetchWorkouts in dependencies
 
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this workout?')) {
@@ -28,7 +32,6 @@ function WorkoutList() {
       }
     }
   };
-
   if (loading) return (
     <div className="workout-spinner">
       <Spinner animation="border" />

@@ -70,9 +70,14 @@ export const WorkoutContext = createContext(null);
 
 export const WorkoutProvider = ({ children }) => {
     const [state, dispatch] = useReducer(workoutReducer, initialState);
+    const fetchInProgress = React.useRef(false);
 
     const fetchWorkouts = useCallback(async () => {
+        // Prevent multiple concurrent fetches
+        if (fetchInProgress.current) return;
+        
         try {
+            fetchInProgress.current = true;
             dispatch({ type: WORKOUT_ACTIONS.SET_LOADING });
             const response = await workoutApi.getAll();
             dispatch({ 
@@ -85,6 +90,8 @@ export const WorkoutProvider = ({ children }) => {
                 payload: error.response?.data?.detail || 'Failed to fetch workouts' 
             });
             throw error;
+        } finally {
+            fetchInProgress.current = false;
         }
     }, []);
 
