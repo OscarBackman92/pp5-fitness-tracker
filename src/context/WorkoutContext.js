@@ -106,12 +106,30 @@ export const WorkoutProvider = ({ children }) => {
         }
     }, []);
 
+    const deleteWorkout = useCallback(async (id) => {
+        try {
+            dispatch({ type: WORKOUT_ACTIONS.SET_LOADING });
+            await workoutApi.delete(id);
+            dispatch({ 
+                type: WORKOUT_ACTIONS.DELETE_WORKOUT, 
+                payload: id 
+            });
+        } catch (error) {
+            dispatch({ 
+                type: WORKOUT_ACTIONS.SET_ERROR, 
+                payload: error.response?.data?.detail || 'Failed to delete workout' 
+            });
+            throw error;
+        }
+    }, []);
+
     const value = {
         workouts: state.workouts,
         loading: state.loading,
         error: state.error,
         fetchWorkouts,
-        createWorkout
+        createWorkout,
+        deleteWorkout
     };
 
     return (

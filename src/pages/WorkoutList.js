@@ -1,42 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Button, Alert, Spinner, Container } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import { getWorkouts, deleteWorkout } from '../services/workouts';
+import { useWorkouts } from '../context/WorkoutContext';
 import '../Styles/WorkoutList.css';
 
 function WorkoutList() {
-  const [workouts, setWorkouts] = useState([]);
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(true);
+  const { workouts, loading, error, fetchWorkouts, deleteWorkout } = useWorkouts();
   const [deleting, setDeleting] = useState(null);
+  const [localError, setLocalError] = useState('');  // Add local error state
 
   useEffect(() => {
-    fetchWorkouts();
-  }, []);
-
-  const fetchWorkouts = async () => {
-    try {
-      setLoading(true);
-      setError('');
-      const data = await getWorkouts();
-      setWorkouts(Array.isArray(data) ? data : data.results || []);
-    } catch (error) {
-      console.error('Error fetching workouts:', error);
-      setError('Failed to load workouts. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
+    fetchWorkouts().catch(err => {
+      setLocalError('Failed to fetch workouts');
+    });
+  }, [fetchWorkouts]);
 
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this workout?')) {
       try {
         setDeleting(id);
         await deleteWorkout(id);
-        setWorkouts(workouts.filter(workout => workout.id !== id));
       } catch (error) {
         console.error('Error deleting workout:', error);
-        setError('Failed to delete workout. Please try again.');
+        setLocalError('Failed to delete workout. Please try again.');
       } finally {
         setDeleting(null);
       }
@@ -55,7 +41,15 @@ function WorkoutList() {
         <h2>Your Workouts</h2>
         <Link to="/workouts/new" className="btn btn-primary">Log New Workout</Link>
       </div>
-      {error && <Alert variant="danger" onClose={() => setError('')} dismissible>{error}</Alert>}
+      {(error || localError) && (
+        <Alert 
+          variant="danger" 
+          onClose={() => setLocalError('')} 
+          dismissible
+        >
+          {error || localError}
+        </Alert>
+      )}
       {workouts.length === 0 ? (
         <div className="no-workouts-alert">
           <Alert variant="info">No workouts logged yet. Start by logging a new workout!</Alert>

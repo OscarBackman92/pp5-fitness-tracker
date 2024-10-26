@@ -7,6 +7,8 @@ import NavBar from './components/NavBar';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+import LogWorkout from './pages/LogWorkout';
+import WorkoutList from './pages/WorkoutList';
 import PrivateRoute from './components/PrivateRoute';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -21,6 +23,23 @@ function App() {
               <Routes>
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+                {/* Add these new routes */}
+                <Route
+                  path="/workouts"
+                  element={
+                    <PrivateRoute>
+                      <WorkoutList />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  path="/workouts/new"
+                  element={
+                    <PrivateRoute>
+                      <LogWorkout />
+                    </PrivateRoute>
+                  }
+                />
                 <Route
                   path="/"
                   element={

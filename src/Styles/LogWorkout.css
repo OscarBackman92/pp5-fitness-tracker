@@ -1,58 +1,81 @@
+/* src/styles/LogWorkout.css */
 .log-workout-container {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 20px;
+  padding: 2rem 0;
+  margin-top: 56px; /* Account for fixed navbar */
+}
+
+.workout-form-card {
+  background: white;
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+}
+
+.form-title {
+  color: #2c3e50;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-label {
+  font-weight: 500;
+  color: #2c3e50;
+}
+
+.form-control:focus {
+  border-color: #3498db;
+  box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+}
+
+.btn-primary {
+  padding: 0.5rem 1.5rem;
+}
+
+.btn-primary:disabled {
+  background-color: #bdc3c7;
+  border-color: #bdc3c7;
+}
+
+/* Icons styling */
+.icon-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  color: #3498db;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .log-workout-container {
+      padding: 1rem;
   }
-  
-  .log-workout-title {
-    font-size: 2rem;
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 1.5rem;
-    text-align: center;
-  }
-  
-  .log-workout-form {
-    background-color: #f8f9fa;
-    padding: 2rem;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  
-  .form-group {
-    margin-bottom: 1.5rem;
-  }
-  
-  .form-label {
-    font-weight: 600;
-    color: #495057;
-  }
-  
-  .form-control {
-    border-radius: 5px;
-  }
-  
-  .form-control:focus {
-    border-color: #80bdff;
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-  }
-  
-  .btn-submit {
-    width: 100%;
-    padding: 10px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    transition: all 0.3s ease;
-  }
-  
-  .btn-submit:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
-  }
-  
-  .error-alert {
-    margin-top: 1rem;
-    margin-bottom: 1rem;
-  }
+}
+
+/* Loading state */
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Form validation styles */
+.invalid-feedback {
+  font-size: 0.875rem;
+}
+
+/* Card hover effect */
+.workout-form-card:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  transition: box-shadow 0.3s ease;
+}
