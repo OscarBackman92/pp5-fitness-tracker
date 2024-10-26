@@ -1,100 +1,102 @@
-import React, { useState, useEffect  } from 'react';
-import { Table, Button, Alert, Spinner, Container } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Table, Alert, Spinner, Container } from 'react-bootstrap'; // Removed unused Button import
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useWorkouts } from '../context/WorkoutContext';
-import '../Styles/WorkoutList.css';
 
 function WorkoutList() {
-  const { workouts, loading, error, fetchWorkouts, deleteWorkout } = useWorkouts();
-  const [deleting, setDeleting] = useState(null);
-  const [localError, setLocalError] = useState('');
-  const initialFetchRef = React.useRef(false);
+    const { workouts, loading, error, fetchWorkouts } = useWorkouts();
+    const location = useLocation();
+    const [successMessage, setSuccessMessage] = useState('');
+    const navigate = useNavigate();
 
-  useEffect(() => {
-    if (!initialFetchRef.current) {
-      initialFetchRef.current = true;
-      fetchWorkouts().catch(err => {
-        setLocalError('Failed to fetch workouts');
-      });
+    useEffect(() => {
+        console.log('WorkoutList mounted, fetching workouts...');
+        fetchWorkouts().catch(err => {
+            console.error('Error fetching workouts:', err);
+        });
+    }, [fetchWorkouts]); // Added fetchWorkouts to dependency array
+
+    // Handle success message from location state
+    useEffect(() => {
+        if (location.state?.message) {
+            setSuccessMessage(location.state.message);
+            // Clear the message from navigation state
+            navigate(location.pathname, { replace: true });
+        }
+    }, [location, navigate]);
+
+    console.log('Current workouts in state:', workouts);
+
+    if (loading) {
+        return (
+            <div className="d-flex justify-content-center align-items-center p-5">
+                <Spinner animation="border" />
+            </div>
+        );
     }
-  }, [fetchWorkouts]); // Include fetchWorkouts in dependencies
 
-  const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this workout?')) {
-      try {
-        setDeleting(id);
-        await deleteWorkout(id);
-      } catch (error) {
-        console.error('Error deleting workout:', error);
-        setLocalError('Failed to delete workout. Please try again.');
-      } finally {
-        setDeleting(null);
-      }
-    }
-  };
-  if (loading) return (
-    <div className="workout-spinner">
-      <Spinner animation="border" />
-    </div>
-  );
+    return (
+        <Container>
+            <div className="d-flex justify-content-between align-items-center mb-4">
+                <h2>Your Workouts</h2>
+                <Link to="/workouts/new" className="btn btn-primary">
+                    Log New Workout
+                </Link>
+            </div>
 
-  return (
-    <Container className="workout-list-container">
-      <div className="workout-list-header">
-        <h2>Your Workouts</h2>
-        <Link to="/workouts/new" className="btn btn-primary">Log New Workout</Link>
-      </div>
-      {(error || localError) && (
-        <Alert 
-          variant="danger" 
-          onClose={() => setLocalError('')} 
-          dismissible
-        >
-          {error || localError}
-        </Alert>
-      )}
-      {workouts.length === 0 ? (
-        <div className="no-workouts-alert">
-          <Alert variant="info">No workouts logged yet. Start by logging a new workout!</Alert>
-        </div>
-      ) : (
-        <Table responsive striped bordered hover className="workout-table">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Type</th>
-              <th>Duration</th>
-              <th>Calories</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {workouts.map((workout) => (
-              <tr key={workout.id}>
-                <td>{new Date(workout.date_logged).toLocaleDateString()}</td>
-                <td>{workout.workout_type}</td>
-                <td>{workout.duration} min</td>
-                <td>{workout.calories}</td>
-                <td>
-                  <div className="workout-actions">
-                    <Link to={`/workouts/edit/${workout.id}`} className="btn btn-sm btn-info">Edit</Link>
-                    <Button 
-                      variant="danger" 
-                      size="sm" 
-                      onClick={() => handleDelete(workout.id)}
-                      disabled={deleting === workout.id}
-                    >
-                      {deleting === workout.id ? <Spinner animation="border" size="sm" /> : 'Delete'}
-                    </Button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-      )}
-    </Container>
-  );
+            {successMessage && (
+                <Alert 
+                    variant="success" 
+                    onClose={() => setSuccessMessage('')} 
+                    dismissible
+                >
+                    {successMessage}
+                </Alert>
+            )}
+
+            {error && (
+                <Alert variant="danger" dismissible>
+                    {error}
+                </Alert>
+            )}
+
+            {!loading && workouts.length === 0 ? (
+                <Alert variant="info">
+                    No workouts logged yet. Start by logging a new workout!
+                </Alert>
+            ) : (
+                <Table responsive striped bordered hover>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>Duration</th>
+                            <th>Calories</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {workouts.map((workout) => (
+                            <tr key={workout.id}>
+                                <td>{new Date(workout.date_logged).toLocaleDateString()}</td>
+                                <td>{workout.workout_type_display || workout.workout_type}</td>
+                                <td>{workout.duration} min</td>
+                                <td>{workout.calories}</td>
+                                <td>
+                                    <Link 
+                                        to={`/workouts/${workout.id}`} 
+                                        className="btn btn-sm btn-info me-2"
+                                    >
+                                        View
+                                    </Link>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </Table>
+            )}
+        </Container>
+    );
 }
 
 export default WorkoutList;

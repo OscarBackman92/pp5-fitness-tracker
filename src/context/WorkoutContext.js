@@ -28,7 +28,7 @@ function workoutReducer(state, action) {
         case WORKOUT_ACTIONS.ADD_WORKOUT:
             return {
                 ...state,
-                workouts: [...state.workouts, action.payload],
+                workouts: [action.payload, ...state.workouts],
                 loading: false
             };
         case WORKOUT_ACTIONS.UPDATE_WORKOUT:
@@ -48,7 +48,8 @@ function workoutReducer(state, action) {
         case WORKOUT_ACTIONS.SET_LOADING:
             return {
                 ...state,
-                loading: true
+                loading: true,
+                error: null
             };
         case WORKOUT_ACTIONS.SET_ERROR:
             return {
@@ -70,28 +71,29 @@ export const WorkoutContext = createContext(null);
 
 export const WorkoutProvider = ({ children }) => {
     const [state, dispatch] = useReducer(workoutReducer, initialState);
-    const fetchInProgress = React.useRef(false);
 
     const fetchWorkouts = useCallback(async () => {
-        // Prevent multiple concurrent fetches
-        if (fetchInProgress.current) return;
-        
         try {
-            fetchInProgress.current = true;
             dispatch({ type: WORKOUT_ACTIONS.SET_LOADING });
+            console.log('Fetching workouts...');
             const response = await workoutApi.getAll();
+            console.log('Fetched workouts:', response.data);
+            
+            // Make sure we're getting an array, even if empty
+            const workouts = response.data.results || [];
+            
             dispatch({ 
                 type: WORKOUT_ACTIONS.SET_WORKOUTS, 
-                payload: response.data.results || [] 
+                payload: workouts
             });
+            return workouts;
         } catch (error) {
+            console.error('Error fetching workouts:', error);
             dispatch({ 
                 type: WORKOUT_ACTIONS.SET_ERROR, 
                 payload: error.response?.data?.detail || 'Failed to fetch workouts' 
             });
             throw error;
-        } finally {
-            fetchInProgress.current = false;
         }
     }, []);
 
@@ -105,9 +107,29 @@ export const WorkoutProvider = ({ children }) => {
             });
             return response.data;
         } catch (error) {
+            console.error('Error creating workout:', error);
             dispatch({ 
                 type: WORKOUT_ACTIONS.SET_ERROR, 
                 payload: error.response?.data?.detail || 'Failed to create workout' 
+            });
+            throw error;
+        }
+    }, []);
+
+    const updateWorkout = useCallback(async (id, workoutData) => {
+        try {
+            dispatch({ type: WORKOUT_ACTIONS.SET_LOADING });
+            const response = await workoutApi.update(id, workoutData);
+            dispatch({ 
+                type: WORKOUT_ACTIONS.UPDATE_WORKOUT, 
+                payload: response.data 
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Error updating workout:', error);
+            dispatch({ 
+                type: WORKOUT_ACTIONS.SET_ERROR, 
+                payload: error.response?.data?.detail || 'Failed to update workout' 
             });
             throw error;
         }
@@ -122,6 +144,7 @@ export const WorkoutProvider = ({ children }) => {
                 payload: id 
             });
         } catch (error) {
+            console.error('Error deleting workout:', error);
             dispatch({ 
                 type: WORKOUT_ACTIONS.SET_ERROR, 
                 payload: error.response?.data?.detail || 'Failed to delete workout' 
@@ -130,13 +153,19 @@ export const WorkoutProvider = ({ children }) => {
         }
     }, []);
 
+    const clearError = useCallback(() => {
+        dispatch({ type: WORKOUT_ACTIONS.CLEAR_ERROR });
+    }, []);
+
     const value = {
         workouts: state.workouts,
         loading: state.loading,
         error: state.error,
         fetchWorkouts,
         createWorkout,
-        deleteWorkout
+        updateWorkout,
+        deleteWorkout,
+        clearError
     };
 
     return (
