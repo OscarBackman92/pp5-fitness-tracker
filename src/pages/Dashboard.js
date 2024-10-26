@@ -1,3 +1,4 @@
+// Dashboard.js
 import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, Card, Button, Spinner, Alert, Badge } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
@@ -108,7 +109,7 @@ const Dashboard = () => {
                 <Col md={3}>
                     <Card className="h-100">
                         <Card.Body className="text-center">
-                            <Flame size={24} className="mb-2" /> {/* Changed from Fire to Flame */}
+                            <Flame size={24} className="mb-2" />
                             <h3>{stats.avgCalories}</h3>
                             <Card.Text>Avg Calories/Workout</Card.Text>
                         </Card.Body>
