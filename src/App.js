@@ -1,3 +1,4 @@
+// App.js
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Container } from 'react-bootstrap';
@@ -17,14 +18,21 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 function App() {
   return (
     <Router>
+      {/* Wrapping the app with AuthProvider and WorkoutProvider to provide context access */}
       <AuthProvider>
         <WorkoutProvider>
           <div className="App">
+            {/* Navigation bar included for global navigation */}
             <NavBar />
+            
+            {/* Container for the main content with padding */}
             <Container className="mt-5 pt-3">
               <Routes>
+                {/* Public routes for login and registration */}
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+
+                {/* Private routes, accessible only if authenticated */}
                 <Route
                   path="/workouts"
                   element={
@@ -57,6 +65,8 @@ function App() {
                     </PrivateRoute>
                   }
                 />
+
+                {/* Default route for Dashboard as the homepage */}
                 <Route
                   path="/"
                   element={
@@ -65,6 +75,8 @@ function App() {
                     </PrivateRoute>
                   }
                 />
+                
+                {/* Additional route for Dashboard explicitly */}
                 <Route
                   path="/dashboard"
                   element={
