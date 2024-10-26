@@ -18,18 +18,22 @@ const initialState = {
 };
 
 function workoutReducer(state, action) {
+    console.log('Workout Reducer Action:', { type: action.type, payload: action.payload });
+    
     switch (action.type) {
         case WORKOUT_ACTIONS.SET_WORKOUTS:
             return {
                 ...state,
                 workouts: action.payload,
-                loading: false
+                loading: false,
+                error: null
             };
         case WORKOUT_ACTIONS.ADD_WORKOUT:
             return {
                 ...state,
                 workouts: [action.payload, ...state.workouts],
-                loading: false
+                loading: false,
+                error: null
             };
         case WORKOUT_ACTIONS.UPDATE_WORKOUT:
             return {
@@ -37,13 +41,15 @@ function workoutReducer(state, action) {
                 workouts: state.workouts.map(workout => 
                     workout.id === action.payload.id ? action.payload : workout
                 ),
-                loading: false
+                loading: false,
+                error: null
             };
         case WORKOUT_ACTIONS.DELETE_WORKOUT:
             return {
                 ...state,
                 workouts: state.workouts.filter(workout => workout.id !== action.payload),
-                loading: false
+                loading: false,
+                error: null
             };
         case WORKOUT_ACTIONS.SET_LOADING:
             return {
@@ -77,16 +83,28 @@ export const WorkoutProvider = ({ children }) => {
             dispatch({ type: WORKOUT_ACTIONS.SET_LOADING });
             console.log('Fetching workouts...');
             const response = await workoutApi.getAll();
-            console.log('Fetched workouts:', response.data);
+            console.log('Raw API response:', response);
             
-            // Make sure we're getting an array, even if empty
-            const workouts = response.data.results || [];
+            // Handle different response structures
+            let workoutsData;
+            if (Array.isArray(response.data)) {
+                workoutsData = response.data;
+            } else if (response.data.results) {
+                workoutsData = response.data.results;
+            } else if (typeof response.data === 'object') {
+                workoutsData = [response.data];
+            } else {
+                workoutsData = [];
+            }
+            
+            console.log('Processed workouts data:', workoutsData);
             
             dispatch({ 
                 type: WORKOUT_ACTIONS.SET_WORKOUTS, 
-                payload: workouts
+                payload: workoutsData 
             });
-            return workouts;
+            
+            return workoutsData;
         } catch (error) {
             console.error('Error fetching workouts:', error);
             dispatch({ 
@@ -100,12 +118,21 @@ export const WorkoutProvider = ({ children }) => {
     const createWorkout = useCallback(async (workoutData) => {
         try {
             dispatch({ type: WORKOUT_ACTIONS.SET_LOADING });
+            console.log('Creating workout:', workoutData);
             const response = await workoutApi.create(workoutData);
+            console.log('Create workout response:', response);
+            
+            const newWorkout = response.data;
+            
             dispatch({ 
                 type: WORKOUT_ACTIONS.ADD_WORKOUT, 
-                payload: response.data 
+                payload: newWorkout 
             });
-            return response.data;
+            
+            // Fetch updated list after creating new workout
+            await fetchWorkouts();
+            
+            return newWorkout;
         } catch (error) {
             console.error('Error creating workout:', error);
             dispatch({ 
@@ -114,7 +141,7 @@ export const WorkoutProvider = ({ children }) => {
             });
             throw error;
         }
-    }, []);
+    }, [fetchWorkouts]);
 
     const updateWorkout = useCallback(async (id, workoutData) => {
         try {
