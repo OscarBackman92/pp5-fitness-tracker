@@ -26,7 +26,7 @@ const NavBar = () => {
     const isActive = (path) => location.pathname === path;
 
     return (
-        <Navbar bg="dark" variant="dark" expand="lg" fixed="top" className="navbar-custom">
+        <NavBar bg="dark" variant="dark" expand="lg" fixed="top" className="navbar-custom">
             <Container>
                 <Navbar.Brand as={Link} to="/" className="d-flex align-items-center">
                     <Activity size={24} className="me-2" />
@@ -123,7 +123,7 @@ const NavBar = () => {
                     </Nav>
                 </Navbar.Collapse>
             </Container>
-        </Navbar>
+        </NavBar>
     );
 };
 
