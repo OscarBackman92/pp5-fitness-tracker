@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Navbar, Nav, Container, Dropdown, Button, Spinner } from 'react-bootstrap';
+import { NavBar, Nav, Container, Dropdown, Button, Spinner } from 'react-bootstrap';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Activity, User, LogOut, BarChart2, Settings } from 'lucide-react';
