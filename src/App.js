@@ -16,9 +16,9 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
   return (
-    <WorkoutProvider>
-      <AuthProvider>
-        <Router>
+    <Router>
+      <WorkoutProvider>
+        <AuthProvider>
           <div className="App">
             <NavBar />
             <Container className="mt-5 pt-3">
@@ -76,9 +76,9 @@ function App() {
               </Routes>
             </Container>
           </div>
-        </Router>
-      </AuthProvider>
-    </WorkoutProvider>
+        </AuthProvider>
+      </WorkoutProvider>
+    </Router>
   );
 }
 
