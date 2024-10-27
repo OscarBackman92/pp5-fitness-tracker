@@ -1,22 +1,16 @@
-// Dashboard.js
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Container, Row, Col, Card, Button, Spinner, Alert, Badge } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useWorkouts } from '../context/WorkoutContext';
-import { Activity, Calendar, Clock, Flame } from 'lucide-react';
+import { Clock, Flame } from 'lucide-react';
+import WorkoutStats from '../components/WorkoutStats';
 import '../Styles/Dashboard.css';
 
 const Dashboard = () => {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
     const { workouts, loading, error, fetchWorkouts } = useWorkouts();
-    const [stats, setStats] = useState({
-        totalWorkouts: 0,
-        thisWeek: 0,
-        totalDuration: 0,
-        avgCalories: 0
-    });
 
     useEffect(() => {
         fetchWorkouts().catch((error) => {
@@ -26,27 +20,6 @@ const Dashboard = () => {
             }
         });
     }, [fetchWorkouts, logout, navigate]);
-
-    useEffect(() => {
-        if (workouts.length > 0) {
-            const now = new Date();
-            const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-
-            const thisWeekWorkouts = workouts.filter(workout => 
-                new Date(workout.date_logged) >= oneWeekAgo
-            );
-
-            const totalDuration = workouts.reduce((sum, workout) => sum + workout.duration, 0);
-            const totalCalories = workouts.reduce((sum, workout) => sum + workout.calories, 0);
-
-            setStats({
-                totalWorkouts: workouts.length,
-                thisWeek: thisWeekWorkouts.length,
-                totalDuration,
-                avgCalories: workouts.length ? Math.round(totalCalories / workouts.length) : 0
-            });
-        }
-    }, [workouts]);
 
     const getWorkoutTypeColor = (type) => {
         const colors = {
@@ -77,45 +50,8 @@ const Dashboard = () => {
                 </Col>
             </Row>
 
-            {/* Stats Section */}
-            <Row className="mb-4">
-                <Col md={3}>
-                    <Card className="h-100">
-                        <Card.Body className="text-center">
-                            <Activity size={24} className="mb-2" />
-                            <h3>{stats.totalWorkouts}</h3>
-                            <Card.Text>Total Workouts</Card.Text>
-                        </Card.Body>
-                    </Card>
-                </Col>
-                <Col md={3}>
-                    <Card className="h-100">
-                        <Card.Body className="text-center">
-                            <Calendar size={24} className="mb-2" />
-                            <h3>{stats.thisWeek}</h3>
-                            <Card.Text>This Week</Card.Text>
-                        </Card.Body>
-                    </Card>
-                </Col>
-                <Col md={3}>
-                    <Card className="h-100">
-                        <Card.Body className="text-center">
-                            <Clock size={24} className="mb-2" />
-                            <h3>{stats.totalDuration}</h3>
-                            <Card.Text>Total Minutes</Card.Text>
-                        </Card.Body>
-                    </Card>
-                </Col>
-                <Col md={3}>
-                    <Card className="h-100">
-                        <Card.Body className="text-center">
-                            <Flame size={24} className="mb-2" />
-                            <h3>{stats.avgCalories}</h3>
-                            <Card.Text>Avg Calories/Workout</Card.Text>
-                        </Card.Body>
-                    </Card>
-                </Col>
-            </Row>
+            {/* Advanced Stats Section */}
+            <WorkoutStats workouts={workouts} />
 
             {/* Quick Actions */}
             <Row className="mb-4">
@@ -141,7 +77,7 @@ const Dashboard = () => {
             <Row>
                 {workouts.slice(0, 6).map((workout) => (
                     <Col key={workout.id} md={4} className="mb-4">
-                        <Card className="h-100">
+                        <Card className="h-100 workout-card">
                             <Card.Body>
                                 <div className="d-flex justify-content-between align-items-start mb-2">
                                     <Badge bg={getWorkoutTypeColor(workout.workout_type)}>
@@ -155,10 +91,15 @@ const Dashboard = () => {
                                 {workout.description && (
                                     <Card.Text>{workout.description}</Card.Text>
                                 )}
-                                <div className="d-flex justify-content-between align-items-center mt-3">
-                                    <small className="text-muted">
-                                        {workout.duration} min | {workout.calories} cal
-                                    </small>
+                                <div className="workout-stats-row mt-3">
+                                    <div className="stat-item">
+                                        <Clock size={16} className="me-1" />
+                                        <span>{workout.duration} min</span>
+                                    </div>
+                                    <div className="stat-item">
+                                        <Flame size={16} className="me-1" />
+                                        <span>{workout.calories} cal</span>
+                                    </div>
                                     <Button 
                                         variant="outline-primary" 
                                         size="sm"
