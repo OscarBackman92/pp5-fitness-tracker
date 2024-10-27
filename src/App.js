@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Container } from 'react-bootstrap';
 import { AuthProvider } from './context/AuthContext';
 import { WorkoutProvider } from './context/WorkoutContext';
-import NavBar from './components/NavBar';
+import NavigationBar from './components/Navbar'; // Updated import
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
@@ -20,7 +20,7 @@ function App() {
       <WorkoutProvider>
         <AuthProvider>
           <div className="App">
-            <NavBar />
+            <NavigationBar /> {/* Updated component name */}
             <Container className="mt-5 pt-3">
               <Routes>
                 <Route path="/login" element={<Login />} />

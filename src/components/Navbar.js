@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { NavBar, Nav, Container, Dropdown, Button, Spinner } from 'react-bootstrap';
+import { Navbar as BootstrapNavbar, Nav, Container, Dropdown, Button, Spinner } from 'react-bootstrap';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Activity, User, LogOut, BarChart2, Settings } from 'lucide-react';
 import '../Styles/NavBar.css';
 
-const NavBar = () => {
+const NavigationBar = () => {
     const { user, isAuthenticated, logout } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
@@ -26,14 +26,14 @@ const NavBar = () => {
     const isActive = (path) => location.pathname === path;
 
     return (
-        <NavBar bg="dark" variant="dark" expand="lg" fixed="top" className="navbar-custom">
+        <BootstrapNavbar bg="dark" variant="dark" expand="lg" fixed="top" className="navbar-custom">
             <Container>
-                <Navbar.Brand as={Link} to="/" className="d-flex align-items-center">
+                <BootstrapNavbar.Brand as={Link} to="/" className="d-flex align-items-center">
                     <Activity size={24} className="me-2" />
                     Fitness App
-                </Navbar.Brand>
-                <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                <Navbar.Collapse id="basic-navbar-nav">
+                </BootstrapNavbar.Brand>
+                <BootstrapNavbar.Toggle aria-controls="basic-navbar-nav" />
+                <BootstrapNavbar.Collapse id="basic-navbar-nav">
                     <Nav className="ms-auto align-items-center">
                         {isAuthenticated ? (
                             <>
@@ -121,10 +121,10 @@ const NavBar = () => {
                             </>
                         )}
                     </Nav>
-                </Navbar.Collapse>
+                </BootstrapNavbar.Collapse>
             </Container>
-        </NavBar>
+        </BootstrapNavbar>
     );
 };
 
-export default NavBar;
+export default NavigationBar;
