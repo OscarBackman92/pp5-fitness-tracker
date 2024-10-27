@@ -3,7 +3,7 @@ import { Navbar, Nav, Container, Dropdown, Button, Spinner } from 'react-bootstr
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Activity, User, LogOut, BarChart2, Settings } from 'lucide-react';
-import '../Styles/Navbar.css';
+import '../Styles/NavBar.css';
 
 const NavBar = () => {
     const { user, isAuthenticated, logout } = useAuth();
