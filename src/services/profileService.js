@@ -9,7 +9,7 @@ export const profileService = {
         axiosInstance.put('/profiles/me/', data),
 
     uploadProfilePicture: (formData) => 
-        axiosInstance.put('/profiles/me/', formData, {
+        axiosInstance.put('/profiles/update_profile_picture/', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
