@@ -19,11 +19,11 @@ export const profileService = {
     getGoals: () => 
         axiosInstance.get('/goals/'),
 
-    updateGoals: (goals) => 
-        axiosInstance.put('/goals/', { goals }),
-
     createGoal: (goalData) => 
         axiosInstance.post('/goals/', goalData),
+
+    updateGoal: (goalId, goalData) => 
+        axiosInstance.patch(`/goals/${goalId}/`, goalData),  // Changed from PUT to PATCH
 
     deleteGoal: (goalId) => 
         axiosInstance.delete(`/goals/${goalId}/`),
