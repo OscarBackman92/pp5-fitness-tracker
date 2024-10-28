@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { Card, Button, Image, Spinner } from 'react-bootstrap';
 import { Camera } from 'lucide-react';
 import { useProfile } from '../../context/ProfileContext';
@@ -6,7 +6,7 @@ import { useProfile } from '../../context/ProfileContext';
 const ProfileUpload = () => {
     const { profile, uploadProfilePicture, loading } = useProfile();
     const [previewUrl, setPreviewUrl] = useState(null);
-    const fileInputRef = useRef(null);
+    const fileInputRef = React.useRef(null);
 
     const handleFileSelect = async (event) => {
         const file = event.target.files[0];
@@ -25,7 +25,7 @@ const ProfileUpload = () => {
 
         try {
             await uploadProfilePicture(file);
-            setPreviewUrl(null);
+            setPreviewUrl(null); // Clear preview after successful upload
         } catch (error) {
             console.error('Upload error:', error);
         }

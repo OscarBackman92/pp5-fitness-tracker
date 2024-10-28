@@ -8,7 +8,7 @@ import MeasurementsTracker from '../components/profiles/MeasurementsTracker';
 import '../Styles/Profile.css';
 
 const Profile = () => {
-    const { loading, error, profile } = useProfile();
+    const { loading, error } = useProfile(); // Removed unused 'profile'
 
     if (loading) {
         return (

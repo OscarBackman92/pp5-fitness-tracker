@@ -1,5 +1,7 @@
 import axiosInstance from './api/axiosInstance';
+
 export const profileService = {
+    // Profile endpoints
     getProfile: () => 
         axiosInstance.get('/profiles/me/'),
 
@@ -7,44 +9,44 @@ export const profileService = {
         axiosInstance.put('/profiles/me/', data),
 
     uploadProfilePicture: (formData) => 
-        axiosInstance.post('/profiles/upload-picture/', formData, {
+        axiosInstance.post('/profiles/update_profile_picture/', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
         }),
 
-    // Goals endpoints
+    // Goals endpoints - Updated to match backend URLs
     getGoals: () => 
-        axiosInstance.get('/profiles/goals/'),
+        axiosInstance.get('/goals/'),
 
     updateGoals: (goals) => 
-        axiosInstance.put('/profiles/goals/', { goals }),
+        axiosInstance.put('/goals/', { goals }),
 
     createGoal: (goalData) => 
-        axiosInstance.post('/profiles/goals/', goalData),
+        axiosInstance.post('/goals/', goalData),
 
     deleteGoal: (goalId) => 
-        axiosInstance.delete(`/profiles/goals/${goalId}/`),
+        axiosInstance.delete(`/goals/${goalId}/`),
 
-    // Measurements endpoints
+    // Measurements endpoints - Updated to match backend URLs
     getMeasurements: () => 
-        axiosInstance.get('/profiles/measurements/'),
+        axiosInstance.get('/measurements/'),
 
     updateMeasurements: (measurements) => 
-        axiosInstance.put('/profiles/measurements/', { measurements }),
+        axiosInstance.put('/measurements/', { measurements }),
 
     createMeasurement: (measurementData) => 
-        axiosInstance.post('/profiles/measurements/', measurementData),
+        axiosInstance.post('/measurements/', measurementData),
 
     deleteMeasurement: (measurementId) => 
-        axiosInstance.delete(`/profiles/measurements/${measurementId}/`),
+        axiosInstance.delete(`/measurements/${measurementId}/`),
 
     // History endpoints
     getMeasurementHistory: () => 
-        axiosInstance.get('/profiles/measurements/history/'),
+        axiosInstance.get('/measurements/history/'),
 
     getWeightHistory: () => 
-        axiosInstance.get('/profiles/measurements/weight-history/'),
+        axiosInstance.get('/measurements/weight-history/'),
 
     // Utility endpoints
     calculateBMI: () => 
@@ -65,7 +67,7 @@ export const profileService = {
 // Request interceptor
 axiosInstance.interceptors.request.use(
     (config) => {
-        if (config.url.includes('/upload-picture/')) {
+        if (config.url.includes('update_profile_picture')) {
             config.headers['Content-Type'] = 'multipart/form-data';
         }
         return config;
