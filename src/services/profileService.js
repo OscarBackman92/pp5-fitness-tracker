@@ -5,8 +5,9 @@ export const profileService = {
     getProfile: () => 
         axiosInstance.get('/profiles/me/'),
 
+    // Changed from PUT to PATCH for profile updates
     updateProfile: (data) => 
-        axiosInstance.put('/profiles/me/', data),
+        axiosInstance.patch('/profiles/me/', data),
 
     uploadProfilePicture: (formData) => 
         axiosInstance.post('/profiles/update_profile_picture/', formData, {
@@ -27,6 +28,10 @@ export const profileService = {
 
     deleteGoal: (goalId) => 
         axiosInstance.delete(`/goals/${goalId}/`),
+
+    // Settings specific endpoint
+    updateSettings: (settingsData) => 
+        axiosInstance.patch('/profiles/me/', { settings: settingsData }),
     
     // Utility endpoints
     calculateBMI: () => 
@@ -44,9 +49,19 @@ axiosInstance.interceptors.request.use(
         if (config.url.includes('update_profile_picture')) {
             config.headers['Content-Type'] = 'multipart/form-data';
         }
+        const token = localStorage.getItem('access_token');
+        if (token) {
+            config.headers['Authorization'] = `Token ${token}`;
+        }
+        console.log('Request config:', {
+            url: config.url,
+            method: config.method,
+            headers: config.headers
+        });
         return config;
     },
     (error) => {
+        console.error('Request Error:', error);
         return Promise.reject(error);
     }
 );
@@ -56,6 +71,9 @@ axiosInstance.interceptors.response.use(
     (response) => response,
     (error) => {
         console.error('API Error:', error.response?.data || error.message);
+        if (error.response?.status === 405) {
+            console.error('Method not allowed. Please check API endpoint configuration.');
+        }
         return Promise.reject(error);
     }
 );

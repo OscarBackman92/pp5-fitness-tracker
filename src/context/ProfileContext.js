@@ -11,7 +11,8 @@ const ACTIONS = {
     ADD_GOAL: 'ADD_GOAL',
     UPDATE_GOAL: 'UPDATE_GOAL',
     DELETE_GOAL: 'DELETE_GOAL',
-    CLEAR_ERROR: 'CLEAR_ERROR'
+    CLEAR_ERROR: 'CLEAR_ERROR',
+    UPDATE_SETTINGS: 'UPDATE_SETTINGS',
 };
 
 const initialState = {
@@ -203,6 +204,25 @@ export const ProfileProvider = ({ children }) => {
     React.useEffect(() => {
         fetchProfile().catch(console.error);
     }, [fetchProfile]);
+
+    const updateSettings = useCallback(async (settingsData) => {
+        try {
+            dispatch({ type: ACTIONS.SET_LOADING });
+            const response = await profileService.updateSettings(settingsData);
+            dispatch({ 
+                type: ACTIONS.UPDATE_SETTINGS, 
+                payload: response.data.settings 
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Error updating settings:', error);
+            dispatch({ 
+                type: ACTIONS.SET_ERROR, 
+                payload: error.response?.data?.detail || 'Failed to update settings' 
+            });
+            throw error;
+        }
+    }, []);
 
     const value = {
         profile: state.profile,

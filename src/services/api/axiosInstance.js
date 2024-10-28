@@ -1,5 +1,6 @@
 import axios from 'axios';
-import { API_URL } from './config';
+
+const API_URL = process.env.REACT_APP_API_URL || 'https://fitnessapi-d773a1148384.herokuapp.com/api';
 
 const axiosInstance = axios.create({
     baseURL: API_URL,
@@ -16,6 +17,7 @@ axiosInstance.interceptors.request.use(
             config.headers['Authorization'] = `Token ${token}`;
             console.log('Request config:', {
                 url: config.url,
+                method: config.method,
                 headers: config.headers
             });
         }

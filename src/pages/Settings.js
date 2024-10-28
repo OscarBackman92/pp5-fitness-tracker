@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Card, Container, Form, Button, Row, Col, Alert, Spinner } from 'react-bootstrap';
 import { useAuth } from '../context/AuthContext';
 import { useProfile } from '../context/ProfileContext';
-import { Bell, Globe, Shield, Sliders, Mail, Moon } from 'lucide-react';
+import { profileService } from '../services/profileService';
+import { Bell, Shield, Sliders } from 'lucide-react';
 
 const Settings = () => {
     const { user } = useAuth();
-    const { updateProfile, loading, error } = useProfile();
+    const { loading, error } = useProfile();
     const [successMessage, setSuccessMessage] = useState('');
+    const [submitError, setError] = useState('');
     const [settings, setSettings] = useState({
         // Notification Settings
         emailNotifications: true,
@@ -33,7 +35,6 @@ const Settings = () => {
     });
 
     useEffect(() => {
-        // Load user settings from profile
         if (user?.settings) {
             setSettings(prevSettings => ({
                 ...prevSettings,
@@ -53,11 +54,15 @@ const Settings = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await updateProfile({ settings });
+            setSuccessMessage('');
+            setError('');
+            const response = await profileService.updateSettings(settings);
+            console.log('Settings update response:', response);
             setSuccessMessage('Settings updated successfully!');
             setTimeout(() => setSuccessMessage(''), 3000);
         } catch (error) {
             console.error('Error updating settings:', error);
+            setError(error.response?.data?.detail || 'Failed to update settings');
         }
     };
 
@@ -79,8 +84,14 @@ const Settings = () => {
                 </Alert>
             )}
 
+            {submitError && (
+                <Alert variant="danger" dismissible onClose={() => setError('')}>
+                    {submitError}
+                </Alert>
+            )}
+
             {successMessage && (
-                <Alert variant="success" dismissible>
+                <Alert variant="success" dismissible onClose={() => setSuccessMessage('')}>
                     {successMessage}
                 </Alert>
             )}
@@ -114,30 +125,6 @@ const Settings = () => {
                                         name="workoutReminders"
                                         label="Workout Reminders"
                                         checked={settings.workoutReminders}
-                                        onChange={handleChange}
-                                    />
-                                </Form.Group>
-                            </Col>
-                            <Col md={6}>
-                                <Form.Group className="mb-3">
-                                    <Form.Check
-                                        type="switch"
-                                        id="goalUpdates"
-                                        name="goalUpdates"
-                                        label="Goal Updates"
-                                        checked={settings.goalUpdates}
-                                        onChange={handleChange}
-                                    />
-                                </Form.Group>
-                            </Col>
-                            <Col md={6}>
-                                <Form.Group className="mb-3">
-                                    <Form.Check
-                                        type="switch"
-                                        id="weeklyReports"
-                                        name="weeklyReports"
-                                        label="Weekly Progress Reports"
-                                        checked={settings.weeklyReports}
                                         onChange={handleChange}
                                     />
                                 </Form.Group>
