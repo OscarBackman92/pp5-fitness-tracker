@@ -7,8 +7,11 @@ const ACTIONS = {
     SET_LOADING: 'SET_LOADING',
     SET_ERROR: 'SET_ERROR',
     UPDATE_PROFILE: 'UPDATE_PROFILE',
-    UPDATE_GOALS: 'UPDATE_GOALS',
-    UPDATE_MEASUREMENTS: 'UPDATE_MEASUREMENTS',
+    SET_GOALS: 'SET_GOALS',
+    ADD_GOAL: 'ADD_GOAL',
+    UPDATE_GOAL: 'UPDATE_GOAL',
+    DELETE_GOAL: 'DELETE_GOAL',
+    SET_MEASUREMENTS: 'SET_MEASUREMENTS',
     CLEAR_ERROR: 'CLEAR_ERROR'
 };
 
@@ -28,12 +31,14 @@ function profileReducer(state, action) {
                 loading: true, 
                 error: null 
             };
+            
         case ACTIONS.SET_ERROR:
             return { 
                 ...state, 
                 error: action.payload, 
                 loading: false 
             };
+            
         case ACTIONS.UPDATE_PROFILE:
             return { 
                 ...state, 
@@ -41,25 +46,55 @@ function profileReducer(state, action) {
                 loading: false,
                 error: null
             };
-        case ACTIONS.UPDATE_GOALS:
-            return { 
-                ...state, 
-                goals: action.payload, 
+            
+        case ACTIONS.SET_GOALS:
+            return {
+                ...state,
+                goals: action.payload,
                 loading: false,
                 error: null
             };
-        case ACTIONS.UPDATE_MEASUREMENTS:
-            return { 
-                ...state, 
-                measurements: action.payload, 
+            
+        case ACTIONS.ADD_GOAL:
+            return {
+                ...state,
+                goals: [...state.goals, action.payload],
                 loading: false,
                 error: null
             };
+            
+        case ACTIONS.UPDATE_GOAL:
+            return {
+                ...state,
+                goals: state.goals.map(goal => 
+                    goal.id === action.payload.id ? action.payload : goal
+                ),
+                loading: false,
+                error: null
+            };
+            
+        case ACTIONS.DELETE_GOAL:
+            return {
+                ...state,
+                goals: state.goals.filter(goal => goal.id !== action.payload),
+                loading: false,
+                error: null
+            };
+            
+        case ACTIONS.SET_MEASUREMENTS:
+            return {
+                ...state,
+                measurements: action.payload,
+                loading: false,
+                error: null
+            };
+            
         case ACTIONS.CLEAR_ERROR:
-            return { 
-                ...state, 
-                error: null 
+            return {
+                ...state,
+                error: null
             };
+            
         default:
             return state;
     }
@@ -84,11 +119,11 @@ export const ProfileProvider = ({ children }) => {
             ]);
 
             dispatch({ 
-                type: ACTIONS.UPDATE_GOALS, 
+                type: ACTIONS.SET_GOALS, 
                 payload: goalsResponse.data 
             });
             dispatch({ 
-                type: ACTIONS.UPDATE_MEASUREMENTS, 
+                type: ACTIONS.SET_MEASUREMENTS, 
                 payload: measurementsResponse.data 
             });
 
@@ -122,61 +157,57 @@ export const ProfileProvider = ({ children }) => {
         }
     }, []);
 
-    const uploadProfilePicture = useCallback(async (file) => {
+    const fetchGoals = useCallback(async () => {
         try {
             dispatch({ type: ACTIONS.SET_LOADING });
-            const formData = new FormData();
-            formData.append('profile_picture', file);
-            
-            const response = await profileService.uploadProfilePicture(formData);
+            const response = await profileService.getGoals();
             dispatch({ 
-                type: ACTIONS.UPDATE_PROFILE, 
-                payload: { ...state.profile, profile_picture: response.data.url } 
-            });
-            return response.data;
-        } catch (error) {
-            console.error('Error uploading profile picture:', error);
-            dispatch({ 
-                type: ACTIONS.SET_ERROR, 
-                payload: error.response?.data?.detail || 'Failed to upload profile picture' 
-            });
-            throw error;
-        }
-    }, [state.profile]);
-
-    const updateGoals = useCallback(async (goals) => {
-        try {
-            dispatch({ type: ACTIONS.SET_LOADING });
-            const response = await profileService.updateGoals(goals);
-            dispatch({ 
-                type: ACTIONS.UPDATE_GOALS, 
+                type: ACTIONS.SET_GOALS, 
                 payload: response.data 
             });
             return response.data;
         } catch (error) {
-            console.error('Error updating goals:', error);
+            console.error('Error fetching goals:', error);
             dispatch({ 
                 type: ACTIONS.SET_ERROR, 
-                payload: error.response?.data?.detail || 'Failed to update goals' 
+                payload: error.response?.data?.detail || 'Failed to fetch goals' 
             });
             throw error;
         }
     }, []);
 
-    const updateMeasurements = useCallback(async (measurements) => {
+    const addGoal = useCallback(async (goalData) => {
         try {
             dispatch({ type: ACTIONS.SET_LOADING });
-            const response = await profileService.updateMeasurements(measurements);
+            const response = await profileService.createGoal(goalData);
             dispatch({ 
-                type: ACTIONS.UPDATE_MEASUREMENTS, 
+                type: ACTIONS.ADD_GOAL, 
                 payload: response.data 
             });
             return response.data;
         } catch (error) {
-            console.error('Error updating measurements:', error);
+            console.error('Error adding goal:', error);
             dispatch({ 
                 type: ACTIONS.SET_ERROR, 
-                payload: error.response?.data?.detail || 'Failed to update measurements' 
+                payload: error.response?.data?.detail || 'Failed to add goal' 
+            });
+            throw error;
+        }
+    }, []);
+
+    const deleteGoal = useCallback(async (goalId) => {
+        try {
+            dispatch({ type: ACTIONS.SET_LOADING });
+            await profileService.deleteGoal(goalId);
+            dispatch({ 
+                type: ACTIONS.DELETE_GOAL, 
+                payload: goalId 
+            });
+        } catch (error) {
+            console.error('Error deleting goal:', error);
+            dispatch({ 
+                type: ACTIONS.SET_ERROR, 
+                payload: error.response?.data?.detail || 'Failed to delete goal' 
             });
             throw error;
         }
@@ -186,7 +217,7 @@ export const ProfileProvider = ({ children }) => {
         dispatch({ type: ACTIONS.CLEAR_ERROR });
     }, []);
 
-    // Load profile data when provider mounts
+    // Initialize profile data
     React.useEffect(() => {
         fetchProfile().catch(console.error);
     }, [fetchProfile]);
@@ -199,9 +230,9 @@ export const ProfileProvider = ({ children }) => {
         error: state.error,
         fetchProfile,
         updateProfile,
-        uploadProfilePicture,
-        updateGoals,
-        updateMeasurements,
+        fetchGoals,
+        addGoal,
+        deleteGoal,
         clearError
     };
 
@@ -219,5 +250,3 @@ export const useProfile = () => {
     }
     return context;
 };
-
-export default ProfileContext;
