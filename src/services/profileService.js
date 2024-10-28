@@ -9,7 +9,7 @@ export const profileService = {
         axiosInstance.put('/profiles/me/', data),
 
     uploadProfilePicture: (formData) => 
-        axiosInstance.put('/profiles/update_profile_picture/', formData, {
+        axiosInstance.post('/profiles/update_profile_picture/', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
@@ -27,7 +27,7 @@ export const profileService = {
 
     deleteGoal: (goalId) => 
         axiosInstance.delete(`/goals/${goalId}/`),
-
+    
     // Utility endpoints
     calculateBMI: () => 
         axiosInstance.get('/profiles/calculate-bmi/'),
