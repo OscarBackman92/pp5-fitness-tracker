@@ -1,33 +1,61 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { Container } from 'react-bootstrap';
+import Navbar from './components/Navbar';
+import Footer from './components/Footer';
+import PrivateRoute from './components/PrivateRoute';
 import { AuthProvider } from './context/AuthContext';
 import { WorkoutProvider } from './context/WorkoutContext';
-import { ProfileProvider } from './context/ProfileContext'; // Add this
-import NavigationBar from './components/Navbar';
+import { ProfileProvider } from './context/ProfileContext';
+
+// Page imports
+import HomePage from './pages/HomePage';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+import Profile from './pages/Profile';
+import Settings from './pages/Settings';
+import WorkoutList from './pages/WorkoutList';
 import LogWorkout from './pages/LogWorkout';
 import EditWorkout from './pages/EditWorkout';
-import WorkoutList from './pages/WorkoutList';
 import WorkoutDetails from './pages/WorkoutDetails';
-import Profile from './pages/Profile'; // Add this
-import PrivateRoute from './components/PrivateRoute';
-import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
   return (
     <Router>
-      <WorkoutProvider>
-        <AuthProvider>
-          <ProfileProvider> {/* Add this */}
-            <div className="App">
-              <NavigationBar />
-              <Container className="mt-5 pt-3">
+      <AuthProvider>
+        <ProfileProvider>
+          <WorkoutProvider>
+            <div className="app-container">
+              <Navbar />
+              <main className="main-content">
                 <Routes>
+                  <Route path="/" element={<HomePage />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
+                  <Route
+                    path="/dashboard"
+                    element={
+                      <PrivateRoute>
+                        <Dashboard />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/profile"
+                    element={
+                      <PrivateRoute>
+                        <Profile />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/settings"
+                    element={
+                      <PrivateRoute>
+                        <Settings />
+                      </PrivateRoute>
+                    }
+                  />
                   <Route
                     path="/workouts"
                     element={
@@ -45,14 +73,6 @@ function App() {
                     }
                   />
                   <Route
-                    path="/workouts/:id"
-                    element={
-                      <PrivateRoute>
-                        <WorkoutDetails />
-                      </PrivateRoute>
-                    }
-                  />
-                  <Route
                     path="/workouts/edit/:id"
                     element={
                       <PrivateRoute>
@@ -60,37 +80,21 @@ function App() {
                       </PrivateRoute>
                     }
                   />
-                  {/* Add Profile Route */}
                   <Route
-                    path="/profile"
+                    path="/workouts/:id"
                     element={
                       <PrivateRoute>
-                        <Profile />
-                      </PrivateRoute>
-                    }
-                  />
-                  <Route
-                    path="/"
-                    element={
-                      <PrivateRoute>
-                        <Dashboard />
-                      </PrivateRoute>
-                    }
-                  />
-                  <Route
-                    path="/dashboard"
-                    element={
-                      <PrivateRoute>
-                        <Dashboard />
+                        <WorkoutDetails />
                       </PrivateRoute>
                     }
                   />
                 </Routes>
-              </Container>
+              </main>
+              <Footer />
             </div>
-          </ProfileProvider>
-        </AuthProvider>
-      </WorkoutProvider>
+          </WorkoutProvider>
+        </ProfileProvider>
+      </AuthProvider>
     </Router>
   );
 }
