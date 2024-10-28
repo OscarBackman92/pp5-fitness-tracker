@@ -5,15 +5,20 @@ export const profileService = {
     getProfile: () => 
         axiosInstance.get('/profiles/me/'),
 
-    // Changed from PUT to PATCH for profile updates
+    // Main profile update
     updateProfile: (data) => 
-        axiosInstance.patch('/profiles/me/', data),
+        axiosInstance.put('/profiles/me/', data),
 
+    // Settings update - using PUT instead of PATCH
+    updateSettings: (settingsData) => 
+        axiosInstance.put('/profiles/me/', { settings: settingsData }),
+
+    // Profile picture upload
     uploadProfilePicture: (formData) => 
         axiosInstance.post('/profiles/update_profile_picture/', formData, {
             headers: {
-                'Content-Type': 'multipart/form-data',
-            },
+                'Content-Type': 'multipart/form-data'
+            }
         }),
 
     // Goals endpoints
@@ -28,10 +33,6 @@ export const profileService = {
 
     deleteGoal: (goalId) => 
         axiosInstance.delete(`/goals/${goalId}/`),
-
-    // Settings specific endpoint
-    updateSettings: (settingsData) => 
-        axiosInstance.patch('/profiles/me/', { settings: settingsData }),
     
     // Utility endpoints
     calculateBMI: () => 
@@ -43,36 +44,13 @@ export const profileService = {
         })
 };
 
-// Request interceptor
-axiosInstance.interceptors.request.use(
-    (config) => {
-        if (config.url.includes('update_profile_picture')) {
-            config.headers['Content-Type'] = 'multipart/form-data';
-        }
-        const token = localStorage.getItem('access_token');
-        if (token) {
-            config.headers['Authorization'] = `Token ${token}`;
-        }
-        console.log('Request config:', {
-            url: config.url,
-            method: config.method,
-            headers: config.headers
-        });
-        return config;
-    },
-    (error) => {
-        console.error('Request Error:', error);
-        return Promise.reject(error);
-    }
-);
-
-// Response interceptor
+// Add response interceptor for better error handling
 axiosInstance.interceptors.response.use(
-    (response) => response,
-    (error) => {
-        console.error('API Error:', error.response?.data || error.message);
+    response => response,
+    error => {
         if (error.response?.status === 405) {
-            console.error('Method not allowed. Please check API endpoint configuration.');
+            console.error('Method not allowed. Endpoint accepts:', 
+                error.response.headers?.['allow'] || 'unknown methods');
         }
         return Promise.reject(error);
     }
