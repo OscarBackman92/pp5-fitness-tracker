@@ -15,7 +15,7 @@ export const profileService = {
             },
         }),
 
-    // Goals endpoints - Updated to match backend URLs
+    // Goals endpoints
     getGoals: () => 
         axiosInstance.get('/goals/'),
 
@@ -23,30 +23,10 @@ export const profileService = {
         axiosInstance.post('/goals/', goalData),
 
     updateGoal: (goalId, goalData) => 
-        axiosInstance.patch(`/goals/${goalId}/`, goalData),  // Changed from PUT to PATCH
+        axiosInstance.patch(`/goals/${goalId}/`, goalData),
 
     deleteGoal: (goalId) => 
         axiosInstance.delete(`/goals/${goalId}/`),
-
-    // Measurements endpoints - Updated to match backend URLs
-    getMeasurements: () => 
-        axiosInstance.get('/measurements/'),
-
-    updateMeasurements: (measurements) => 
-        axiosInstance.put('/measurements/', { measurements }),
-
-    createMeasurement: (measurementData) => 
-        axiosInstance.post('/measurements/', measurementData),
-
-    deleteMeasurement: (measurementId) => 
-        axiosInstance.delete(`/measurements/${measurementId}/`),
-
-    // History endpoints
-    getMeasurementHistory: () => 
-        axiosInstance.get('/measurements/history/'),
-
-    getWeightHistory: () => 
-        axiosInstance.get('/measurements/weight-history/'),
 
     // Utility endpoints
     calculateBMI: () => 

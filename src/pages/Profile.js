@@ -4,11 +4,10 @@ import { useProfile } from '../context/ProfileContext';
 import ProfileUpload from '../components/profiles/ProfileUpload';
 import GoalsSection from '../components/profiles/GoalsSection';
 import ProgressCharts from '../components/profiles/ProgressCharts';
-import MeasurementsTracker from '../components/profiles/MeasurementsTracker';
 import '../Styles/Profile.css';
 
 const Profile = () => {
-    const { loading, error } = useProfile(); // Removed unused 'profile'
+    const { loading, error } = useProfile();
 
     if (loading) {
         return (
@@ -40,9 +39,6 @@ const Profile = () => {
                     <div className="profile-main">
                         <div className="mb-4">
                             <ProgressCharts />
-                        </div>
-                        <div>
-                            <MeasurementsTracker />
                         </div>
                     </div>
                 </Col>

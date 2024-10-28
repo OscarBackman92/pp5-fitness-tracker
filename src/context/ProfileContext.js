@@ -11,14 +11,12 @@ const ACTIONS = {
     ADD_GOAL: 'ADD_GOAL',
     UPDATE_GOAL: 'UPDATE_GOAL',
     DELETE_GOAL: 'DELETE_GOAL',
-    SET_MEASUREMENTS: 'SET_MEASUREMENTS',
     CLEAR_ERROR: 'CLEAR_ERROR'
 };
 
 const initialState = {
     profile: null,
     goals: [],
-    measurements: [],
     loading: false,
     error: null
 };
@@ -81,14 +79,6 @@ function profileReducer(state, action) {
                 error: null
             };
             
-        case ACTIONS.SET_MEASUREMENTS:
-            return {
-                ...state,
-                measurements: action.payload,
-                loading: false,
-                error: null
-            };
-            
         case ACTIONS.CLEAR_ERROR:
             return {
                 ...state,
@@ -112,19 +102,11 @@ export const ProfileProvider = ({ children }) => {
                 payload: response.data 
             });
 
-            // Fetch goals and measurements after profile
-            const [goalsResponse, measurementsResponse] = await Promise.all([
-                profileService.getGoals(),
-                profileService.getMeasurements()
-            ]);
-
+            // Fetch goals only
+            const goalsResponse = await profileService.getGoals();
             dispatch({ 
                 type: ACTIONS.SET_GOALS, 
                 payload: goalsResponse.data 
-            });
-            dispatch({ 
-                type: ACTIONS.SET_MEASUREMENTS, 
-                payload: measurementsResponse.data 
             });
 
             return response.data;
@@ -225,7 +207,6 @@ export const ProfileProvider = ({ children }) => {
     const value = {
         profile: state.profile,
         goals: state.goals,
-        measurements: state.measurements,
         loading: state.loading,
         error: state.error,
         fetchProfile,
