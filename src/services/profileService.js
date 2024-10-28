@@ -9,7 +9,7 @@ export const profileService = {
         axiosInstance.put('/profiles/me/', data),
 
     uploadProfilePicture: (formData) => 
-        axiosInstance.post('/profiles/update_profile_picture/', formData, {
+        axiosInstance.put('/profiles/me/', formData, {  // Changed to PUT and endpoint
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
@@ -35,13 +35,7 @@ export const profileService = {
     getProgressReport: (startDate, endDate) => 
         axiosInstance.get('/profiles/progress-report/', {
             params: { start_date: startDate, end_date: endDate }
-        }),
-
-    // Error handler helper
-    handleError: (error) => {
-        console.error('Profile service error:', error);
-        throw error.response?.data?.detail || 'An error occurred';
-    }
+        })
 };
 
 // Request interceptor

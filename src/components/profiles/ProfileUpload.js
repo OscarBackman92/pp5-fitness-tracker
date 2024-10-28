@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { Card, Button, Image, Spinner } from 'react-bootstrap';
 import { Camera } from 'lucide-react';
 import { useProfile } from '../../context/ProfileContext';
+import { profileService } from '../../services/profileService';
 
 const ProfileUpload = () => {
-    const { profile, uploadProfilePicture, loading } = useProfile();
+    const { profile, fetchProfile, loading } = useProfile();
     const [previewUrl, setPreviewUrl] = useState(null);
     const fileInputRef = React.useRef(null);
 
@@ -24,7 +25,11 @@ const ProfileUpload = () => {
         reader.readAsDataURL(file);
 
         try {
-            await uploadProfilePicture(file);
+            const formData = new FormData();
+            formData.append('profile_picture', file);
+            
+            await profileService.uploadProfilePicture(formData);
+            await fetchProfile(); // Refresh profile data to get new picture URL
             setPreviewUrl(null); // Clear preview after successful upload
         } catch (error) {
             console.error('Upload error:', error);
