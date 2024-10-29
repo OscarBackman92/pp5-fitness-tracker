@@ -1,0 +1,74 @@
+.container {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+.welcome {
+    margin-bottom: 2rem;
+}
+
+.welcome h1 {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.actions {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.mainAction {
+    display: flex;
+    align-items: center;
+}
+
+.statCard {
+    border: none;
+    border-radius: 12px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.statCard:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+}
+
+.statIcon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(37, 99, 235, 0.1);
+    color: #2563eb;
+    margin-bottom: 1rem;
+}
+
+.thisWeek {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+}
+
+.calories {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+}
+
+.duration {
+    background-color: rgba(139, 92, 246, 0.1);
+    color: #8b5cf6;
+}
+
+.statValue {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.statLabel {
+    color: #64748b;
+    font-size: 0.875rem;
+}
