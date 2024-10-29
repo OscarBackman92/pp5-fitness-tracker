@@ -231,6 +231,7 @@ export const ProfileProvider = ({ children }) => {
         error: state.error,
         fetchProfile,
         updateProfile,
+        updateSettings,  // Add this
         fetchGoals,
         addGoal,
         deleteGoal,
