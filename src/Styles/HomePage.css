@@ -8,6 +8,7 @@
   overflow: hidden;
 }
 
+/* Create a pattern overlay using CSS */
 .hero-section::before {
   content: '';
   position: absolute;
@@ -15,8 +16,9 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: url('/public/hero-pattern.svg') center/cover;
-  opacity: 0.1;
+  background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.1) 1px, transparent 0);
+  background-size: 40px 40px;
+  opacity: 0.3;
 }
 
 /* Features Section */
@@ -63,6 +65,39 @@
 .workout-card:hover {
   transform: translateY(-3px);
   box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* Landing Page Specific */
+.landing-page .hero-section {
+  padding: 100px 0;
+}
+
+.landing-page .display-4 {
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+}
+
+.landing-page .lead {
+  font-size: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.landing-page .cta-buttons .btn {
+  padding: 0.75rem 2rem;
+  font-weight: 500;
+  border-radius: 30px;
+}
+
+.landing-page .feature-section {
+  background-color: #f8f9fa;
+  padding: 80px 0;
+}
+
+.landing-page .feature-card {
+  padding: 2rem;
+  text-align: center;
+  background: white;
+  border-radius: 15px;
 }
 
 /* Responsive Design */
@@ -134,4 +169,21 @@
 
 .quick-actions .btn:hover {
   transform: translateY(-2px);
+}
+
+/* Call to Action Buttons */
+.cta-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+@media (max-width: 576px) {
+  .cta-buttons {
+      flex-direction: column;
+  }
+  
+  .cta-buttons .btn {
+      width: 100%;
+  }
 }
