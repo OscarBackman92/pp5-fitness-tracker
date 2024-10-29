@@ -3,7 +3,7 @@ import { Form, Button, Container, Alert, Card, Row, Col, Spinner } from 'react-b
 import { useNavigate, Link } from 'react-router-dom';
 import { Activity, Clock, Flame, Calendar, FileText } from 'lucide-react';
 import { useWorkouts } from '../../context/WorkoutContext';
-import '../Styles/LogWorkout.css';
+
 
 const WORKOUT_TYPES = [
     { value: 'cardio', label: 'Cardio', icon: <Activity /> },

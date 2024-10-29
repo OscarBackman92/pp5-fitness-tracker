@@ -4,7 +4,7 @@ import { useProfile } from '../../context/ProfileContext';
 import ProfileUpload from './components/ProfileUpload/ProfileUpload';
 import GoalsSection from './components/GoalsSection/GoalsSection';
 import ProgressCharts from './components/ProgressChart/ProgressCharts';
-import '../Styles/Profile.css';
+
 
 const Profile = () => {
     const { loading, error } = useProfile();
