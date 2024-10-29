@@ -3,6 +3,7 @@ import { Navbar, Nav, Container, Dropdown } from 'react-bootstrap';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 import { Activity, LayoutDashboard, Dumbbell } from 'lucide-react';
+// Fix the import statement
 import styles from './Navbar.module.css';
 
 // Rest of your component code stays the same
