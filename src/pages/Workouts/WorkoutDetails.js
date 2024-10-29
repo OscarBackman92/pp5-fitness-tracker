@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Card, Button, Modal, Spinner, Alert } from 'react-bootstrap';
 import { Activity, Clock, Flame, Calendar, FileText } from 'lucide-react';
-import { useWorkouts } from '../context/WorkoutContext';
+import { useWorkouts } from '../../context/WorkoutContext';
 
 function WorkoutDetails() {
     const { id } = useParams();

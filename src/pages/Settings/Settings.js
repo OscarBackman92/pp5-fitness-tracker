@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Container, Form, Button, Row, Col, Alert, Spinner } from 'react-bootstrap';
-import { useAuth } from '../context/AuthContext';
-import { useProfile } from '../context/ProfileContext';
-import { profileService } from '../services/profileService';
+import { useAuth } from '../../context/AuthContext';
+import { useProfile } from '../../context/ProfileContext';
+import { profileService } from '../../services/profileService';
 import { Bell, Shield, Sliders } from 'lucide-react';
 
 const Settings = () => {

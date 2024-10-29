@@ -1,9 +1,9 @@
 import React from 'react';
 import { Container, Row, Col, Alert, Spinner } from 'react-bootstrap';
-import { useProfile } from '../context/ProfileContext';
-import ProfileUpload from '../components/profiles/ProfileUpload';
-import GoalsSection from '../components/profiles/GoalsSection';
-import ProgressCharts from '../components/profiles/ProgressCharts';
+import { useProfile } from '../../context/ProfileContext';
+import ProfileUpload from '../../components/profiles/ProfileUpload';
+import GoalsSection from '../../components/profiles/GoalsSection';
+import ProgressCharts from '../../components/profiles/ProgressCharts';
 import '../Styles/Profile.css';
 
 const Profile = () => {

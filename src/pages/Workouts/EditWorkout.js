@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Form, Button, Container, Alert, Card, Row, Col, Spinner } from 'react-bootstrap';
 import { useNavigate, Link, useParams } from 'react-router-dom';
 import { Activity, Clock, Flame, Calendar, FileText } from 'lucide-react';
-import { useWorkouts } from '../context/WorkoutContext';
+import { useWorkouts } from '../../context/WorkoutContext';
 
 const WORKOUT_TYPES = [
     { value: 'cardio', label: 'Cardio', icon: <Activity /> },

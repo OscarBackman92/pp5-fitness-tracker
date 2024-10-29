@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
 import { Container, Row, Col, Card, Button, Spinner, Alert, Badge } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { useWorkouts } from '../context/WorkoutContext';
+import { useAuth } from '../../context/AuthContext';
+import { useWorkouts } from '../../context/WorkoutContext';
 import { Clock, Flame } from 'lucide-react';
-import WorkoutStats from '../components/WorkoutStats';
-import '../Styles/Dashboard.css';
+import WorkoutStats from '../../components/WorkoutStats';
+import './Dashboard.module.css';
 
 const Dashboard = () => {
     const { user, logout } = useAuth();

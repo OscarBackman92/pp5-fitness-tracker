@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Form, Button, Container, Alert, Card, Row, Col, Spinner } from 'react-bootstrap';
 import { useNavigate, Link } from 'react-router-dom';
 import { Activity, Clock, Flame, Calendar, FileText } from 'lucide-react';
-import { useWorkouts } from '../context/WorkoutContext';
+import { useWorkouts } from '../../context/WorkoutContext';
 import '../Styles/LogWorkout.css';
 
 const WORKOUT_TYPES = [

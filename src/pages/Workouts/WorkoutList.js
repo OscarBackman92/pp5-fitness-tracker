@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Alert, Spinner, Container, Button, Modal } from 'react-bootstrap';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useWorkouts } from '../context/WorkoutContext';
+import { useWorkouts } from '../../context/WorkoutContext';
 import { MdRemoveRedEye, MdDeleteSweep } from 'react-icons/md';
 import '../Styles/WorkoutList.css';
 
