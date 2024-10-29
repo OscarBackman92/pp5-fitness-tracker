@@ -11,7 +11,7 @@ export const profileService = {
 
     // Settings update - using PUT instead of PATCH
     updateSettings: (settingsData) => 
-        axiosInstance.patch('/profiles/me/', { settings: settingsData }),
+        axiosInstance.put('/profiles/me/', { settings: settingsData }),
 
     // Profile picture upload
     uploadProfilePicture: (formData) => 
