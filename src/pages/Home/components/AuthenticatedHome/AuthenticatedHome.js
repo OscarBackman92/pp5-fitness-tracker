@@ -16,37 +16,35 @@ const AuthenticatedHome = () => {
     };
 
     return (
-        <Container className={styles.container}>
+        <Container>
             <Row>
                 {/* Left Column - Stats & Actions */}
                 <Col lg={8}>
-                    {/* Welcome Section */}
                     <div className={styles.welcome}>
                         <h1>Welcome back, {user?.username}! 👋</h1>
                         <p>Track your progress and crush your fitness goals.</p>
                     </div>
 
-                    {/* Quick Actions */}
                     <div className={styles.actions}>
                         <Link to="/workouts/new">
-                            <Button variant="primary" className={styles.mainAction}>
+                            <Button variant="primary" className={`${styles.mainAction} hover-lift`}>
                                 <Plus size={20} className="me-2" />
                                 Log New Workout
                             </Button>
                         </Link>
                         <Link to="/workouts">
-                            <Button variant="outline-primary">
+                            <Button variant="outline-primary" className="hover-lift">
                                 View All Workouts
                             </Button>
                         </Link>
                     </div>
 
-                    {/* Stats Overview */}
-                    <Row className="g-4 mt-2">
+                    <Row className="g-4">
+                        {/* Total Workouts */}
                         <Col md={3}>
-                            <Card className={styles.statCard}>
+                            <Card className="shadow-sm hover-lift">
                                 <Card.Body>
-                                    <div className={styles.statIcon}>
+                                    <div className={`${styles.statIcon} ${styles.primary}`}>
                                         <Activity size={24} />
                                     </div>
                                     <div className={styles.statValue}>{stats.totalWorkouts}</div>
@@ -55,8 +53,9 @@ const AuthenticatedHome = () => {
                             </Card>
                         </Col>
 
+                        {/* This Week */}
                         <Col md={3}>
-                            <Card className={styles.statCard}>
+                            <Card className="shadow-sm hover-lift">
                                 <Card.Body>
                                     <div className={`${styles.statIcon} ${styles.thisWeek}`}>
                                         <Activity size={24} />
@@ -67,8 +66,9 @@ const AuthenticatedHome = () => {
                             </Card>
                         </Col>
 
+                        {/* Calories */}
                         <Col md={3}>
-                            <Card className={styles.statCard}>
+                            <Card className="shadow-sm hover-lift">
                                 <Card.Body>
                                     <div className={`${styles.statIcon} ${styles.calories}`}>
                                         <Flame size={24} />
@@ -79,8 +79,9 @@ const AuthenticatedHome = () => {
                             </Card>
                         </Col>
 
+                        {/* Duration */}
                         <Col md={3}>
-                            <Card className={styles.statCard}>
+                            <Card className="shadow-sm hover-lift">
                                 <Card.Body>
                                     <div className={`${styles.statIcon} ${styles.duration}`}>
                                         <Clock size={24} />
@@ -95,7 +96,7 @@ const AuthenticatedHome = () => {
 
                 {/* Right Column - Social Feed */}
                 <Col lg={4} className="mt-4 mt-lg-0">
-                    <Card className={styles.feedCard}>
+                    <Card className="shadow-sm">
                         <Card.Body>
                             <h5 className={styles.feedTitle}>Community Feed</h5>
                             <SocialFeed />
