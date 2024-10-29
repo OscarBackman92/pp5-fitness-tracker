@@ -15,7 +15,7 @@ const NavigationBar = () => {
         try {
             setIsLoggingOut(true);
             await logout();
-            navigate('/login');
+            navigate('/');
         } catch (error) {
             console.error('Logout error:', error);
         } finally {
@@ -30,7 +30,7 @@ const NavigationBar = () => {
             <Container>
                 <BootstrapNavbar.Brand as={Link} to="/" className="d-flex align-items-center">
                     <Activity size={24} className="me-2" />
-                    Fitness App
+                    Fitness Tracker
                 </BootstrapNavbar.Brand>
                 <BootstrapNavbar.Toggle aria-controls="basic-navbar-nav" />
                 <BootstrapNavbar.Collapse id="basic-navbar-nav">
@@ -46,6 +46,14 @@ const NavigationBar = () => {
                                     Dashboard
                                 </Nav.Link>
                                 
+                                <Nav.Link 
+                                    as={Link} 
+                                    to="/workouts"
+                                    className={isActive('/workouts') ? 'active' : ''}
+                                >
+                                    Workouts
+                                </Nav.Link>
+
                                 <Dropdown align="end" className="ms-2">
                                     <Dropdown.Toggle 
                                         variant="dark" 

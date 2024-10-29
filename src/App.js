@@ -19,19 +19,23 @@ import LogWorkout from './pages/LogWorkout';
 import EditWorkout from './pages/EditWorkout';
 import WorkoutDetails from './pages/WorkoutDetails';
 
+
 function App() {
   return (
     <Router>
       <AuthProvider>
         <ProfileProvider>
           <WorkoutProvider>
-            <div className="app-container">
+            <div className="app-container d-flex flex-column min-vh-100">
               <Navbar />
-              <main className="main-content">
+              <main className="flex-grow-1">
                 <Routes>
+                  {/* Public Routes */}
                   <Route path="/" element={<HomePage />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
+
+                  {/* Protected Routes */}
                   <Route
                     path="/dashboard"
                     element={

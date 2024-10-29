@@ -1,26 +1,32 @@
-/* src/Styles/App.css */
+/* Base App Layout */
 .App {
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
+/* Content Layout */
 .content {
-  padding-top: 60px; /* Adjust based on your navbar height */
+  flex: 1 0 auto;
+  padding-top: 60px; /* Navbar height */
 }
 
-/* Add margin to account for fixed navbar */
+/* Container Adjustments */
 .container-fluid {
-  margin-top: 56px; /* Adjust based on your navbar height */
+  margin-top: 56px; /* Navbar height */
+  padding-bottom: 2rem;
 }
 
-/* Loading spinner styles */
+/* Loading States */
 .loading-spinner {
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  z-index: 1000;
 }
 
-/* Smooth page transitions */
+/* Page Transitions */
 .fade-enter {
   opacity: 0;
 }
@@ -37,4 +43,146 @@
 .fade-exit-active {
   opacity: 0;
   transition: opacity 300ms ease-in;
+}
+
+/* Navbar Styling */
+.navbar-custom {
+  background: linear-gradient(135deg, #2575fc 0%, #6a11cb 100%) !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+  font-weight: 600;
+}
+
+/* Main Content Wrapper */
+.content-wrapper {
+  margin-top: 56px;
+  min-height: calc(100vh - 56px - 60px); /* viewport height - navbar - footer */
+  padding: 20px 0;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .content {
+      padding-top: 56px;
+  }
+
+  .container-fluid {
+      margin-top: 56px;
+      padding: 1rem;
+  }
+}
+
+/* Utility Classes */
+.flex-grow {
+  flex: 1 0 auto;
+}
+
+/* Shadow Utilities */
+.shadow-sm {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05) !important;
+}
+
+.shadow-md {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+}
+
+.shadow-lg {
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Animation Utilities */
+.transition-all {
+  transition: all 0.3s ease;
+}
+
+.hover-lift {
+  transition: transform 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Loading Overlay */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+/* Error States */
+.error-message {
+  padding: 1rem;
+  border-radius: 8px;
+  background-color: #fee2e2;
+  border: 1px solid #ef4444;
+  color: #dc2626;
+  margin: 1rem 0;
+}
+
+/* Success States */
+.success-message {
+  padding: 1rem;
+  border-radius: 8px;
+  background-color: #dcfce7;
+  border: 1px solid #22c55e;
+  color: #16a34a;
+  margin: 1rem 0;
+}
+
+/* Form Styles */
+.form-control:focus {
+  border-color: #2575fc;
+  box-shadow: 0 0 0 0.2rem rgba(37, 117, 252, 0.25);
+}
+
+/* Button Styles */
+.btn-primary {
+  background: linear-gradient(135deg, #2575fc 0%, #6a11cb 100%);
+  border: none;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Card Styles */
+.card {
+  border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
