@@ -1,32 +1,42 @@
 .navbar {
-    box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     height: 64px;
+    background-color: #f7f9fc;
+    border-bottom: 2px solid #0f172a;
 }
 
 .brand {
     display: flex;
     align-items: center;
-    font-size: 1.25rem;
+    font-size: 1.5rem;
+    color: #0f172a;
+    font-weight: bold;
+    text-transform: uppercase;
 }
 
 .navLink {
     display: flex;
     align-items: center;
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    transition: all 0.2s ease;
-    color: #64748b !important;
+    padding: 0.5rem 1.2rem;
+    border-radius: 10px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    color: #3b82f6 !important; /* Vibrant blue */
+    font-weight: 500;
+    letter-spacing: 0.5px;
 }
 
 .navLink:hover {
-    background-color: #f8fafc;
-    color: #0f172a !important;
+    background-color: #dbeafe; /* Soft blue for hover */
+    color: #1e3a8a !important;
+    transform: translateY(-2px);
 }
 
 .navLink.active {
-    background-color: #f1f5f9;
-    color: #0f172a !important;
-    font-weight: 500;
+    background-color: #0f172a; /* Dark active state */
+    color: #f8fafc !important; /* Light text */
+    font-weight: 600;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transform: scale(1.05);
 }
 
 .profileDropdown {
@@ -36,21 +46,25 @@
     border: none;
     padding: 0.5rem 1rem;
     border-radius: 8px;
-    color: #64748b;
+    color: #3b82f6; /* Match navLink color */
+    font-weight: 500;
 }
 
 .profileDropdown:hover,
 .profileDropdown:focus,
 .profileDropdown:active {
-    background-color: #f8fafc !important;
-    color: #0f172a !important;
-    border: none;
-    box-shadow: none !important;
+    background-color: #e0e7ff !important; /* Soft background for profile hover */
+    color: #1e3a8a !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
 .profilePicture {
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     object-fit: cover;
+    border: 2px solid #3b82f6; /* Blue border for a sporty look */
+}
+.navbar {
+    z-index: 1000; /* Ensures navbar is above other elements */
 }

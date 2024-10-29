@@ -1,0 +1,128 @@
+/* WorkoutList Styles */
+.workout-list-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    padding-top: 70px;
+  }
+  
+  .workout-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  /* Success and Alert Messages */
+  .alert {
+    margin: 10px 0;
+  }
+  
+  /* Loading Spinner */
+  .workout-spinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px;
+  }
+  
+  /* Table Styling */
+  .workout-table-container {
+    overflow-x: auto; /* Ensures table can scroll horizontally on smaller screens */
+  }
+  
+  .workout-table {
+    width: 100%;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  }
+  
+  .workout-table th {
+    background-color: #f7f7f7;
+    text-align: center;
+    padding: 12px;
+  }
+  
+  .workout-table td {
+    text-align: center;
+    vertical-align: middle;
+    padding: 12px;
+  }
+  
+  /* Responsive Table Actions */
+  .action-icons {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+  }
+  
+  .icon-view,
+  .icon-delete {
+    font-size: 1.2rem;
+    color: #6c757d;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+  
+  .icon-view:hover {
+    color: #2575fc;
+  }
+  
+  .icon-delete:hover {
+    color: #dc3545;
+  }
+  
+  /* No Workouts Alert */
+  .no-workouts-alert {
+    text-align: center;
+    background-color: #f8f9fa;
+    color: #555;
+    padding: 20px;
+    border-radius: 8px;
+    font-size: 1rem;
+  }
+  
+  /* Modal Button Styles */
+  .modal-footer .btn-danger {
+    background-color: #dc3545;
+    border: none;
+  }
+  
+  .modal-footer .btn-secondary {
+    background-color: #6c757d;
+    border: none;
+  }
+  
+  /* Button Styles */
+  .btn-primary {
+    background: linear-gradient(135deg, #2575fc 0%, #6a11cb 100%);
+    border: none;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Small Screen Adjustments */
+  @media (max-width: 768px) {
+    .workout-list-header h2 {
+      font-size: 1.5rem;
+    }
+  
+    .btn-primary {
+      font-size: 0.875rem;
+      padding: 0.5rem 1rem;
+    }
+  
+    .workout-table td,
+    .workout-table th {
+      font-size: 0.875rem;
+      padding: 8px;
+    }
+  
+    .workout-list-container {
+      padding: 10px;
+    }
+  }
+  

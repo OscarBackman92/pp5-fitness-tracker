@@ -3,7 +3,7 @@ import { Table, Alert, Spinner, Container, Button, Modal } from 'react-bootstrap
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useWorkouts } from '../../context/WorkoutContext';
 import { MdRemoveRedEye, MdDeleteSweep } from 'react-icons/md';
-
+import styles from './WorkoutList.module.css';
 
 function WorkoutList() {
     const { workouts, loading, error, fetchWorkouts, deleteWorkout } = useWorkouts();
@@ -49,8 +49,8 @@ function WorkoutList() {
     };
 
     return (
-        <Container className="workout-list-container">
-            <div className="workout-list-header">
+        <Container className={styles['workout-list-container']}>
+            <div className={styles['workout-list-header']}>
                 <h2>Your Workouts</h2>
                 <Link to="/workouts/new" className="btn btn-primary">Log New Workout</Link>
             </div>
@@ -66,16 +66,16 @@ function WorkoutList() {
             )}
 
             {loading ? (
-                <div className="workout-spinner">
+                <div className={styles['workout-spinner']}>
                     <Spinner animation="border" />
                 </div>
             ) : workouts.length === 0 ? (
-                <Alert variant="info" className="no-workouts-alert">
+                <Alert variant="info" className={styles['no-workouts-alert']}>
                     No workouts logged yet. Start by logging a new workout!
                 </Alert>
             ) : (
-                <div className="workout-table-container">
-                    <Table responsive striped bordered hover className="workout-table">
+                <div className={styles['workout-table-container']}>
+                    <Table responsive striped bordered hover className={styles['workout-table']}>
                         <thead>
                             <tr>
                                 <th>Date</th>
@@ -92,11 +92,11 @@ function WorkoutList() {
                                     <td>{workout.workout_type_display || workout.workout_type}</td>
                                     <td>{workout.duration} min</td>
                                     <td>{workout.calories}</td>
-                                    <td className="action-icons">
+                                    <td className={styles['action-icons']}>
                                         <Link to={`/workouts/${workout.id}`}>
-                                            <MdRemoveRedEye className="icon-view" />
+                                            <MdRemoveRedEye className={styles['icon-view']} />
                                         </Link>
-                                        <Button variant="link" className="icon-delete" onClick={() => handleDeleteClick(workout)}>
+                                        <Button variant="link" className={styles['icon-delete']} onClick={() => handleDeleteClick(workout)}>
                                             <MdDeleteSweep />
                                         </Button>
                                     </td>
