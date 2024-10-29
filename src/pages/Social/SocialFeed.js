@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { socialService } from '../services/social';
+import { socialService } from '../../services/social';
 
 const SocialFeed = () => {
     const [feed, setFeed] = useState([]);

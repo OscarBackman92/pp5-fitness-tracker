@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { Card, Form, Row, Col, Alert } from 'react-bootstrap';
 import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { TrendingUp, Calendar } from 'lucide-react';
-import { useProfile } from '../../context/ProfileContext';
-import { useWorkouts } from '../../context/WorkoutContext';
+import { useProfile } from '../../../../context/ProfileContext';
+import { useWorkouts } from '../../../../context/WorkoutContext';
 
 const CHART_TYPES = {
     WEIGHT: 'weight',

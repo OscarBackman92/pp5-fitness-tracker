@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Card, Button, Image, Spinner } from 'react-bootstrap';
 import { Camera } from 'lucide-react';
-import { useProfile } from '../../context/ProfileContext';
-import { profileService } from '../../services/profileService';
+import { useProfile } from '../../../../context/ProfileContext';
+import { profileService } from '../../../../services/profileService';
 
 const ProfileUpload = () => {
     const { profile, fetchProfile, loading } = useProfile();
