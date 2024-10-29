@@ -1,0 +1,56 @@
+.navbar {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+    height: 64px;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    font-size: 1.25rem;
+}
+
+.navLink {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    color: #64748b !important;
+}
+
+.navLink:hover {
+    background-color: #f8fafc;
+    color: #0f172a !important;
+}
+
+.navLink.active {
+    background-color: #f1f5f9;
+    color: #0f172a !important;
+    font-weight: 500;
+}
+
+.profileDropdown {
+    display: flex;
+    align-items: center;
+    background: none;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    color: #64748b;
+}
+
+.profileDropdown:hover,
+.profileDropdown:focus,
+.profileDropdown:active {
+    background-color: #f8fafc !important;
+    color: #0f172a !important;
+    border: none;
+    box-shadow: none !important;
+}
+
+.profilePicture {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+}

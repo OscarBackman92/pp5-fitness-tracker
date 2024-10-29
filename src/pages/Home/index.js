@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAuth } from '../../context/AuthContext';
-import PublicHome from './components/PublicHome';
+import PublicHome from './components/PublicHome/PublicHome';
 import AuthenticatedHome from './components/AuthenticatedHome';
 
 const HomePage = () => {

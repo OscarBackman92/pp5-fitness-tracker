@@ -1,21 +1,21 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Navbar from './components/Navbar';
+import Navbar from './components/layout/Navbar/Navbar';
 import HomePage from './pages/HomePage';
 import Login from './pages/Login';
-import Register from './pages/Register';
+import Register from './pages/Auth/Register/Register';
 import Dashboard from './pages/Dashboard';
 import { AuthProvider } from './context/AuthContext';
 import { WorkoutProvider } from './context/WorkoutContext';
 import { ProfileProvider } from './context/ProfileContext';
-import PrivateRoute from './components/PrivateRoute';
+import PrivateRoute from './components/auth/PrivateRoute/PrivateRoute';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
 import WorkoutList from './pages/WorkoutList';
 import LogWorkout from './pages/LogWorkout';
 import EditWorkout from './pages/EditWorkout';
 import WorkoutDetails from './pages/WorkoutDetails';
-import Footer from './components/Footer';
+import Footer from './components/layout/Footer/Footer';
 
 
 function App() {
