@@ -1,19 +1,15 @@
 import axiosInstance from './api/axiosInstance';
 
 export const profileService = {
-    // Profile endpoints
     getProfile: () => 
         axiosInstance.get('/profiles/me/'),
 
-    // Main profile update
     updateProfile: (data) => 
         axiosInstance.put('/profiles/me/', data),
 
-    // Settings update - using PUT instead of PATCH
     updateSettings: (settingsData) => 
         axiosInstance.put('/profiles/me/', { settings: settingsData }),
 
-    // Profile picture upload
     uploadProfilePicture: (formData) => 
         axiosInstance.put('/profiles/update_profile_picture/', formData, {
             headers: {
@@ -21,7 +17,6 @@ export const profileService = {
             }
         }),
 
-    // Goals endpoints
     getGoals: () => 
         axiosInstance.get('/goals/'),
 
@@ -34,7 +29,6 @@ export const profileService = {
     deleteGoal: (goalId) => 
         axiosInstance.delete(`/goals/${goalId}/`),
     
-    // Utility endpoints
     calculateBMI: () => 
         axiosInstance.get('/profiles/calculate-bmi/'),
 
@@ -44,7 +38,6 @@ export const profileService = {
         })
 };
 
-// Add response interceptor for better error handling
 axiosInstance.interceptors.response.use(
     response => response,
     error => {
