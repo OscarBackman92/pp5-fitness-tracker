@@ -11,6 +11,12 @@
     font-size: 2rem;
     font-weight: 600;
     margin-bottom: 0.5rem;
+    color: #1e293b;
+}
+
+.welcome p {
+    color: #64748b;
+    font-size: 1.1rem;
 }
 
 .actions {
@@ -28,6 +34,7 @@
     border: none;
     border-radius: 12px;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+    height: 100%;
 }
 
 .statCard:hover {
@@ -66,6 +73,7 @@
     font-size: 2rem;
     font-weight: 600;
     margin-bottom: 0.25rem;
+    color: #1e293b;
 }
 
 .statLabel {

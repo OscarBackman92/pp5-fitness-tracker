@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/layout/Navbar/Navbar';
+import Home from './pages/Home/Home';
 import Login from './pages/Auth/Login/Login';
 import Register from './pages/Auth/Register/Register';
 import Dashboard from './pages/Dashboard/Dashboard';
@@ -16,7 +17,6 @@ import EditWorkout from './pages/Workouts/EditWorkout';
 import WorkoutDetails from './pages/Workouts/WorkoutDetails';
 import Footer from './components/layout/Footer/Footer';
 
-
 function App() {
   return (
     <Router>
@@ -28,7 +28,7 @@ function App() {
               <main className="flex-grow-1">
                 <Routes>
                   {/* Public Routes */}
-                  <Route path="/home" />
+                  <Route path="/" element={<Home />} /> {/* Root route */}
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
 
@@ -99,6 +99,5 @@ function App() {
     </Router>
   );
 }
-
 
 export default App;

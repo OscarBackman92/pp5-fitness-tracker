@@ -13,11 +13,9 @@ const PublicHome = () => {
                     <Row className="align-items-center min-vh-100">
                         <Col lg={6} className="text-white">
                             <span className={styles.badge}>🚀 Your Fitness Journey Starts Here</span>
-                            <h1 className={styles.title}>
-                                Transform Your Body, Track Your Progress
-                            </h1>
+                            <h1 className={styles.title}>Transform Your Fitness Journey</h1>
                             <p className={styles.subtitle}>
-                                Join thousands of users who are achieving their fitness goals with our comprehensive tracking platform.
+                                Track workouts, analyze progress, and achieve your goals with our comprehensive fitness tracking platform.
                             </p>
                             <div className={styles.cta}>
                                 <Link to="/register">
@@ -46,9 +44,9 @@ const PublicHome = () => {
             {/* Features Section */}
             <section className={styles.features}>
                 <Container>
-                    <h2 className={styles.sectionTitle}>Why Choose Us?</h2>
+                    <h2 className={styles.sectionTitle}>Why Choose Our Platform?</h2>
                     <Row>
-                        {features.map((feature, index) => (
+                        {FEATURES.map((feature, index) => (
                             <Col key={index} md={3} className="mb-4">
                                 <div className={styles.featureCard}>
                                     <div className={styles.featureIcon}>{feature.icon}</div>
@@ -64,7 +62,7 @@ const PublicHome = () => {
     );
 };
 
-const features = [
+const FEATURES = [
     {
         icon: <Activity size={32} />,
         title: "Easy Tracking",
