@@ -7,7 +7,6 @@ export const useHeroAnimation = () => {
         const element = animationRef.current;
         if (!element) return;
 
-        // Add animation logic here
         const observer = new IntersectionObserver(
             (entries) => {
                 entries.forEach(entry => {

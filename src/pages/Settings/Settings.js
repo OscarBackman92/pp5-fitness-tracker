@@ -11,24 +11,20 @@ const Settings = () => {
     const [successMessage, setSuccessMessage] = useState('');
     const [submitError, setError] = useState('');
     const [settings, setSettings] = useState({
-        // Notification Settings
         emailNotifications: true,
         workoutReminders: true,
         goalUpdates: true,
         weeklyReports: true,
 
-        // Display Settings
         theme: 'light',
         language: 'en',
         measurementUnit: 'metric',
         timeFormat: '24h',
 
-        // Privacy Settings
         profileVisibility: 'public',
         showWorkouts: true,
         showProgress: true,
 
-        // Workout Settings
         defaultWorkoutDuration: 60,
         calorieTracking: true,
         autoPause: true,

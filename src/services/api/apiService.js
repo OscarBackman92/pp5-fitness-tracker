@@ -24,13 +24,12 @@ export const authApi = {
         }
     },
 
-    // Add the register function
     register: async (userData) => {
         try {
             const formattedData = {
                 username: userData.username,
                 email: userData.email,
-                password: userData.password1,  // Changed from password1 to password
+                password: userData.password1,
                 password2: userData.password2
             };
             console.log('Sending registration data:', formattedData);
@@ -38,7 +37,6 @@ export const authApi = {
         } catch (error) {
             console.error('Registration error:', error.response?.data);
             if (error.response?.data?.password) {
-                // Handle specific password field errors
                 throw new Error(`Password error: ${error.response.data.password.join(', ')}`);
             }
             throw error;

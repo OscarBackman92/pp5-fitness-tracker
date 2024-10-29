@@ -5,14 +5,14 @@
   flex-direction: column;
 }
 
-/* Navbar Styling */
+
 .navbar-custom {
   background: linear-gradient(135deg, #2575fc 0%, #6a11cb 100%) !important;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   height: 64px;
-  position: sticky; /* Ensures navbar sticks to top */
+  position: sticky;
   top: 0;
-  z-index: 1000; /* Sits above other elements */
+  z-index: 1000;
 }
 
 /* Brand */
@@ -26,19 +26,19 @@
 /* Content Layout */
 .content {
   flex: 1 0 auto;
-  padding-top: 80px; /* Spacing below the navbar to prevent overlap */
+  padding-top: 80px;
 }
 
 /* Container Adjustments */
 .container-fluid {
-  margin-top: 64px; /* Matches navbar height */
+  margin-top: 64px;
   padding-bottom: 2rem;
 }
 
 /* Main Content Wrapper */
 .content-wrapper {
-  margin-top: 64px; /* Offset for the navbar */
-  min-height: calc(100vh - 64px - 60px); /* Adjust for footer */
+  margin-top: 64px;
+  min-height: calc(100vh - 64px - 60px);
   padding: 20px 0;
 }
 

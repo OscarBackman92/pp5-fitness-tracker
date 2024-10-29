@@ -103,7 +103,6 @@ export const ProfileProvider = ({ children }) => {
                 payload: response.data 
             });
 
-            // Fetch goals only
             const goalsResponse = await profileService.getGoals();
             dispatch({ 
                 type: ACTIONS.SET_GOALS, 
@@ -200,7 +199,6 @@ export const ProfileProvider = ({ children }) => {
         dispatch({ type: ACTIONS.CLEAR_ERROR });
     }, []);
 
-    // Initialize profile data
     React.useEffect(() => {
         fetchProfile().catch(console.error);
     }, [fetchProfile]);
@@ -231,7 +229,7 @@ export const ProfileProvider = ({ children }) => {
         error: state.error,
         fetchProfile,
         updateProfile,
-        updateSettings,  // Add this
+        updateSettings,
         fetchGoals,
         addGoal,
         deleteGoal,

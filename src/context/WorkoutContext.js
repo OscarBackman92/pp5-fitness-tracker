@@ -129,7 +129,6 @@ export const WorkoutProvider = ({ children }) => {
                 payload: newWorkout 
             });
             
-            // Fetch updated list after creating new workout
             await fetchWorkouts();
             
             return newWorkout;
@@ -155,7 +154,6 @@ export const WorkoutProvider = ({ children }) => {
                 payload: response.data 
             });
             
-            // Fetch updated list after update
             await fetchWorkouts();
             
             return response.data;

@@ -1,4 +1,3 @@
-// src/pages/Login.js
 import React, { useState, useEffect } from 'react';
 import { Form, Button, Card, Alert, Container, Row, Col, Spinner } from 'react-bootstrap';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
@@ -15,7 +14,6 @@ const Login = () => {
     const location = useLocation();
     const { login, isAuthenticated } = useAuth();
 
-    // Redirect if already logged in
     useEffect(() => {
         if (isAuthenticated) {
             navigate('/dashboard');
@@ -27,7 +25,6 @@ const Login = () => {
             ...prev,
             [e.target.name]: e.target.value
         }));
-        // Clear error when user starts typing
         if (error) setError('');
     };
 
@@ -44,7 +41,6 @@ const Login = () => {
             console.log('Attempting login with:', formData.username);
             await login(formData.username, formData.password);
             
-            // Get the redirect path from location state or default to dashboard
             const from = location.state?.from || '/dashboard';
             navigate(from, { replace: true });
         } catch (err) {

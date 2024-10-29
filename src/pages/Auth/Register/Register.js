@@ -16,7 +16,6 @@ const Register = () => {
     const navigate = useNavigate();
     const { isAuthenticated } = useAuth();
 
-    // Redirect if already logged in
     useEffect(() => {
         if (isAuthenticated) {
             navigate('/dashboard');
@@ -59,7 +58,7 @@ const Register = () => {
     
         try {
             console.log('Submitting registration data...');
-            await authApi.register(formData); // Removed unused response variable
+            await authApi.register(formData);
             console.log('Registration successful');
             navigate('/login', { 
                 state: { 
@@ -72,13 +71,11 @@ const Register = () => {
             
             if (error.response?.data) {
                 const errorData = error.response.data;
-                // Handle different error formats
                 if (typeof errorData === 'string') {
                     setError(errorData);
                 } else if (typeof errorData === 'object') {
                     const errorMessage = Object.entries(errorData)
                         .map(([key, value]) => {
-                            // Format the key to be more readable
                             const formattedKey = key.charAt(0).toUpperCase() + key.slice(1).replace('_', ' ');
                             return `${formattedKey}: ${Array.isArray(value) ? value.join(', ') : value}`;
                         })
