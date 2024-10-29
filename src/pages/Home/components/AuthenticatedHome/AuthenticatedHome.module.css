@@ -1,6 +1,5 @@
 .container {
-    padding-top: 2rem;
-    padding-bottom: 2rem;
+    padding: 2rem 1rem;
 }
 
 .welcome {
@@ -16,7 +15,7 @@
 
 .welcome p {
     color: #64748b;
-    font-size: 1.1rem;
+    margin-bottom: 0;
 }
 
 .actions {
@@ -79,4 +78,37 @@
 .statLabel {
     color: #64748b;
     font-size: 0.875rem;
+}
+
+.feedCard {
+    border: none;
+    border-radius: 12px;
+    background: white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.feedTitle {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 1.5rem;
+}
+
+/* Responsive Styles */
+@media (max-width: 992px) {
+    .welcome h1 {
+        font-size: 1.75rem;
+    }
+
+    .actions {
+        flex-direction: column;
+    }
+
+    .actions a {
+        width: 100%;
+    }
+
+    .actions button {
+        width: 100%;
+    }
 }
