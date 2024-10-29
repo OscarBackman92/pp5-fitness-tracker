@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Navbar, Nav, Container, Dropdown, Button, Spinner } from 'react-bootstrap';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Activity, User, LogOut, BarChart2, Settings, Dumbbell } from 'lucide-react';
+import { Activity, User, LogOut, BarChart2, Settings, Dumbbell, Home } from 'lucide-react';
 
 const NavigationBar = () => {
     const { user, isAuthenticated, logout } = useAuth();
@@ -37,6 +37,16 @@ const NavigationBar = () => {
                 
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="ms-auto align-items-center gap-2">
+                        {/* Home Link - Always visible */}
+                        <Nav.Link 
+                            as={Link} 
+                            to="/"
+                            className={`d-flex align-items-center ${isActive('/') ? 'active fw-bold' : ''}`}
+                        >
+                            <Home size={16} className="me-1" />
+                            Home
+                        </Nav.Link>
+
                         {isAuthenticated ? (
                             <>
                                 {/* Dashboard Link */}
