@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/layout/Navbar/Navbar';
 import Home from './pages/Home/Home';
 import Login from './pages/Auth/Login/Login';
@@ -28,7 +28,8 @@ function App() {
               <main className="flex-grow-1">
                 <Routes>
                   {/* Public Routes */}
-                  <Route path="/" element={<Home />} /> {/* Root route */}
+                  <Route path="/" element={<Home />} />
+                  <Route path="/home" element={<Navigate to="/" replace />} /> {/* Redirect /home to / */}
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
 
@@ -89,6 +90,9 @@ function App() {
                       </PrivateRoute>
                     }
                   />
+
+                  {/* Catch all route - redirect to home */}
+                  <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
               </main>
               <Footer />
