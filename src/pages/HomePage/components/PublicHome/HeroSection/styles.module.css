@@ -1,0 +1,123 @@
+.heroSection {
+    position: relative;
+    background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+    min-height: 85vh;
+    overflow: hidden;
+}
+
+.heroBadge {
+    margin-bottom: 1rem;
+    padding: 0.75rem 1.5rem;
+    display: inline-flex;
+    align-items: center;
+}
+
+.heroTitle {
+    font-size: 3.5rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
+}
+
+.heroDescription {
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+}
+
+.ctaContainer {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.primaryCta,
+.secondaryCta {
+    border-radius: 9999px;
+    padding: 0.75rem 2rem;
+    transition: transform 0.2s ease;
+}
+
+.primaryCta:hover,
+.secondaryCta:hover {
+    transform: scale(1.05);
+}
+
+.heroImage {
+    border-radius: 0.5rem;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.heroImage:hover {
+    transform: translateY(-5px);
+}
+
+/* Background Shapes */
+.backgroundShapes {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+}
+
+.shape {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    filter: blur(40px);
+}
+
+.shape1 {
+    width: 300px;
+    height: 300px;
+    top: -150px;
+    right: -150px;
+}
+
+.shape2 {
+    width: 200px;
+    height: 200px;
+    bottom: -100px;
+    left: -100px;
+}
+
+.gridPattern {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.1) 1px, transparent 0);
+    background-size: 40px 40px;
+    opacity: 0.3;
+}
+
+/* Responsive Styles */
+@media (max-width: 992px) {
+    .heroTitle {
+        font-size: 2.5rem;
+    }
+
+    .heroDescription {
+        font-size: 1.125rem;
+    }
+
+    .ctaContainer {
+        flex-direction: column;
+    }
+
+    .primaryCta,
+    .secondaryCta {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .heroSection {
+        min-height: 100vh;
+        padding: 4rem 0;
+    }
+}
