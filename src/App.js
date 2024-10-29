@@ -28,7 +28,7 @@ function App() {
               <main className="flex-grow-1">
                 <Routes>
                   {/* Public Routes */}
-                  <Route path="/" />
+                  <Route path="/home" />
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
 
