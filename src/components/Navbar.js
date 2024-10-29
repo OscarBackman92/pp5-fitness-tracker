@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Navbar, Nav, Container, Dropdown, Button, Spinner } from 'react-bootstrap';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -9,11 +9,14 @@ const NavigationBar = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const [isLoggingOut, setIsLoggingOut] = useState(false);
+    const [expanded, setExpanded] = useState(false);
+    const navToggleRef = useRef(null);
 
     const handleLogout = async () => {
         try {
             setIsLoggingOut(true);
             await logout();
+            setExpanded(false);
             navigate('/');
         } catch (error) {
             console.error('Logout error:', error);
@@ -24,16 +27,36 @@ const NavigationBar = () => {
 
     const isActive = (path) => location.pathname === path;
 
+    // Handle navigation and collapse
+    const handleNavigation = () => {
+        setExpanded(false);
+    };
+
     return (
-        <Navbar bg="white" expand="lg" fixed="top" className="navbar-light border-bottom">
+        <Navbar 
+            bg="white" 
+            expand="lg" 
+            fixed="top" 
+            className="navbar-light border-bottom"
+            expanded={expanded}
+            onToggle={setExpanded}
+        >
             <Container>
                 {/* Brand */}
-                <Navbar.Brand as={Link} to="/" className="d-flex align-items-center">
+                <Navbar.Brand 
+                    as={Link} 
+                    to="/" 
+                    className="d-flex align-items-center"
+                    onClick={handleNavigation}
+                >
                     <Activity size={24} className="text-primary me-2" />
                     <span className="fw-bold">FitTrack</span>
                 </Navbar.Brand>
 
-                <Navbar.Toggle aria-controls="basic-navbar-nav" />
+                <Navbar.Toggle 
+                    ref={navToggleRef}
+                    aria-controls="basic-navbar-nav" 
+                />
                 
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="ms-auto align-items-center gap-2">
@@ -42,6 +65,7 @@ const NavigationBar = () => {
                             as={Link} 
                             to="/"
                             className={`d-flex align-items-center ${isActive('/') ? 'active fw-bold' : ''}`}
+                            onClick={handleNavigation}
                         >
                             <Home size={16} className="me-1" />
                             Home
@@ -54,6 +78,7 @@ const NavigationBar = () => {
                                     as={Link} 
                                     to="/dashboard"
                                     className={`d-flex align-items-center ${isActive('/dashboard') ? 'active fw-bold' : ''}`}
+                                    onClick={handleNavigation}
                                 >
                                     <BarChart2 size={16} className="me-1" />
                                     Dashboard
@@ -64,6 +89,7 @@ const NavigationBar = () => {
                                     as={Link} 
                                     to="/workouts"
                                     className={`d-flex align-items-center ${isActive('/workouts') ? 'active fw-bold' : ''}`}
+                                    onClick={handleNavigation}
                                 >
                                     <Dumbbell size={16} className="me-1" />
                                     Workouts
@@ -95,17 +121,30 @@ const NavigationBar = () => {
                                     </Dropdown.Toggle>
 
                                     <Dropdown.Menu className="shadow-sm border-0">
-                                        <Dropdown.Item as={Link} to="/profile" className="d-flex align-items-center">
+                                        <Dropdown.Item 
+                                            as={Link} 
+                                            to="/profile" 
+                                            className="d-flex align-items-center"
+                                            onClick={handleNavigation}
+                                        >
                                             <User size={16} className="me-2" />
                                             Profile
                                         </Dropdown.Item>
-                                        <Dropdown.Item as={Link} to="/settings" className="d-flex align-items-center">
+                                        <Dropdown.Item 
+                                            as={Link} 
+                                            to="/settings" 
+                                            className="d-flex align-items-center"
+                                            onClick={handleNavigation}
+                                        >
                                             <Settings size={16} className="me-2" />
                                             Settings
                                         </Dropdown.Item>
                                         <Dropdown.Divider />
                                         <Dropdown.Item 
-                                            onClick={handleLogout}
+                                            onClick={() => {
+                                                handleNavigation();
+                                                handleLogout();
+                                            }}
                                             className="text-danger d-flex align-items-center"
                                             disabled={isLoggingOut}
                                         >
@@ -136,6 +175,7 @@ const NavigationBar = () => {
                                     as={Link} 
                                     to="/login"
                                     className={`btn btn-outline-primary me-2 ${isActive('/login') ? 'active' : ''}`}
+                                    onClick={handleNavigation}
                                 >
                                     Login
                                 </Nav.Link>
@@ -144,6 +184,7 @@ const NavigationBar = () => {
                                     to="/register"
                                     variant="primary"
                                     className="rounded-pill px-4"
+                                    onClick={handleNavigation}
                                 >
                                     Sign Up
                                 </Button>
