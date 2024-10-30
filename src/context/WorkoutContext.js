@@ -1,4 +1,3 @@
-// workoutContext.js
 import React, { createContext, useContext, useReducer, useCallback, useMemo, useEffect } from 'react';
 import axiosInstance from '../services/api/axiosInstance';
 
@@ -85,7 +84,7 @@ export const WorkoutProvider = ({ children }) => {
       dispatch({
         type: ACTIONS.SET_WORKOUTS,
         payload: {
-          workouts: response.data.results,
+          workouts: response.data.results || [],
           hasMore: !!response.data.next,
           page
         }
@@ -95,6 +94,7 @@ export const WorkoutProvider = ({ children }) => {
         type: ACTIONS.SET_ERROR, 
         payload: error.response?.data?.detail || 'Failed to fetch workouts' 
       });
+      throw error;
     }
   }, []);
 
@@ -180,3 +180,5 @@ export const useWorkouts = () => {
   }
   return context;
 };
+
+export default WorkoutContext;

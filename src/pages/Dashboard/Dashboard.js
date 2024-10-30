@@ -10,15 +10,17 @@ import './Dashboard.module.css';
 const Dashboard = () => {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
-    const { workouts, loading, error, fetchWorkouts } = useWorkouts();
+    const { workouts = [], loading, error, fetchWorkouts } = useWorkouts();
 
     useEffect(() => {
-        fetchWorkouts().catch((error) => {
-            if (error.response?.status === 403) {
-                logout();
-                navigate('/login');
-            }
-        });
+        if (fetchWorkouts) {
+            fetchWorkouts().catch((error) => {
+                if (error.response?.status === 403) {
+                    logout();
+                    navigate('/login');
+                }
+            });
+        }
     }, [fetchWorkouts, logout, navigate]);
 
     const getWorkoutTypeColor = (type) => {
@@ -75,44 +77,45 @@ const Dashboard = () => {
             {/* Recent Workouts */}
             <h2 className="mb-3">Recent Workouts</h2>
             <Row>
-                {workouts.slice(0, 6).map((workout) => (
-                    <Col key={workout.id} md={4} className="mb-4">
-                        <Card className="h-100 workout-card">
-                            <Card.Body>
-                                <div className="d-flex justify-content-between align-items-start mb-2">
-                                    <Badge bg={getWorkoutTypeColor(workout.workout_type)}>
-                                        {workout.workout_type}
-                                    </Badge>
-                                    <small className="text-muted">
-                                        {new Date(workout.date_logged).toLocaleDateString()}
-                                    </small>
-                                </div>
-                                <Card.Title>{workout.title || workout.workout_type}</Card.Title>
-                                {workout.description && (
-                                    <Card.Text>{workout.description}</Card.Text>
-                                )}
-                                <div className="workout-stats-row mt-3">
-                                    <div className="stat-item">
-                                        <Clock size={16} className="me-1" />
-                                        <span>{workout.duration} min</span>
+                {workouts && workouts.length > 0 ? (
+                    workouts.slice(0, 6).map((workout) => (
+                        <Col key={workout.id} md={4} className="mb-4">
+                            <Card className="h-100 workout-card">
+                                <Card.Body>
+                                    <div className="d-flex justify-content-between align-items-start mb-2">
+                                        <Badge bg={getWorkoutTypeColor(workout.workout_type)}>
+                                            {workout.workout_type}
+                                        </Badge>
+                                        <small className="text-muted">
+                                            {new Date(workout.date_logged).toLocaleDateString()}
+                                        </small>
                                     </div>
-                                    <div className="stat-item">
-                                        <Flame size={16} className="me-1" />
-                                        <span>{workout.calories} cal</span>
+                                    <Card.Title>{workout.title || workout.workout_type}</Card.Title>
+                                    {workout.description && (
+                                        <Card.Text>{workout.description}</Card.Text>
+                                    )}
+                                    <div className="workout-stats-row mt-3">
+                                        <div className="stat-item">
+                                            <Clock size={16} className="me-1" />
+                                            <span>{workout.duration} min</span>
+                                        </div>
+                                        <div className="stat-item">
+                                            <Flame size={16} className="me-1" />
+                                            <span>{workout.calories} cal</span>
+                                        </div>
+                                        <Button 
+                                            variant="outline-primary" 
+                                            size="sm"
+                                            onClick={() => navigate(`/workouts/${workout.id}`)}
+                                        >
+                                            View Details
+                                        </Button>
                                     </div>
-                                    <Button 
-                                        variant="outline-primary" 
-                                        size="sm"
-                                        onClick={() => navigate(`/workouts/${workout.id}`)}
-                                    >
-                                        View Details
-                                    </Button>
-                                </div>
-                            </Card.Body>
-                        </Card>
-                    </Col>
-                ))}
-                {workouts.length === 0 && !loading && !error && (
+                                </Card.Body>
+                            </Card>
+                        </Col>
+                    ))
+                ) : (
                     <Col xs={12}>
                         <Alert variant="info">
                             <h4>Welcome to Your Fitness Journey!</h4>
