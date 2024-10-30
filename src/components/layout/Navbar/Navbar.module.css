@@ -1,70 +1,116 @@
 .navbar {
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    height: 64px;
-    background-color: #f7f9fc;
-    border-bottom: 2px solid #0f172a;
+  height: 64px;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  border-bottom: 2px solid #00ff88;
 }
 
 .brand {
-    display: flex;
-    align-items: center;
-    font-size: 1.5rem;
-    color: #0f172a;
-    font-weight: bold;
-    text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #00ff88;
+  text-decoration: none;
+  letter-spacing: 1px;
+  text-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
 }
 
-.navLink {
-    display: flex;
-    align-items: center;
-    padding: 0.5rem 1.2rem;
-    border-radius: 10px;
-    transition: background-color 0.2s ease, color 0.2s ease;
-    color: #3b82f6 !important; /* Vibrant blue */
-    font-weight: 500;
-    letter-spacing: 0.5px;
+.brand:hover {
+  color: #00ff88;
+  transform: scale(1.05);
+  text-shadow: 0 0 15px rgba(0, 255, 136, 0.5);
 }
 
-.navLink:hover {
-    background-color: #dbeafe; /* Soft blue for hover */
-    color: #1e3a8a !important;
-    transform: translateY(-2px);
+.main-nav {
+  display: flex;
+  gap: 1.25rem;
+  margin: 0 auto;
 }
 
-.navLink.active {
-    background-color: #0f172a; /* Dark active state */
-    color: #f8fafc !important; /* Light text */
-    font-weight: 600;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    transform: scale(1.05);
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  color: #ffffff !important;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
 }
 
-.profileDropdown {
-    display: flex;
-    align-items: center;
-    background: none;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    color: #3b82f6; /* Match navLink color */
-    font-weight: 500;
+.nav-link:hover {
+  background: rgba(0, 255, 136, 0.1);
+  transform: translateY(-1px);
+  border-color: rgba(0, 255, 136, 0.2);
 }
 
-.profileDropdown:hover,
-.profileDropdown:focus,
-.profileDropdown:active {
-    background-color: #e0e7ff !important; /* Soft background for profile hover */
-    color: #1e3a8a !important;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+.nav-link.active {
+  background: #00ff88;
+  color: #0f172a !important;
+  font-weight: 600;
+  box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
 }
 
-.profilePicture {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid #3b82f6; /* Blue border for a sporty look */
+.profile-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(0, 255, 136, 0.2);
+  border-radius: 8px;
+  color: #ffffff;
+  transition: all 0.2s ease;
 }
-.navbar {
-    z-index: 1000; /* Ensures navbar is above other elements */
+
+.profile-toggle:hover,
+.profile-toggle:focus {
+  background: rgba(0, 255, 136, 0.1);
+  border-color: #00ff88;
+  box-shadow: 0 0 15px rgba(0, 255, 136, 0.2);
+}
+
+.profile-pic {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid #00ff88;
+  box-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+}
+
+.navbar .dropdown-menu {
+  background: #1e293b;
+  border: 1px solid rgba(0, 255, 136, 0.2);
+  border-radius: 8px;
+  margin-top: 0.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.navbar .dropdown-item {
+  color: #ffffff;
+  padding: 0.75rem 1.25rem;
+  transition: all 0.2s ease;
+}
+
+.navbar .dropdown-item:hover {
+  background: rgba(0, 255, 136, 0.1);
+  color: #00ff88;
+}
+
+.navbar .dropdown-divider {
+  border-color: rgba(0, 255, 136, 0.2);
+}
+
+@media (max-width: 768px) {
+  .main-nav {
+    display: none;
+  }
+  
+  .profile-toggle span {
+    display: none;
+  }
 }
