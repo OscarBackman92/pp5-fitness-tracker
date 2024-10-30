@@ -20,7 +20,7 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     await logout();
-    navigate('/login');
+    navigate('/'); // Redirect to homepage after logout
     setIsOpen(false);
   };
 
@@ -42,7 +42,8 @@ const Navbar = () => {
 
         <div className={`${styles.navContent} ${isOpen ? styles.show : ''}`}>
           <div className={styles.navLinks}>
-            {navigationLinks.map((link) => (
+            {/* Display links only if user is logged in */}
+            {user && navigationLinks.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
@@ -55,22 +56,30 @@ const Navbar = () => {
             ))}
           </div>
 
-          <div className={styles.userSection}>
-            <Link to="/profile" className={styles.profileLink}>
-              <img 
-                src={user?.profile_picture || "/api/placeholder/32/32"}
-                alt="Profile"
-                className={styles.avatar}
-              />
-              <span className={styles.username}>{user?.username}</span>
+          {/* Conditional Rendering for Logged-in and Logged-out State */}
+          {user ? (
+            <div className={styles.userSection}>
+              <Link to="/profile" className={styles.profileLink}>
+                <img 
+                  src={user?.profile_picture || "/api/placeholder/32/32"}
+                  alt="Profile"
+                  className={styles.avatar}
+                />
+                <span className={styles.username}>{user?.username}</span>
+              </Link>
+              <button onClick={handleLogout} className={styles.logoutBtn}>
+                <LogOut size={18} />
+                <span>Logout</span>
+              </button>
+            </div>
+          ) : (
+            <Link to="/login" className={`${styles.loginLink} ${styles.logoutBtn}`}>
+              <span>Sign in/Register</span>
             </Link>
-            <button onClick={handleLogout} className={styles.logoutBtn}>
-              <LogOut size={18} />
-              <span>Logout</span>
-            </button>
-          </div>
+          )}
         </div>
 
+        {/* Mobile Menu Toggle Button */}
         <button 
           className={styles.mobileMenuBtn}
           onClick={() => setIsOpen(!isOpen)}
