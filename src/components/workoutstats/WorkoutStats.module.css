@@ -1,0 +1,20 @@
+.statCard {
+    transition: transform 0.2s ease;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+  
+  .statCard:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .statIcon {
+    color: #00ff88;
+  }
+  
+  @media (max-width: 768px) {
+    .statCard {
+      margin-bottom: 1rem;
+    }
+  }
