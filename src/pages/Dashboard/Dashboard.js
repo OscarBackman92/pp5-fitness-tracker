@@ -9,7 +9,11 @@ import styles from './Dashboard.module.css';
 const Dashboard = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+<<<<<<< HEAD
   const { workouts, loading } = useWorkout();
+=======
+  const { workouts, loading } = useWorkouts();
+>>>>>>> 7f33bf9 (fix: Implement proper auth flow and error handling)
 
   if (loading) {
     return <div>Loading...</div>;
