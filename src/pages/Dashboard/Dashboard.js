@@ -2,14 +2,14 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Activity, Plus, List, Clock, Flame } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { useWorkouts } from '../../context/WorkoutContext';
+import { useWorkout } from '../../context/WorkoutContext';
 import WorkoutStats from '../../components/workoutstats/WorkoutStats';
 import styles from './Dashboard.module.css';
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { workouts, loading } = useWorkouts();
+  const { workouts, loading } = useWorkout();
 
   if (loading) {
     return <div>Loading...</div>;

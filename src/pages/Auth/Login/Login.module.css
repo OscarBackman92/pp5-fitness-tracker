@@ -1,0 +1,66 @@
+.container {
+    background-color: #f0f4f8; /* Light background for the container */
+    min-height: 100vh; /* Full viewport height */
+    display: flex; /* Flexbox layout */
+    align-items: center; /* Center items vertically */
+    justify-content: center; /* Center items horizontally */
+}
+
+.loginCard {
+    background-color: white; /* White background for the card */
+    border-radius: 12px; /* Rounded corners */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Soft shadow */
+    padding: 3rem; /* Increased padding */
+    min-height: 400px; /* Minimum height for the card */
+    width: 100%; /* Full width */
+    max-width: 600px; /* Optional max width */
+    margin: auto; /* Center the card */
+}
+
+.title {
+    color: #007bff; /* Blue color for the title */
+    font-weight: bold; /* Bold font weight */
+    margin-bottom: 1.5rem; /* Space below the title */
+}
+
+.formGroup {
+    margin-bottom: 1.5rem; /* Space below form groups */
+}
+
+.inputField {
+    border: 1px solid #ced4da; /* Light gray border */
+    border-radius: 5px; /* Rounded edges */
+    transition: border-color 0.3s; /* Smooth transition for border color */
+}
+
+.inputField:focus {
+    border-color: #007bff; /* Change border color on focus */
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Shadow on focus */
+}
+
+.submitButton {
+    background-color: #28a745; /* Green background */
+    border: none; /* No border */
+    border-radius: 5px; /* Rounded edges */
+    color: white; /* White text */
+    padding: 0.75rem; /* Padding inside button */
+    font-size: 1rem; /* Font size */
+    transition: background-color 0.3s; /* Smooth transition for background color */
+}
+
+.submitButton:hover {
+    background-color: #218838; /* Darker green on hover */
+}
+
+.alert {
+    margin-top: 1rem; /* Space above alert */
+}
+
+.link {
+    color: #007bff; /* Blue color for links */
+    text-decoration: none; /* No underline */
+}
+
+.link:hover {
+    text-decoration: underline; /* Underline on hover */
+}

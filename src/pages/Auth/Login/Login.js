@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Form, Button, Card, Alert, Container, Row, Col, Spinner } from 'react-bootstrap';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
+import styles from './Login.module.css';
 
 const Login = () => {
     const [formData, setFormData] = useState({
@@ -67,23 +68,24 @@ const Login = () => {
     }
 
     return (
-        <Container>
-            <Row className="justify-content-md-center mt-5">
-                <Col md={6}>
-                    <Card>
+        <Container className={styles.container}>
+            <Row className="justify-content-md-center">
+                <Col md={8}> {/* Increased column size */}
+                    <Card className={styles.loginCard}>
                         <Card.Body>
-                            <h2 className="text-center mb-4">Log In</h2>
+                            <h2 className={styles.title}>Welcome Back!</h2>
                             {error && (
                                 <Alert 
                                     variant="danger" 
                                     onClose={() => setError('')} 
                                     dismissible
+                                    className={styles.alert}
                                 >
                                     {error}
                                 </Alert>
                             )}
                             <Form onSubmit={handleSubmit}>
-                                <Form.Group className="mb-3">
+                                <Form.Group className={styles.formGroup}>
                                     <Form.Label>Username</Form.Label>
                                     <Form.Control
                                         type="text"
@@ -93,10 +95,12 @@ const Login = () => {
                                         required
                                         disabled={loading}
                                         autoComplete="username"
+                                        className={styles.inputField}
+                                        placeholder="Enter your username"
                                     />
                                 </Form.Group>
 
-                                <Form.Group className="mb-3">
+                                <Form.Group className={styles.formGroup}>
                                     <Form.Label>Password</Form.Label>
                                     <Form.Control
                                         type="password"
@@ -106,11 +110,13 @@ const Login = () => {
                                         required
                                         disabled={loading}
                                         autoComplete="current-password"
+                                        className={styles.inputField}
+                                        placeholder="Enter your password"
                                     />
                                 </Form.Group>
 
                                 <Button
-                                    className="w-100"
+                                    className={`w-100 ${styles.submitButton}`}
                                     type="submit"
                                     disabled={loading}
                                 >
@@ -127,12 +133,12 @@ const Login = () => {
                                             Logging in...
                                         </>
                                     ) : (
-                                        'Log In'
+                                        'Let’s Go!'
                                     )}
                                 </Button>
                             </Form>
-                            <div className="text-center mt-3">
-                                Need an account? <Link to="/register">Sign Up</Link>
+                            <div className="text-center mt-4">
+                                New here? <Link to="/register" className={styles.link}>Join Us!</Link>
                             </div>
                         </Card.Body>
                     </Card>

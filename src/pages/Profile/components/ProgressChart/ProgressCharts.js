@@ -3,7 +3,7 @@ import { Card, Form, Row, Col, Alert } from 'react-bootstrap';
 import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { TrendingUp, Calendar } from 'lucide-react';
 import { useProfile } from '../../../../context/ProfileContext';
-import { useWorkouts } from '../../../../context/WorkoutContext';
+import { useWorkout } from '../../../../context/WorkoutContext';
 
 const CHART_TYPES = {
     WEIGHT: 'weight',
@@ -30,7 +30,7 @@ const MEASUREMENT_COLORS = {
 
 const ProgressCharts = () => {
     const { measurements = [] } = useProfile();
-    const { workouts = [] } = useWorkouts();
+    const { workouts = [] } = useWorkout();
     const [selectedChart, setSelectedChart] = useState(CHART_TYPES.WEIGHT);
     const [timeRange, setTimeRange] = useState(TIME_RANGES.MONTH);
 

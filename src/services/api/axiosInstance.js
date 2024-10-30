@@ -10,25 +10,22 @@ const axiosInstance = axios.create({
     }
 });
 
+// Request interceptor to add the token
 axiosInstance.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('access_token');
+        console.log('Current Token:', token); // Log the token
         if (token) {
             config.headers['Authorization'] = `Token ${token}`;
-            console.log('Request config:', {
-                url: config.url,
-                method: config.method,
-                headers: config.headers
-            });
         }
         return config;
     },
     (error) => {
-        console.error('Request Error:', error);
         return Promise.reject(error);
     }
 );
 
+// Response interceptor for error handling
 axiosInstance.interceptors.response.use(
     (response) => response,
     (error) => {

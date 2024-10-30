@@ -1,13 +1,27 @@
 import axiosInstance from './axiosInstance';
-export { authApi } from './authApi';
-export { profileApi } from './profileApi';
 
-export { axiosInstance };
+export const apiService = {
+    getData: async (endpoint) => {
+        try {
+            const response = await axiosInstance.get(endpoint);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching data:', error.response?.data || error.message);
+            throw error;
+        }
+    },
 
-export const workoutApi = {
-  getAll: () => axiosInstance.get('/workouts/'),
-  getById: (id) => axiosInstance.get(`/workouts/${id}/`),
-  create: (data) => axiosInstance.post('/workouts/', data),
-  update: (id, data) => axiosInstance.put(`/workouts/${id}/`, data),
-  delete: (id) => axiosInstance.delete(`/workouts/${id}/`)
+    postData: async (endpoint, data) => {
+        try {
+            const response = await axiosInstance.post(endpoint, data);
+            return response.data;
+        } catch (error) {
+            console.error('Error posting data:', error.response?.data || error.message);
+            throw error;
+        }
+    },
+
+    // Add more methods for PUT, DELETE, etc., as needed
 };
+
+export default apiService;

@@ -1,22 +1,25 @@
 import axiosInstance from './axiosInstance';
 
 export const profileApi = {
-  getMe: () => axiosInstance.get('/profiles/me/'),
-  
-  updateMe: (data) => axiosInstance.put('/profiles/me/', data),
-  
-  uploadProfilePicture: (formData) => 
-    axiosInstance.put('/profiles/update_profile_picture/', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    }),
+    getProfile: async () => {
+        try {
+            const response = await axiosInstance.get('/profiles/me/');
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching profile:', error.response?.data || error.message);
+            throw error;
+        }
+    },
 
-  getGoals: () => axiosInstance.get('/goals/'),
-  
-  createGoal: (goalData) => axiosInstance.post('/goals/', goalData),
-  
-  updateGoal: (goalId, goalData) => axiosInstance.patch(`/goals/${goalId}/`, goalData),
-  
-  deleteGoal: (goalId) => axiosInstance.delete(`/goals/${goalId}/`)
+    updateProfile: async (profileData) => {
+        try {
+            const response = await axiosInstance.put('/profiles/me/', profileData);
+            return response.data;
+        } catch (error) {
+            console.error('Error updating profile:', error.response?.data || error.message);
+            throw error;
+        }
+    }
 };
+
+export default profileApi;
