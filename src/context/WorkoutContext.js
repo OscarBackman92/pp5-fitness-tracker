@@ -101,17 +101,31 @@ export const WorkoutProvider = ({ children }) => {
   const createWorkout = useCallback(async (workoutData) => {
     try {
       dispatch({ type: ACTIONS.SET_LOADING });
+      console.log('Sending workout data:', workoutData); // Debug log
+
       const response = await axiosInstance.post('/workouts/', workoutData);
-      await fetchWorkouts(1); // Refresh the list
+      console.log('Server response:', response.data); // Debug log
+
+      // Update local state with new workout
+      dispatch({
+        type: ACTIONS.SET_WORKOUTS,
+        payload: {
+          workouts: [response.data, ...state.workouts],
+          hasMore: state.hasMore,
+          page: state.page
+        }
+      });
+
       return response.data;
     } catch (error) {
+      console.error('Error creating workout:', error.response?.data || error); // Debug log
       dispatch({ 
         type: ACTIONS.SET_ERROR, 
         payload: error.response?.data?.detail || 'Failed to create workout' 
       });
       throw error;
     }
-  }, [fetchWorkouts]);
+  }, [state.workouts, state.hasMore, state.page]);
 
   const updateWorkout = useCallback(async (id, workoutData) => {
     try {

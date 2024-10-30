@@ -1,26 +1,22 @@
 import React, { useState } from 'react';
 import { Form, Button, Container, Alert, Card, Row, Col, Spinner } from 'react-bootstrap';
-import { useNavigate, Link } from 'react-router-dom';
-import { Activity, Clock, Flame, Calendar, FileText } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Activity, Clock, Flame, Calendar } from 'lucide-react';
 import { useWorkouts } from '../../context/WorkoutContext';
 
-
 const WORKOUT_TYPES = [
-    { value: 'cardio', label: 'Cardio', icon: <Activity /> },
-    { value: 'strength', label: 'Strength Training', icon: <Activity /> },
-    { value: 'flexibility', label: 'Flexibility', icon: <Activity /> },
-    { value: 'sports', label: 'Sports', icon: <Activity /> },
-    { value: 'other', label: 'Other', icon: <Activity /> }
+    { value: 'cardio', label: 'Cardio' },
+    { value: 'strength', label: 'Strength Training' },
+    { value: 'flexibility', label: 'Flexibility' },
+    { value: 'sports', label: 'Sports' },
+    { value: 'other', label: 'Other' }
 ];
 
-const INTENSITY_LEVELS = [
-    { value: 'low', label: 'Low' },
-    { value: 'moderate', label: 'Moderate' },
-    { value: 'high', label: 'High' }
-];
-
-function LogWorkout() {
-    const { createWorkout, loading, error: contextError } = useWorkouts();
+const LogWorkout = () => {
+    const navigate = useNavigate();
+    const { createWorkout } = useWorkouts();
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
     const [workoutData, setWorkoutData] = useState({
         workout_type: '',
         duration: '',
@@ -29,142 +25,96 @@ function LogWorkout() {
         notes: '',
         intensity: 'moderate'
     });
-    const [errors, setErrors] = useState({});
-    const [submitError, setSubmitError] = useState('');
-    const navigate = useNavigate();
-
-    const validateForm = () => {
-        const newErrors = {};
-        
-        if (!workoutData.workout_type) {
-            newErrors.workout_type = 'Please select a workout type';
-        }
-        if (!workoutData.duration) {
-            newErrors.duration = 'Duration is required';
-        } else if (workoutData.duration < 1 || workoutData.duration > 1440) {
-            newErrors.duration = 'Duration must be between 1 and 1440 minutes';
-        }
-        if (!workoutData.calories) {
-            newErrors.calories = 'Calories is required';
-        } else if (workoutData.calories < 0) {
-            newErrors.calories = 'Calories cannot be negative';
-        }
-        if (!workoutData.date_logged) {
-            newErrors.date_logged = 'Date is required';
-        }
-
-        return newErrors;
-    };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setWorkoutData(prevData => ({
-            ...prevData,
-            [name]: name === 'duration' || name === 'calories' ? Number(value) || '' : value
+        setWorkoutData(prev => ({
+            ...prev,
+            [name]: name === 'duration' || name === 'calories' ? 
+                    Number(value) || '' : 
+                    value
         }));
-        
-        if (errors[name]) {
-            setErrors(prev => ({ ...prev, [name]: '' }));
+        if (error) setError('');
+    };
+
+    const validateForm = () => {
+        const errors = {};
+        if (!workoutData.workout_type) errors.workout_type = 'Please select a workout type';
+        if (!workoutData.duration) errors.duration = 'Duration is required';
+        if (workoutData.duration < 1 || workoutData.duration > 1440) {
+            errors.duration = 'Duration must be between 1 and 1440 minutes';
         }
-        setSubmitError('');
+        if (!workoutData.calories) errors.calories = 'Calories is required';
+        if (!workoutData.date_logged) errors.date_logged = 'Date is required';
+        return errors;
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const validationErrors = validateForm();
         
-        const formErrors = validateForm();
-        if (Object.keys(formErrors).length > 0) {
-            setErrors(formErrors);
+        if (Object.keys(validationErrors).length > 0) {
+            setError('Please fill all required fields correctly');
             return;
         }
 
         try {
+            setLoading(true);
+            setError('');
+            console.log('Submitting workout:', workoutData); // Debug log
+
             await createWorkout(workoutData);
             navigate('/workouts', { 
                 state: { message: 'Workout logged successfully!' }
             });
-        } catch (error) {
-            setSubmitError(
-                error.response?.data?.detail || 
-                'Failed to log workout. Please try again.'
-            );
+        } catch (err) {
+            console.error('Error logging workout:', err); // Debug log
+            setError(err.response?.data?.detail || 'Failed to log workout. Please try again.');
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
-        <Container className="log-workout-container">
-            <Card className="workout-form-card">
+        <Container className="py-4">
+            <Card>
                 <Card.Body>
-                    <div className="text-center mb-4">
-                        <h2 className="form-title">Log New Workout</h2>
-                        <p className="text-muted">Track your fitness progress by logging your workout details</p>
-                    </div>
-
-                    {(submitError || contextError) && (
-                        <Alert 
-                            variant="danger" 
-                            dismissible 
-                            onClose={() => {
-                                setSubmitError('');
-                            }}
-                            style={{ whiteSpace: 'pre-line' }}
-                        >
-                            {submitError || contextError}
+                    <h2 className="text-center mb-4">Log New Workout</h2>
+                    
+                    {error && (
+                        <Alert variant="danger" dismissible onClose={() => setError('')}>
+                            {error}
                         </Alert>
                     )}
 
-                    <Form onSubmit={handleSubmit} noValidate>
+                    <Form onSubmit={handleSubmit}>
                         <Row>
                             <Col md={6}>
                                 <Form.Group className="mb-3">
-                                    <Form.Label className="d-flex align-items-center">
-                                        <Activity size={18} className="me-2" />
+                                    <Form.Label>
+                                        <Activity className="me-2" />
                                         Workout Type
                                     </Form.Label>
                                     <Form.Select
                                         name="workout_type"
                                         value={workoutData.workout_type}
                                         onChange={handleChange}
-                                        isInvalid={!!errors.workout_type}
+                                        required
                                     >
-                                        <option value="">Select a workout type</option>
+                                        <option value="">Select Type</option>
                                         {WORKOUT_TYPES.map(type => (
-                                            <option key={type.value} value={type.value}>{type.label}</option>
-                                        ))}
-                                    </Form.Select>
-                                    <Form.Control.Feedback type="invalid">
-                                        {errors.workout_type}
-                                    </Form.Control.Feedback>
-                                </Form.Group>
-                            </Col>
-
-                            <Col md={6}>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>Intensity Level</Form.Label>
-                                    <Form.Select
-                                        name="intensity"
-                                        value={workoutData.intensity}
-                                        onChange={handleChange}
-                                        isInvalid={!!errors.intensity}
-                                    >
-                                        {INTENSITY_LEVELS.map(level => (
-                                            <option key={level.value} value={level.value}>
-                                                {level.label}
+                                            <option key={type.value} value={type.value}>
+                                                {type.label}
                                             </option>
                                         ))}
                                     </Form.Select>
-                                    <Form.Control.Feedback type="invalid">
-                                        {errors.intensity}
-                                    </Form.Control.Feedback>
                                 </Form.Group>
                             </Col>
-                        </Row>
 
-                        <Row>
                             <Col md={6}>
                                 <Form.Group className="mb-3">
-                                    <Form.Label className="d-flex align-items-center">
-                                        <Clock size={18} className="me-2" />
+                                    <Form.Label>
+                                        <Clock className="me-2" />
                                         Duration (minutes)
                                     </Form.Label>
                                     <Form.Control
@@ -172,41 +122,19 @@ function LogWorkout() {
                                         name="duration"
                                         value={workoutData.duration}
                                         onChange={handleChange}
-                                        isInvalid={!!errors.duration}
+                                        required
                                         min="1"
                                         max="1440"
                                     />
-                                    <Form.Control.Feedback type="invalid">
-                                        {errors.duration}
-                                    </Form.Control.Feedback>
-                                </Form.Group>
-                            </Col>
-
-                            <Col md={6}>
-                                <Form.Group className="mb-3">
-                                    <Form.Label className="d-flex align-items-center">
-                                        <Calendar size={18} className="me-2" />
-                                        Date
-                                    </Form.Label>
-                                    <Form.Control
-                                        type="date"
-                                        name="date_logged"
-                                        value={workoutData.date_logged}
-                                        onChange={handleChange}
-                                        isInvalid={!!errors.date_logged}
-                                    />
-                                    <Form.Control.Feedback type="invalid">
-                                        {errors.date_logged}
-                                    </Form.Control.Feedback>
                                 </Form.Group>
                             </Col>
                         </Row>
 
                         <Row>
-                            <Col md={12}>
+                            <Col md={6}>
                                 <Form.Group className="mb-3">
-                                    <Form.Label className="d-flex align-items-center">
-                                        <Flame size={18} className="me-2" />
+                                    <Form.Label>
+                                        <Flame className="me-2" />
                                         Calories Burned
                                     </Form.Label>
                                     <Form.Control
@@ -214,47 +142,50 @@ function LogWorkout() {
                                         name="calories"
                                         value={workoutData.calories}
                                         onChange={handleChange}
-                                        isInvalid={!!errors.calories}
+                                        required
                                         min="0"
                                     />
-                                    <Form.Control.Feedback type="invalid">
-                                        {errors.calories}
-                                    </Form.Control.Feedback>
                                 </Form.Group>
                             </Col>
-                        </Row>
 
-                        <Row>
-                            <Col md={12}>
+                            <Col md={6}>
                                 <Form.Group className="mb-3">
-                                    <Form.Label className="d-flex align-items-center">
-                                        <FileText size={18} className="me-2" />
-                                        Notes
+                                    <Form.Label>
+                                        <Calendar className="me-2" />
+                                        Date
                                     </Form.Label>
                                     <Form.Control
-                                        as="textarea"
-                                        rows={3}
-                                        name="notes"
-                                        value={workoutData.notes}
+                                        type="date"
+                                        name="date_logged"
+                                        value={workoutData.date_logged}
                                         onChange={handleChange}
-                                        placeholder="Add any additional notes about your workout..."
+                                        required
                                     />
                                 </Form.Group>
                             </Col>
                         </Row>
 
-                        <div className="d-flex justify-content-between">
+                        <Form.Group className="mb-3">
+                            <Form.Label>Notes</Form.Label>
+                            <Form.Control
+                                as="textarea"
+                                name="notes"
+                                value={workoutData.notes}
+                                onChange={handleChange}
+                                rows={3}
+                            />
+                        </Form.Group>
+
+                        <div className="d-flex justify-content-end gap-2">
                             <Button 
-                                variant="outline-secondary" 
-                                as={Link} 
-                                to="/workouts"
+                                variant="secondary" 
+                                onClick={() => navigate('/workouts')}
                                 disabled={loading}
                             >
                                 Cancel
                             </Button>
                             <Button 
-                                variant="primary" 
-                                type="submit"
+                                type="submit" 
                                 disabled={loading}
                             >
                                 {loading ? (
@@ -279,6 +210,6 @@ function LogWorkout() {
             </Card>
         </Container>
     );
-}
+};
 
 export default LogWorkout;
