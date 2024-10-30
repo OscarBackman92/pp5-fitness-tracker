@@ -1,15 +1,22 @@
 import React, { useState } from 'react';
-import { Container } from 'react-bootstrap';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, Activity, LayoutDashboard, Dumbbell, UserCircle, Settings, LogOut } from 'lucide-react';
+import { 
+  Dumbbell, 
+  LayoutDashboard, 
+  Activity,
+  Settings, 
+  LogOut, 
+  Menu, 
+  X 
+} from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 import styles from './Navbar.module.css';
 
-const NavigationBar = () => {
+const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { user, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
 
   const handleLogout = async () => {
     await logout();
@@ -17,62 +24,63 @@ const NavigationBar = () => {
     setIsOpen(false);
   };
 
-  const navItems = [
+  const isActive = (path) => location.pathname === path;
+
+  const navigationLinks = [
     { path: '/dashboard', icon: <LayoutDashboard size={20} />, label: 'Dashboard' },
-    { path: '/workouts', icon: <Dumbbell size={20} />, label: 'Workouts' },
-    { path: '/profile', icon: <UserCircle size={20} />, label: 'Profile' },
-    { path: '/settings', icon: <Settings size={20} />, label: 'Settings' }
+    { path: '/workouts', icon: <Activity size={20} />, label: 'Workouts' },
+    { path: '/settings', icon: <Settings size={20} />, label: 'Settings' },
   ];
 
   return (
     <nav className={styles.navbar}>
-      <Container className={styles.container}>
-        <Link to="/" className={styles.brand}>
-          <Activity className={styles.brandIcon} size={28} />
-          <span>PEAKFORM</span>
+      <div className={styles.navContainer}>
+        <Link to="/" className={styles.logo}>
+          <Dumbbell className={styles.logoIcon} size={28} />
+          <span className={styles.logoText}>FITPRO</span>
         </Link>
 
+        <div className={`${styles.navContent} ${isOpen ? styles.show : ''}`}>
+          <div className={styles.navLinks}>
+            {navigationLinks.map((link) => (
+              <Link
+                key={link.path}
+                to={link.path}
+                className={`${styles.navLink} ${isActive(link.path) ? styles.active : ''}`}
+                onClick={() => setIsOpen(false)}
+              >
+                {link.icon}
+                <span className={styles.linkText}>{link.label}</span>
+              </Link>
+            ))}
+          </div>
+
+          <div className={styles.userSection}>
+            <Link to="/profile" className={styles.profileLink}>
+              <img 
+                src={user?.profile_picture || "/api/placeholder/32/32"}
+                alt="Profile"
+                className={styles.avatar}
+              />
+              <span className={styles.username}>{user?.username}</span>
+            </Link>
+            <button onClick={handleLogout} className={styles.logoutBtn}>
+              <LogOut size={18} />
+              <span>Logout</span>
+            </button>
+          </div>
+        </div>
+
         <button 
-          className={styles.mobileToggle} 
+          className={styles.mobileMenuBtn}
           onClick={() => setIsOpen(!isOpen)}
           aria-label="Toggle menu"
         >
           {isOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
-
-        <div className={`${styles.navContent} ${isOpen ? styles.show : ''}`}>
-          {/* User Info - Mobile Only */}
-          <div className={styles.mobileUserInfo}>
-            <img 
-              src={user?.profile_picture || "/api/placeholder/32/32"}
-              alt="Profile" 
-              className={styles.avatar}
-            />
-            <span className={styles.username}>{user?.username}</span>
-          </div>
-
-          {/* Navigation Links */}
-          <div className={styles.navLinks}>
-            {navItems.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`${styles.navLink} ${location.pathname === item.path ? styles.active : ''}`}
-                onClick={() => setIsOpen(false)}
-              >
-                {item.icon}
-                <span>{item.label}</span>
-              </Link>
-            ))}
-            <button onClick={handleLogout} className={styles.logoutButton}>
-              <LogOut size={20} />
-              <span>Logout</span>
-            </button>
-          </div>
-        </div>
-      </Container>
+      </div>
     </nav>
   );
 };
 
-export default NavigationBar;
+export default Navbar;
