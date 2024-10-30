@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Card, Form, Button, ListGroup, Badge, Alert, Spinner } from 'react-bootstrap';
 import { Target, Plus, X } from 'lucide-react';
 import { useProfile } from '../../../../context/ProfileContext';
-import { profileService } from '../../../../services/profileService';
+import { profileService } from '../../../../services/profileService'; 
 
 const GOAL_TYPES = [
     { value: 'weight', label: 'Weight Goal' },

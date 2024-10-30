@@ -6,15 +6,13 @@ export const API_ENDPOINTS = {
         LOGOUT: '/auth/logout/',
         REGISTER: '/auth/register/',
     },
+    PROFILES: {
+        ME: '/profiles/me/',
+        UPDATE_PROFILE_PICTURE: '/profiles/update_profile_picture/',
+        GOALS: '/goals/',
+    },
     WORKOUTS: {
         LIST: '/workouts/',
         DETAIL: (id) => `/workouts/${id}/`,
-        CREATE: '/workouts/',
-        UPDATE: (id) => `/workouts/${id}/`,
-        DELETE: (id) => `/workouts/${id}/`
-    },
-    PROFILES: {
-        ME: '/profiles/me/',
-        LIST: '/profiles/',
     }
 };

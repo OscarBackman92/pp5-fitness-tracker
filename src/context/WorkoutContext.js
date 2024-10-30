@@ -1,216 +1,182 @@
-import React, { createContext, useContext, useReducer, useCallback } from 'react';
-import { workoutApi } from '../services/api/apiService';
+// workoutContext.js
+import React, { createContext, useContext, useReducer, useCallback, useMemo, useEffect } from 'react';
+import axiosInstance from '../services/api/axiosInstance';
 
-const WORKOUT_ACTIONS = {
-    SET_WORKOUTS: 'SET_WORKOUTS',
-    ADD_WORKOUT: 'ADD_WORKOUT',
-    UPDATE_WORKOUT: 'UPDATE_WORKOUT',
-    DELETE_WORKOUT: 'DELETE_WORKOUT',
-    SET_LOADING: 'SET_LOADING',
-    SET_ERROR: 'SET_ERROR',
-    CLEAR_ERROR: 'CLEAR_ERROR'
-};
+const WorkoutContext = createContext(null);
 
 const initialState = {
-    workouts: [],
-    loading: false,
-    error: null
+  workouts: [],
+  loading: false,
+  error: null,
+  page: 1,
+  hasMore: true
 };
 
-function workoutReducer(state, action) {
-    console.log('Workout Reducer Action:', { type: action.type, payload: action.payload });
-    
-    switch (action.type) {
-        case WORKOUT_ACTIONS.SET_WORKOUTS:
-            return {
-                ...state,
-                workouts: action.payload,
-                loading: false,
-                error: null
-            };
-        case WORKOUT_ACTIONS.ADD_WORKOUT:
-            return {
-                ...state,
-                workouts: [action.payload, ...state.workouts],
-                loading: false,
-                error: null
-            };
-        case WORKOUT_ACTIONS.UPDATE_WORKOUT:
-            return {
-                ...state,
-                workouts: state.workouts.map(workout => 
-                    workout.id === action.payload.id ? action.payload : workout
-                ),
-                loading: false,
-                error: null
-            };
-        case WORKOUT_ACTIONS.DELETE_WORKOUT:
-            return {
-                ...state,
-                workouts: state.workouts.filter(workout => workout.id !== action.payload),
-                loading: false,
-                error: null
-            };
-        case WORKOUT_ACTIONS.SET_LOADING:
-            return {
-                ...state,
-                loading: true,
-                error: null
-            };
-        case WORKOUT_ACTIONS.SET_ERROR:
-            return {
-                ...state,
-                error: action.payload,
-                loading: false
-            };
-        case WORKOUT_ACTIONS.CLEAR_ERROR:
-            return {
-                ...state,
-                error: null
-            };
-        default:
-            return state;
-    }
-}
+const ACTIONS = {
+  SET_LOADING: 'SET_LOADING',
+  SET_WORKOUTS: 'SET_WORKOUTS',
+  SET_ERROR: 'SET_ERROR',
+  UPDATE_WORKOUT: 'UPDATE_WORKOUT',
+  DELETE_WORKOUT: 'DELETE_WORKOUT',
+  CLEAR_ERROR: 'CLEAR_ERROR',
+  SET_PAGE: 'SET_PAGE',
+  SET_HAS_MORE: 'SET_HAS_MORE'
+};
 
-export const WorkoutContext = createContext(null);
+const workoutReducer = (state, action) => {
+  switch (action.type) {
+    case ACTIONS.SET_LOADING:
+      return { ...state, loading: true, error: null };
+    
+    case ACTIONS.SET_WORKOUTS:
+      return {
+        ...state,
+        workouts: action.payload.page === 1 
+          ? action.payload.workouts 
+          : [...state.workouts, ...action.payload.workouts],
+        loading: false,
+        error: null,
+        hasMore: action.payload.hasMore
+      };
+    
+    case ACTIONS.SET_ERROR:
+      return { ...state, error: action.payload, loading: false };
+    
+    case ACTIONS.UPDATE_WORKOUT:
+      return {
+        ...state,
+        workouts: state.workouts.map(workout => 
+          workout.id === action.payload.id ? action.payload : workout
+        ),
+        loading: false
+      };
+    
+    case ACTIONS.DELETE_WORKOUT:
+      return {
+        ...state,
+        workouts: state.workouts.filter(workout => workout.id !== action.payload),
+        loading: false
+      };
+    
+    case ACTIONS.SET_PAGE:
+      return { ...state, page: action.payload };
+    
+    case ACTIONS.SET_HAS_MORE:
+      return { ...state, hasMore: action.payload };
+    
+    case ACTIONS.CLEAR_ERROR:
+      return { ...state, error: null };
+    
+    default:
+      return state;
+  }
+};
 
 export const WorkoutProvider = ({ children }) => {
-    const [state, dispatch] = useReducer(workoutReducer, initialState);
+  const [state, dispatch] = useReducer(workoutReducer, initialState);
 
-    const fetchWorkouts = useCallback(async () => {
-        try {
-            dispatch({ type: WORKOUT_ACTIONS.SET_LOADING });
-            console.log('Fetching workouts...');
-            const response = await workoutApi.getAll();
-            console.log('Raw API response:', response);
-            
-            // Handle different response structures
-            let workoutsData;
-            if (Array.isArray(response.data)) {
-                workoutsData = response.data;
-            } else if (response.data.results) {
-                workoutsData = response.data.results;
-            } else if (typeof response.data === 'object') {
-                workoutsData = [response.data];
-            } else {
-                workoutsData = [];
-            }
-            
-            console.log('Processed workouts data:', workoutsData);
-            
-            dispatch({ 
-                type: WORKOUT_ACTIONS.SET_WORKOUTS, 
-                payload: workoutsData 
-            });
-            
-            return workoutsData;
-        } catch (error) {
-            console.error('Error fetching workouts:', error);
-            dispatch({ 
-                type: WORKOUT_ACTIONS.SET_ERROR, 
-                payload: error.response?.data?.detail || 'Failed to fetch workouts' 
-            });
-            throw error;
+  const fetchWorkouts = useCallback(async (page = 1) => {
+    try {
+      dispatch({ type: ACTIONS.SET_LOADING });
+      const response = await axiosInstance.get('/workouts/', {
+        params: { page, page_size: 10 }
+      });
+      
+      dispatch({
+        type: ACTIONS.SET_WORKOUTS,
+        payload: {
+          workouts: response.data.results,
+          hasMore: !!response.data.next,
+          page
         }
-    }, []);
+      });
+    } catch (error) {
+      dispatch({ 
+        type: ACTIONS.SET_ERROR, 
+        payload: error.response?.data?.detail || 'Failed to fetch workouts' 
+      });
+    }
+  }, []);
 
-    const createWorkout = useCallback(async (workoutData) => {
-        try {
-            dispatch({ type: WORKOUT_ACTIONS.SET_LOADING });
-            console.log('Creating workout:', workoutData);
-            const response = await workoutApi.create(workoutData);
-            console.log('Create workout response:', response);
-            
-            const newWorkout = response.data;
-            
-            dispatch({ 
-                type: WORKOUT_ACTIONS.ADD_WORKOUT, 
-                payload: newWorkout 
-            });
-            
-            await fetchWorkouts();
-            
-            return newWorkout;
-        } catch (error) {
-            console.error('Error creating workout:', error);
-            dispatch({ 
-                type: WORKOUT_ACTIONS.SET_ERROR, 
-                payload: error.response?.data?.detail || 'Failed to create workout' 
-            });
-            throw error;
-        }
-    }, [fetchWorkouts]);
+  const createWorkout = useCallback(async (workoutData) => {
+    try {
+      dispatch({ type: ACTIONS.SET_LOADING });
+      const response = await axiosInstance.post('/workouts/', workoutData);
+      await fetchWorkouts(1); // Refresh the list
+      return response.data;
+    } catch (error) {
+      dispatch({ 
+        type: ACTIONS.SET_ERROR, 
+        payload: error.response?.data?.detail || 'Failed to create workout' 
+      });
+      throw error;
+    }
+  }, [fetchWorkouts]);
 
-    const updateWorkout = useCallback(async (id, workoutData) => {
-        try {
-            dispatch({ type: WORKOUT_ACTIONS.SET_LOADING });
-            console.log('Updating workout:', id, workoutData);
-            const response = await workoutApi.update(id, workoutData);
-            console.log('Update response:', response);
-            
-            dispatch({ 
-                type: WORKOUT_ACTIONS.UPDATE_WORKOUT, 
-                payload: response.data 
-            });
-            
-            await fetchWorkouts();
-            
-            return response.data;
-        } catch (error) {
-            console.error('Error updating workout:', error);
-            dispatch({ 
-                type: WORKOUT_ACTIONS.SET_ERROR, 
-                payload: error.response?.data?.detail || 'Failed to update workout' 
-            });
-            throw error;
-        }
-    }, [fetchWorkouts]);
+  const updateWorkout = useCallback(async (id, workoutData) => {
+    try {
+      dispatch({ type: ACTIONS.SET_LOADING });
+      const response = await axiosInstance.put(`/workouts/${id}/`, workoutData);
+      dispatch({ type: ACTIONS.UPDATE_WORKOUT, payload: response.data });
+      return response.data;
+    } catch (error) {
+      dispatch({ 
+        type: ACTIONS.SET_ERROR, 
+        payload: error.response?.data?.detail || 'Failed to update workout' 
+      });
+      throw error;
+    }
+  }, []);
 
-    const deleteWorkout = useCallback(async (id) => {
-        try {
-            dispatch({ type: WORKOUT_ACTIONS.SET_LOADING });
-            await workoutApi.delete(id);
-            dispatch({ 
-                type: WORKOUT_ACTIONS.DELETE_WORKOUT, 
-                payload: id 
-            });
-        } catch (error) {
-            console.error('Error deleting workout:', error);
-            dispatch({ 
-                type: WORKOUT_ACTIONS.SET_ERROR, 
-                payload: error.response?.data?.detail || 'Failed to delete workout' 
-            });
-            throw error;
-        }
-    }, []);
+  const deleteWorkout = useCallback(async (id) => {
+    try {
+      dispatch({ type: ACTIONS.SET_LOADING });
+      await axiosInstance.delete(`/workouts/${id}/`);
+      dispatch({ type: ACTIONS.DELETE_WORKOUT, payload: id });
+    } catch (error) {
+      dispatch({ 
+        type: ACTIONS.SET_ERROR, 
+        payload: error.response?.data?.detail || 'Failed to delete workout' 
+      });
+      throw error;
+    }
+  }, []);
 
-    const clearError = useCallback(() => {
-        dispatch({ type: WORKOUT_ACTIONS.CLEAR_ERROR });
-    }, []);
+  const loadMore = useCallback(() => {
+    if (!state.loading && state.hasMore) {
+      const nextPage = state.page + 1;
+      dispatch({ type: ACTIONS.SET_PAGE, payload: nextPage });
+      fetchWorkouts(nextPage);
+    }
+  }, [state.loading, state.hasMore, state.page, fetchWorkouts]);
 
-    const value = {
-        workouts: state.workouts,
-        loading: state.loading,
-        error: state.error,
-        fetchWorkouts,
-        createWorkout,
-        updateWorkout,
-        deleteWorkout,
-        clearError
+  useEffect(() => {
+    fetchWorkouts(1);
+    return () => {
+      // Cleanup if needed
     };
+  }, [fetchWorkouts]);
 
-    return (
-        <WorkoutContext.Provider value={value}>
-            {children}
-        </WorkoutContext.Provider>
-    );
+  const value = useMemo(() => ({
+    ...state,
+    fetchWorkouts,
+    createWorkout,
+    updateWorkout,
+    deleteWorkout,
+    loadMore
+  }), [state, fetchWorkouts, createWorkout, updateWorkout, deleteWorkout, loadMore]);
+
+  return (
+    <WorkoutContext.Provider value={value}>
+      {children}
+    </WorkoutContext.Provider>
+  );
 };
 
 export const useWorkouts = () => {
-    const context = useContext(WorkoutContext);
-    if (!context) {
-        throw new Error('useWorkouts must be used within a WorkoutProvider');
-    }
-    return context;
+  const context = useContext(WorkoutContext);
+  if (!context) {
+    throw new Error('useWorkouts must be used within a WorkoutProvider');
+  }
+  return context;
 };

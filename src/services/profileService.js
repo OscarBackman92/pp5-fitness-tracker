@@ -38,15 +38,4 @@ export const profileService = {
         })
 };
 
-axiosInstance.interceptors.response.use(
-    response => response,
-    error => {
-        if (error.response?.status === 405) {
-            console.error('Method not allowed. Endpoint accepts:', 
-                error.response.headers?.['allow'] || 'unknown methods');
-        }
-        return Promise.reject(error);
-    }
-);
-
 export default profileService;
